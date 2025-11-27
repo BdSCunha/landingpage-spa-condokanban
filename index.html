@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CondoKanban - A Proposta</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+    <!-- Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Theme Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            bg: '#F5F5F4',       /* Stone 100 - Warm Neutral Background */
+                            card: '#FFFFFF',     /* White */
+                            text: '#292524',     /* Stone 800 */
+                            subtext: '#57534E',  /* Stone 600 */
+                            accent: '#D97706',   /* Amber 600 - Warm Accent */
+                            secondary: '#0EA5E9',/* Sky 500 - Trust/Tech */
+                            success: '#10B981',
+                            warning: '#F59E0B',
+                            danger: '#EF4444'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Chart Container Utilities */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            height: 400px;
+            /* Default height */
+            max-height: 500px;
+        }
+
+        @media (max-width: 640px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #F5F5F4;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #D6D3D1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #A8A29E;
+        }
+
+        .kanban-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .kanban-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+
+    <!-- Chosen Palette: Warm Neutrals (Stone) with Amber/Sky Accents for a professional, calm, yet modern tech feel. -->
+
+    <!-- Application Structure Plan: 
+         The structure mimics a "Shark Tank" pitch deck tailored for a scrolling web experience (10/20/30 rule adaptation).
+         1. The Hook (Hero): Define the problem (Transparency gap).
+         2. The Solution (Interactive Kanban): Show, don't just tell. A live simplified board allowing users to toggle between "Manager" and "Resident" views to understand the privacy logic.
+         3. The Secret Sauce (AI Integration): An interactive Eisenhower Matrix (Plotly) demonstrating how Gemini prioritizes tasks.
+         4. The Market (Charts): Comparing CondoKanban vs Traditional ERPs using charts.
+         5. The Ask/Roadmap: Future steps and scalability.
+         Why this structure? It moves from emotional buy-in (the problem) to logical proof (the demo) to business viability.
+    -->
+
+    <!-- Visualization & Content Choices:
+         1. Interactive Kanban: Goal -> Demonstrate the core USP (Privacy rules). Method -> HTML/JS Grid. Justification -> Static screenshots don't explain the complex visibility logic (Public/Block/Floor/Private).
+         2. Eisenhower Matrix: Goal -> Explain the AI Prioritization. Method -> Plotly Scatter Plot. Justification -> Best way to visualize Q1-Q4 quadrants clearly.
+         3. Market Comparison: Goal -> Show differentiation. Method -> Chart.js Radar Chart. Justification -> Visualizes "Communication" vs "Finance" focus gap.
+         4. Workflow: Goal -> Explain the user journey. Method -> CSS/HTML Flow steps. Justification -> Simple visual cues (Unicode icons) are cleaner than images.
+    -->
+
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+</head>
+
+<body class="bg-brand-bg text-brand-text antialiased selection:bg-brand-accent selection:text-white">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-brand-bg/90 backdrop-blur-sm border-b border-stone-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <div
+                        class="w-8 h-8 bg-brand-accent rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                        C</div>
+                    <span class="font-bold text-xl tracking-tight">CondoKanban</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#problem" class="text-brand-subtext hover:text-brand-accent transition">O Problema</a>
+                    <a href="#demo" class="text-brand-subtext hover:text-brand-accent transition">A Solução</a>
+                    <a href="#ai" class="text-brand-subtext hover:text-brand-accent transition">Inteligência</a>
+                    <a href="#business" class="text-brand-subtext hover:text-brand-accent transition">O Negócio</a>
+                </div>
+                <button onclick="document.getElementById('business').scrollIntoView()"
+                    class="bg-brand-text text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-stone-700 transition">
+                    Ver Proposta
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative pt-20 pb-32 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <span
+                class="inline-block py-1 px-3 rounded-full bg-brand-accent/10 text-brand-accent text-xs font-bold tracking-wider uppercase mb-6">
+                Proposta de Projeto Interno
+            </span>
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-brand-text">
+                Transparência não é só<br>mostrar as contas.
+            </h1>
+            <p class="mt-4 text-xl md:text-2xl text-brand-subtext max-w-3xl mx-auto font-light">
+                É mostrar o <span class="font-semibold text-brand-accent">trabalho</span>. Apresentamos o <span
+                    class="font-semibold">CondoKanban</span>: a ferramenta que transforma a caixa preta da gestão
+                condominial em um fluxo claro, priorizado e transparente.
+            </p>
+            <div class="mt-10 flex justify-center gap-4">
+                <a href="#demo"
+                    class="bg-brand-accent text-white px-8 py-4 rounded-lg text-lg font-bold hover:bg-amber-700 transition shadow-lg shadow-amber-500/30">
+                    Ver Como Funciona
+                </a>
+            </div>
+        </div>
+        <!-- Decorative bg element -->
+        <div class="absolute top-0 left-1/2 w-full -translate-x-1/2 h-full z-0 opacity-30 pointer-events-none">
+            <div
+                class="absolute top-20 left-10 w-72 h-72 bg-brand-secondary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob">
+            </div>
+            <div
+                class="absolute top-20 right-10 w-72 h-72 bg-brand-accent rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000">
+            </div>
+        </div>
+    </section>
+
+    <!-- The Problem / Solution (Context) -->
+    <section id="problem" class="py-20 bg-white border-y border-stone-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="text-3xl font-bold mb-6">A "Caixa Preta" da Sindicância</h2>
+                    <p class="text-lg text-brand-subtext mb-6 leading-relaxed">
+                        Os aplicativos atuais focam em boletos e reserva de churrasqueira. Mas quando o elevador quebra
+                        ou há uma infiltração, o condômino fica no escuro.
+                    </p>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <span
+                                class="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-red-100 text-red-500 mt-1 mr-3 text-sm">✕</span>
+                            <span class="text-brand-subtext">Condôminos acham que o síndico "não faz nada".</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span
+                                class="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-red-100 text-red-500 mt-1 mr-3 text-sm">✕</span>
+                            <span class="text-brand-subtext">Grupo Gestor (GG) sobrecarregado respondendo
+                                WhatsApp.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span
+                                class="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-red-100 text-red-500 mt-1 mr-3 text-sm">✕</span>
+                            <span class="text-brand-subtext">Falta de histórico real do trabalho executado (V&A).</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-brand-bg p-8 rounded-2xl border border-stone-200 shadow-sm">
+                    <h3 class="text-xl font-bold mb-4 text-brand-accent">A Solução CondoKanban</h3>
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-lg shadow-sm flex items-center gap-4">
+                            <div class="text-2xl">📋</div>
+                            <div>
+                                <h4 class="font-bold">Quadro Visual</h4>
+                                <p class="text-sm text-brand-subtext">Backlog, Fazendo, Enroscado, Feito.</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm flex items-center gap-4">
+                            <div class="text-2xl">🔒</div>
+                            <div>
+                                <h4 class="font-bold">Privacidade Inteligente</h4>
+                                <p class="text-sm text-brand-subtext">Público, Por Bloco, Por Andar, Privado.</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm flex items-center gap-4">
+                            <div class="text-2xl">🤖</div>
+                            <div>
+                                <h4 class="font-bold">Priorização via IA</h4>
+                                <p class="text-sm text-brand-subtext">Matriz Eisenhower via Gemini API.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demo Section -->
+    <section id="demo" class="py-24 bg-brand-bg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Veja a Lógica na Prática</h2>
+                <p class="text-brand-subtext max-w-2xl mx-auto">
+                    A grande inovação é o sistema de <span class="font-semibold text-brand-text">V&A (Visualização e
+                        Acompanhamento)</span>. O quadro se adapta a quem está vendo.
+                </p>
+            </div>
+
+            <!-- Simulation Controls -->
+            <div class="bg-white rounded-xl shadow-lg border border-stone-200 overflow-hidden">
+                <div
+                    class="p-4 border-b border-stone-100 bg-stone-50 flex flex-wrap justify-between items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-bold text-brand-subtext uppercase tracking-wide">Simular
+                            Usuário:</span>
+                        <select id="userRoleSelector"
+                            class="bg-white border border-stone-300 text-brand-text text-sm rounded-lg focus:ring-brand-accent focus:border-brand-accent block p-2.5">
+                            <option value="manager">👤 Grupo Gestor (Admin)</option>
+                            <option value="resident_b1_f2">🏠 Condômino (Bloco A, 2º Andar)</option>
+                            <option value="resident_b2_f5">🏠 Condômino (Bloco B, 5º Andar)</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2 text-xs">
+                        <span
+                            class="px-2 py-1 rounded bg-green-100 text-green-800 border border-green-200">Publico</span>
+                        <span class="px-2 py-1 rounded bg-blue-100 text-blue-800 border border-blue-200">Bloco</span>
+                        <span
+                            class="px-2 py-1 rounded bg-purple-100 text-purple-800 border border-purple-200">Andar</span>
+                        <span
+                            class="px-2 py-1 rounded bg-stone-200 text-stone-600 border border-stone-300">Privado</span>
+                    </div>
+                </div>
+
+                <!-- Kanban Board HTML Representation -->
+                <div class="p-6 overflow-x-auto">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 min-w-[800px]">
+
+                        <!-- Column: Backlog -->
+                        <div class="flex flex-col h-full bg-stone-100 rounded-lg p-3">
+                            <h3 class="font-bold text-brand-subtext mb-3 flex justify-between items-center">
+                                A Fazer (Backlog)
+                                <span class="bg-stone-200 text-stone-600 px-2 py-0.5 rounded-full text-xs"
+                                    id="count-backlog">0</span>
+                            </h3>
+                            <div id="col-backlog" class="space-y-3">
+                                <!-- Cards injected by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Column: Doing -->
+                        <div class="flex flex-col h-full bg-stone-100 rounded-lg p-3">
+                            <h3 class="font-bold text-blue-600 mb-3 flex justify-between items-center">
+                                Fazendo
+                                <span class="bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full text-xs"
+                                    id="count-doing">0</span>
+                            </h3>
+                            <div id="col-doing" class="space-y-3"></div>
+                        </div>
+
+                        <!-- Column: Stuck -->
+                        <div class="flex flex-col h-full bg-stone-100 rounded-lg p-3">
+                            <h3 class="font-bold text-red-600 mb-3 flex justify-between items-center">
+                                Enroscado
+                                <span class="bg-red-100 text-red-600 px-2 py-0.5 rounded-full text-xs"
+                                    id="count-stuck">0</span>
+                            </h3>
+                            <div id="col-stuck" class="space-y-3"></div>
+                        </div>
+
+                        <!-- Column: Done -->
+                        <div class="flex flex-col h-full bg-stone-100 rounded-lg p-3">
+                            <h3 class="font-bold text-green-600 mb-3 flex justify-between items-center">
+                                Feito
+                                <span class="bg-green-100 text-green-600 px-2 py-0.5 rounded-full text-xs"
+                                    id="count-done">0</span>
+                            </h3>
+                            <div id="col-done" class="space-y-3"></div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="p-4 bg-stone-50 border-t border-stone-200 text-center">
+                    <p id="view-message" class="text-sm text-brand-subtext font-medium italic">
+                        <!-- Dynamic message about visibility -->
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI & Prioritization Section -->
+    <section id="ai" class="py-20 bg-white border-y border-stone-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="flex flex-col justify-center">
+                    <div class="inline-flex items-center gap-2 mb-4">
+                        <span class="bg-brand-secondary/10 text-brand-secondary p-1 rounded">✨ Gemini AI 2.5
+                            Flash</span>
+                    </div>
+                    <h2 class="text-3xl font-bold mb-6">Fim das Brigas por Prioridade</h2>
+                    <p class="text-lg text-brand-subtext mb-6">
+                        O síndico não decide sozinho o que é urgente. Ao abrir um chamado, nossa API conecta ao
+                        <strong>Google Gemini</strong> para classificar automaticamente a tarefa na <strong>Matriz de
+                            Eisenhower</strong>.
+                    </p>
+                    <ul class="space-y-4 text-sm text-brand-subtext">
+                        <li class="p-3 bg-red-50 border-l-4 border-red-500 rounded-r-md">
+                            <strong>Q1: Crítico e Imediato.</strong> (Ex: Vazamento de gás, Portão quebrado). Entra
+                            direto no topo do Backlog.
+                        </li>
+                        <li class="p-3 bg-blue-50 border-l-4 border-blue-500 rounded-r-md">
+                            <strong>Q2: Planejamento.</strong> (Ex: Pintura da fachada, Orçamento anual). Importante,
+                            mas sem prazo fatal.
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="bg-white p-4 rounded-xl shadow-lg border border-stone-100">
+                        <h3 class="text-center font-bold text-sm text-stone-500 mb-2">Visualização da Matriz de
+                            Prioridades (Dados Reais)</h3>
+                        <div class="chart-container" id="matrix-chart-container">
+                            <div id="eisenhowerChart" class="w-full h-full"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Market & Business Section -->
+    <section id="business" class="py-20 bg-brand-bg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold mb-4">Por que investir nisso agora?</h2>
+                <p class="text-brand-subtext">Não estamos construindo mais um ERP. Estamos construindo confiança.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Market Gap Chart -->
+                <div class="col-span-1 md:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                    <h3 class="font-bold text-lg mb-4">Diferencial Competitivo</h3>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="marketChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center mt-4 text-brand-subtext">Comparação com apps tradicionais de
+                        condomínio.</p>
+                </div>
+
+                <!-- Stats/ROI -->
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                        <h4 class="text-sm font-bold text-brand-subtext uppercase mb-2">Potencial de Mercado</h4>
+                        <div class="text-4xl font-extrabold text-brand-text">200k+</div>
+                        <p class="text-sm text-brand-subtext">Condomínios no Brasil carentes de transparência na gestão
+                            operacional.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                        <h4 class="text-sm font-bold text-brand-subtext uppercase mb-2">Escalabilidade</h4>
+                        <div class="text-4xl font-extrabold text-brand-secondary">SaaS</div>
+                        <p class="text-sm text-brand-subtext">Modelo leve. Arquitetura pronta para expansão futura
+                            (auditoria, financeiro).</p>
+                    </div>
+                    <div class="bg-brand-accent p-6 rounded-xl shadow-lg text-white">
+                        <h4 class="text-sm font-bold opacity-80 uppercase mb-2">Custo de Implementação</h4>
+                        <div class="text-3xl font-extrabold">Baixo</div>
+                        <p class="text-sm opacity-90">Stack Serverless (Firebase/Supabase), Gemini API (baixo
+                            custo/token).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer / Call to Action -->
+    <footer class="bg-brand-text text-stone-300 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold text-white mb-6">Vamos tirar essa ideia do papel?</h2>
+            <div class="max-w-2xl mx-auto mb-10">
+                <p class="text-lg mb-4">O CondoKanban resolve a maior dor de cabeça do síndico: provar que está
+                    trabalhando.</p>
+                <p class="text-sm text-stone-400">MVP pronto para desenvolvimento em 4 semanas.</p>
+            </div>
+            <button
+                class="bg-brand-accent text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white hover:text-brand-accent transition duration-300">
+                Aprovar Projeto Piloto
+            </button>
+            <div class="mt-12 text-sm text-stone-500 border-t border-stone-700 pt-8">
+                <p>&copy; 2025 Proposta de Inovação Interna. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- DATA & STATE ---
+
+        // Mock Data for Kanban Tasks
+        const tasks = [
+            {id: 1, title: "Vazamento Gás Bloco A", status: "doing", visibility: "public", priority: "Q1", urgency: 9, importance: 9, description: "Cheiro forte reportado no 3º andar."},
+            {id: 2, title: "Troca lâmpada Hall 2º Andar", status: "backlog", visibility: "floor", block: "A", floor: "2", priority: "Q3", urgency: 7, importance: 3, description: "Lâmpada queimada."},
+            {id: 3, title: "Barulho excessivo Apt 502B", status: "stuck", visibility: "private", owner_id: "resident_b2_f5", priority: "Q4", urgency: 2, importance: 2, description: "Festa após horário."},
+            {id: 4, title: "Orçamento Pintura Fachada", status: "doing", visibility: "public", priority: "Q2", urgency: 4, importance: 9, description: "Coletando 3 orçamentos."},
+            {id: 5, title: "Limpeza da Piscina", status: "done", visibility: "public", priority: "Q2", urgency: 5, importance: 7, description: "Realizada na segunda-feira."},
+            {id: 6, title: "Portão Garagem Travando", status: "backlog", visibility: "block", block: "A", priority: "Q1", urgency: 8, importance: 8, description: "Motor engasgando."},
+            {id: 7, title: "Reembolso Material Limpeza", status: "done", visibility: "private", owner_id: "other", priority: "Q3", urgency: 6, importance: 4, description: "Compra de cloro."}
+        ];
+
+        // State
+        let currentUser = {
+            role: 'manager', // manager, resident
+            block: null,
+            floor: null,
+            id: 'admin'
+        };
+
+        // --- VISUALIZATION: KANBAN LOGIC ---
+
+        function getVisibilityBadge(task) {
+            const map = {
+                'public': '<span class="text-[10px] uppercase font-bold text-green-600 bg-green-100 px-1.5 py-0.5 rounded border border-green-200">Público</span>',
+                'block': '<span class="text-[10px] uppercase font-bold text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded border border-blue-200">Bloco</span>',
+                'floor': '<span class="text-[10px] uppercase font-bold text-purple-600 bg-purple-100 px-1.5 py-0.5 rounded border border-purple-200">Andar</span>',
+                'private': '<span class="text-[10px] uppercase font-bold text-stone-500 bg-stone-200 px-1.5 py-0.5 rounded border border-stone-300">Privado</span>'
+            };
+            return map[task.visibility];
+        }
+
+        function getPriorityColor(p) {
+            if (p === 'Q1') return 'border-l-4 border-red-500'; // Critical
+            if (p === 'Q2') return 'border-l-4 border-blue-500'; // Strategic
+            if (p === 'Q3') return 'border-l-4 border-yellow-500'; // Delegate
+            return 'border-l-4 border-stone-300'; // Eliminate
+        }
+
+        function filterTasks() {
+            return tasks.filter(task => {
+                // Manager sees everything
+                if (currentUser.role === 'manager') return true;
+
+                // Logic for Residents
+                if (task.visibility === 'public') return true;
+
+                if (task.visibility === 'block') {
+                    return task.block === currentUser.block;
+                }
+
+                if (task.visibility === 'floor') {
+                    // Must match block AND floor
+                    return task.block === currentUser.block && task.floor === currentUser.floor;
+                }
+
+                if (task.visibility === 'private') {
+                    return task.owner_id === currentUser.id;
+                }
+
+                return false;
+            });
+        }
+
+        function renderBoard() {
+            const filteredTasks = filterTasks();
+            const columns = {
+                'backlog': document.getElementById('col-backlog'),
+                'doing': document.getElementById('col-doing'),
+                'stuck': document.getElementById('col-stuck'),
+                'done': document.getElementById('col-done')
+            };
+            const counts = {
+                'backlog': 0, 'doing': 0, 'stuck': 0, 'done': 0
+            };
+
+            // Clear columns
+            Object.values(columns).forEach(col => col.innerHTML = '');
+
+            filteredTasks.forEach(task => {
+                counts[task.status]++;
+                const card = document.createElement('div');
+                card.className = `kanban-card bg-white p-3 rounded shadow-sm border border-stone-100 ${getPriorityColor(task.priority)}`;
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-xs font-bold text-stone-400">${task.priority}</span>
+                        ${getVisibilityBadge(task)}
+                    </div>
+                    <h4 class="text-sm font-semibold text-brand-text leading-tight mb-1">${task.title}</h4>
+                    <p class="text-xs text-stone-500 truncate">${task.description}</p>
+                `;
+                columns[task.status].appendChild(card);
+            });
+
+            // Update Counters
+            Object.keys(counts).forEach(key => {
+                document.getElementById(`count-${key}`).textContent = counts[key];
+            });
+
+            // Update Message
+            const msgEl = document.getElementById('view-message');
+            if (currentUser.role === 'manager') {
+                msgEl.innerHTML = "👁️ Visão do <strong>Grupo Gestor</strong>: Você vê todos os chamados, inclusive os privados de todos os condôminos.";
+            } else {
+                msgEl.innerHTML = `👁️ Visão de <strong>Condômino</strong> (${currentUser.id === 'resident_b1_f2' ? 'Bloco A, 2º Andar' : 'Bloco B, 5º Andar'}): Você vê chamados Públicos, do seu Bloco/Andar e os seus Privados.`;
+            }
+        }
+
+        // --- INTERACTION HANDLERS ---
+
+        document.getElementById('userRoleSelector').addEventListener('change', (e) => {
+            const val = e.target.value;
+            if (val === 'manager') {
+                currentUser = {role: 'manager', id: 'admin'};
+            } else if (val === 'resident_b1_f2') {
+                currentUser = {role: 'resident', block: 'A', floor: '2', id: 'resident_b1_f2'};
+            } else if (val === 'resident_b2_f5') {
+                currentUser = {role: 'resident', block: 'B', floor: '5', id: 'resident_b2_f5'};
+            }
+            renderBoard();
+        });
+
+
+        // --- CHARTS INITIALIZATION ---
+
+        function initCharts() {
+            // 1. Radar Chart (Market Comparison)
+            const ctxMarket = document.getElementById('marketChart').getContext('2d');
+            new Chart(ctxMarket, {
+                type: 'radar',
+                data: {
+                    labels: ['Transparência', 'Facilidade de Uso', 'Gestão Financeira', 'Comunicação', 'Gestão de Tarefas'],
+                    datasets: [{
+                        label: 'CondoKanban',
+                        data: [95, 90, 20, 100, 100],
+                        fill: true,
+                        backgroundColor: 'rgba(217, 119, 6, 0.2)', // Amber
+                        borderColor: 'rgb(217, 119, 6)',
+                        pointBackgroundColor: 'rgb(217, 119, 6)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(217, 119, 6)'
+                    }, {
+                        label: 'Apps Tradicionais',
+                        data: [40, 60, 95, 30, 20],
+                        fill: true,
+                        backgroundColor: 'rgba(87, 83, 78, 0.2)', // Stone
+                        borderColor: 'rgb(87, 83, 78)',
+                        pointBackgroundColor: 'rgb(87, 83, 78)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(87, 83, 78)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    elements: {line: {tension: 0.3}},
+                    scales: {r: {suggestedMin: 0, suggestedMax: 100}}
+                }
+            });
+
+            // 2. Plotly Eisenhower Matrix
+            const q1x = [8, 9, 7.5]; const q1y = [8, 9, 7]; // Urgent & Important
+            const q2x = [4, 3, 5]; const q2y = [9, 8, 7.5]; // Not Urgent, Important
+            const q3x = [8, 9, 7]; const q3y = [3, 2, 4];   // Urgent, Not Important
+            const q4x = [2, 3, 1]; const q4y = [2, 1, 3];   // Not Urgent, Not Important
+
+            const trace1 = {
+                x: tasks.map(t => t.urgency),
+                y: tasks.map(t => t.importance),
+                mode: 'markers+text',
+                type: 'scatter',
+                text: tasks.map(t => t.priority),
+                textposition: 'top center',
+                marker: {size: 12, color: tasks.map(t => t.priority === 'Q1' ? '#EF4444' : t.priority === 'Q2' ? '#3B82F6' : t.priority === 'Q3' ? '#F59E0B' : '#78716C')},
+                hoverinfo: 'text',
+                hovertext: tasks.map(t => `<b>${t.title}</b><br>Urgência: ${t.urgency}<br>Importância: ${t.importance}`)
+            };
+
+            const layout = {
+                title: 'Matriz Eisenhower (Priorização via Gemini)',
+                xaxis: {title: 'Urgência (Prazo)', range: [0, 10], showgrid: false},
+                yaxis: {title: 'Importância (Impacto)', range: [0, 10], showgrid: false},
+                shapes: [
+                    // Quadrant lines
+                    {type: 'line', x0: 5, y0: 0, x1: 5, y1: 10, line: {color: 'grey', width: 1, dash: 'dot'}},
+                    {type: 'line', x0: 0, y0: 5, x1: 10, y1: 5, line: {color: 'grey', width: 1, dash: 'dot'}}
+                ],
+                annotations: [
+                    {x: 2.5, y: 9, text: 'Q2: Planejar', showarrow: false, font: {color: '#3B82F6', size: 14, weight: 'bold'}},
+                    {x: 7.5, y: 9, text: 'Q1: FAZER AGORA', showarrow: false, font: {color: '#EF4444', size: 14, weight: 'bold'}},
+                    {x: 2.5, y: 1, text: 'Q4: Eliminar', showarrow: false, font: {color: '#78716C', size: 14}},
+                    {x: 7.5, y: 1, text: 'Q3: Delegar', showarrow: false, font: {color: '#F59E0B', size: 14}}
+                ],
+                margin: {t: 40, r: 20, b: 40, l: 40},
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)'
+            };
+
+            // Plotly container wrapper check
+            const plotlyContainer = document.getElementById('eisenhowerChart');
+            Plotly.newPlot(plotlyContainer, [trace1], layout, {responsive: true, displayModeBar: false});
+        }
+
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderBoard();
+            initCharts();
+        });
+
+    </script>
+</body>
+
+</html>
