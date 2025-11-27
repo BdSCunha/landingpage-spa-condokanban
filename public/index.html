@@ -103,12 +103,16 @@
                 class="inline-block py-1 px-3 rounded-full bg-brand-accent/10 text-brand-accent text-xs font-bold tracking-wider uppercase mb-6">
                 Proposta de Projeto Interno
             </span>
-            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-brand-text">
-                Transparência não é só<br>mostrar as contas.
+            <h1
+                class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-brand-text max-w-3xl mx-auto leading-tight whitespace-normal break-words">
+                Transparência não é só mostrar as contas.
             </h1>
             <p class="mt-4 text-xl md:text-2xl text-brand-subtext max-w-3xl mx-auto font-light">
-                É mostrar o <span class="font-semibold text-brand-accent">trabalho</span>. Apresentamos o <span
-                    class="font-semibold">CondoKanban</span>: a ferramenta que transforma a caixa preta da gestão
+                É mostrar o <span class="font-semibold text-brand-accent">trabalho</span> também.
+            </p>
+            <p class="mt-4 text-xl md:text-2xl text-brand-subtext max-w-3xl mx-auto font-light">
+                Apresentamos o <span class="font-semibold">CondoKanban</span>: a ferramenta que transforma a caixa preta
+                da gestão
                 condominial em um fluxo claro, priorizado e transparente.
             </p>
             <div class="mt-10 flex justify-center gap-4">
@@ -203,11 +207,11 @@
             <div class="bg-white rounded-xl shadow-lg border border-stone-200 overflow-hidden">
                 <div
                     class="p-4 border-b border-stone-100 bg-stone-50 flex flex-wrap justify-between items-center gap-4">
-                    <div class="flex items-center gap-2">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
                         <span class="text-sm font-bold text-brand-subtext uppercase tracking-wide">Simular
                             Usuário:</span>
                         <select id="userRoleSelector"
-                            class="bg-white border border-stone-300 text-brand-text text-sm rounded-lg focus:ring-brand-accent focus:border-brand-accent block p-2.5">
+                            class="bg-white border border-stone-300 text-brand-text text-sm rounded-lg focus:ring-brand-accent focus:border-brand-accent block p-2.5 w-full sm:w-auto">
                             <option value="manager">👤 Grupo Gestor (Admin)</option>
                             <option value="resident_b1_f2">🏠 Condômino (Bloco A, 2º Andar)</option>
                             <option value="resident_b2_f5">🏠 Condômino (Bloco B, 5º Andar)</option>
@@ -225,7 +229,7 @@
                 </div>
 
                 <!-- Kanban Board HTML Representation -->
-                <div class="p-6 overflow-x-auto">
+                <div class="p-6 overflow-x-auto sticky-scrollbar" style="max-height: 600px; overflow-y: auto;">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 min-w-[800px]">
 
                         <!-- Column: Backlog -->
@@ -284,37 +288,110 @@
     <!-- AI & Prioritization Section -->
     <section id="ai" class="py-20 bg-white border-y border-stone-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                <div class="flex flex-col justify-center">
-                    <div class="inline-flex items-center gap-2 mb-4">
-                        <span class="bg-brand-secondary/10 text-brand-secondary p-1 rounded">✨ Gemini AI 2.5
-                            Flash</span>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
+                <div class="flex flex-col justify-between">
+                    <div>
+                        <div class="inline-flex items-center gap-2 mb-4">
+                            <span class="bg-brand-secondary/10 text-brand-secondary p-1 rounded">✨ Gemini AI 2.5
+                                Flash</span>
+                        </div>
+                        <h2 class="text-3xl font-bold mb-6">Fim das Brigas por Prioridade</h2>
+                        <p class="text-lg text-brand-subtext mb-6">
+                            O síndico não decide sozinho o que é urgente. Ao abrir um chamado, nossa API conecta ao
+                            <strong>Google Gemini</strong> para classificar automaticamente a tarefa na <strong>Matriz
+                                de
+                                Eisenhower</strong>.
+                        </p>
+                        <ul class="space-y-4 text-sm text-brand-subtext">
+                            <li class="p-3 bg-red-50 border-l-4 border-red-500 rounded-r-md">
+                                <strong>Q1: Urgente e Importante.</strong> Tarefas críticas que exigem ação imediata.
+                                Devem
+                                ser tratadas com máxima prioridade.
+                            </li>
+                            <li class="p-3 bg-blue-50 border-l-4 border-blue-500 rounded-r-md">
+                                <strong>Q2: Não Urgente, mas Importante.</strong> Planejamento e desenvolvimento. Requer
+                                atenção, mas pode ser agendado.
+                            </li>
+                            <li class="p-3 bg-amber-50 border-l-4 border-amber-500 rounded-r-md">
+                                <strong>Q3: Urgente, mas Não Importante.</strong> Interrupções e distrações. Podem ser
+                                delegadas ou tratadas rapidamente.
+                            </li>
+                            <li class="p-3 bg-stone-50 border-l-4 border-stone-400 rounded-r-md">
+                                <strong>Q4: Não Urgente e Não Importante.</strong> Atividades de baixo valor. Podem ser
+                                eliminadas ou adiadas indefinidamente.
+                            </li>
+                        </ul>
                     </div>
-                    <h2 class="text-3xl font-bold mb-6">Fim das Brigas por Prioridade</h2>
-                    <p class="text-lg text-brand-subtext mb-6">
-                        O síndico não decide sozinho o que é urgente. Ao abrir um chamado, nossa API conecta ao
-                        <strong>Google Gemini</strong> para classificar automaticamente a tarefa na <strong>Matriz de
-                            Eisenhower</strong>.
-                    </p>
-                    <ul class="space-y-4 text-sm text-brand-subtext">
-                        <li class="p-3 bg-red-50 border-l-4 border-red-500 rounded-r-md">
-                            <strong>Q1: Crítico e Imediato.</strong> (Ex: Vazamento de gás, Portão quebrado). Entra
-                            direto no topo do Backlog.
-                        </li>
-                        <li class="p-3 bg-blue-50 border-l-4 border-blue-500 rounded-r-md">
-                            <strong>Q2: Planejamento.</strong> (Ex: Pintura da fachada, Orçamento anual). Importante,
-                            mas sem prazo fatal.
-                        </li>
-                    </ul>
                 </div>
-                <div>
-                    <div class="bg-white p-4 rounded-xl shadow-lg border border-stone-100">
-                        <h3 class="text-center font-bold text-sm text-stone-500 mb-2">Visualização da Matriz de
-                            Prioridades (Dados Reais)</h3>
-                        <div class="chart-container" id="matrix-chart-container">
+                <div class="flex flex-col">
+                    <div class="bg-white p-4 rounded-xl shadow-lg border border-stone-100 h-full flex flex-col">
+                        <h3 class="text-center font-bold text-sm text-stone-500 mb-2">Visualização de chamados
+                            distribuídos sobre a Matriz de
+                            Eisenhower</h3>
+                        <div class="chart-container flex-1" id="matrix-chart-container">
                             <div id="eisenhowerChart" class="w-full h-full"></div>
                         </div>
+                        <p class="text-xs text-center text-brand-subtext mt-4">
+                            Cada ponto representa um chamado. A posição é determinada pela análise de urgência e
+                            importância feita pela Gemini AI. <strong>Passe o mouse sobre ou toque os pontos para ver
+                                detalhes.</strong>
+                        </p>
                     </div>
+                </div>
+            </div>
+
+            <!-- Fila Inteligente -->
+            <div
+                class="mt-12 bg-gradient-to-r from-brand-secondary/5 to-brand-accent/5 border border-brand-secondary/20 rounded-xl p-6">
+                <div class="flex items-start gap-3 mb-4">
+                    <div class="text-3xl">🎯</div>
+                    <div>
+                        <h3 class="font-bold text-lg text-brand-text mb-2">Fila Inteligente com IA</h3>
+                        <p class="text-sm text-brand-subtext leading-relaxed">
+                            Não basta classificar. O CondoKanban gera uma <strong>fila de execução
+                                dinâmica</strong>
+                            que impede que tarefas simples sejam eternamente postergadas enquanto só se resolve
+                            o "urgente".
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                    <div class="bg-white/70 backdrop-blur-sm rounded-lg p-3 border border-stone-200">
+                        <div class="font-bold text-brand-accent mb-1">📊 Pontuação Multicritério</div>
+                        <p class="text-stone-600">Base por quadrante + aging (dias em aberto) + status atual +
+                            penalidades por regressão.</p>
+                    </div>
+                    <div class="bg-white/70 backdrop-blur-sm rounded-lg p-3 border border-stone-200">
+                        <div class="font-bold text-brand-secondary mb-1">⚖️ Balanceamento Automático</div>
+                        <p class="text-stone-600">Intercala 2 tarefas complexas (Q1/Q2) com 1 simples (Q3/Q4)
+                            para evitar abandono.</p>
+                    </div>
+                    <div class="bg-white/70 backdrop-blur-sm rounded-lg p-3 border border-stone-200">
+                        <div class="font-bold text-brand-text mb-1">🤖 Ajuste Final via Gemini</div>
+                        <p class="text-stone-600">IA analisa contexto e sugere reordenações baseadas em
+                            experiência de gestão condominial.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resultado Prático -->
+            <div class="mt-12 max-w-4xl mx-auto">
+                <div
+                    class="bg-gradient-to-br from-brand-accent/10 via-white to-brand-secondary/10 border-2 border-brand-accent/30 rounded-2xl p-8 shadow-xl">
+                    <div class="flex items-center justify-center gap-3 mb-4">
+                        <span class="text-3xl">✨</span>
+                        <h3 class="text-2xl font-bold text-brand-text">Resultado Prático</h3>
+                        <span class="text-3xl">✨</span>
+                    </div>
+                    <p class="text-lg text-brand-subtext text-center leading-relaxed">
+                        O Grupo Gestor vê <span class="font-bold text-brand-accent">exatamente qual chamado atacar
+                            agora</span>, sem culpa por "ignorar" outros.
+                    </p>
+                    <p class="text-lg text-brand-subtext text-center leading-relaxed">
+                        A fila se reorganiza <span class="font-bold text-brand-secondary">sozinha</span> toda manhã e
+                        também após qualquer movimentação de chamados no board.
+                    </p>
                 </div>
             </div>
         </div>
@@ -368,13 +445,54 @@
     <footer class="bg-brand-text text-stone-300 py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 class="text-3xl font-bold text-white mb-6">Vamos tirar essa ideia do papel?</h2>
-            <div class="max-w-2xl mx-auto mb-10">
-                <p class="text-lg mb-4">O CondoKanban resolve a maior dor de cabeça do síndico: provar que está
-                    trabalhando.</p>
-                <p class="text-sm text-stone-400">MVP pronto para desenvolvimento em 4 semanas.</p>
+            <div class="max-w-3xl mx-auto mb-10">
+                <p class="text-lg text-white mb-6 leading-relaxed">
+                    Cansado de passar o dia <span class="text-brand-accent font-bold">apagando incêndios</span>?
+                    O CondoKanban é o atalho para sair do modo "bombeiro" e virar gestor de verdade!
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-left mb-8">
+                    <div class="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+                        <div class="text-2xl mb-2">🔥</div>
+                        <p class="text-stone-300">
+                            <strong class="text-white">Resolva crises rápido</strong> (Q1), mas pare de viver nelas.
+                        </p>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+                        <div class="text-2xl mb-2">🎯</div>
+                        <p class="text-stone-300">
+                            <strong class="text-white">Delegue o operacional</strong> (Q3) para zelador e
+                            administradora. Automaticamente.
+                        </p>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+                        <div class="text-2xl mb-2">🚀</div>
+                        <p class="text-stone-300">
+                            <strong class="text-white">Mate o WhatsApp</strong> (Q4). Centralize. Respire.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Q2 - O Preferido -->
+                <div
+                    class="bg-brand-secondary/10 backdrop-blur-sm rounded-lg p-5 border-2 border-brand-secondary/30 mb-8">
+                    <div class="flex items-center gap-4">
+                        <div class="text-3xl">🎓</div>
+                        <p class="text-base text-stone-300 flex-1">
+                            O tempo ganho vai para o <span class="text-brand-secondary font-bold">planejamento e
+                                manutenção
+                                preventiva</span> (Q2) — o quadrante que <strong class="text-white">previne as
+                                crises</strong> ao invés de apenas reagir a elas.
+                        </p>
+                    </div>
+                </div>
+
+                <p class="text-base text-stone-400 italic border-t border-stone-700 pt-6">
+                    Resultado? <span class="text-white font-bold">As crises diminuem</span>. Você dorme melhor. Simples
+                    assim.</p>
+                <p class="text-sm text-stone-500 mt-4">MVP pronto para desenvolvimento em 4 semanas.</p>
             </div>
             <button
-                class="bg-brand-accent text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white hover:text-brand-accent transition duration-300">
+                class="bg-brand-accent text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white hover:text-brand-accent transition duration-300 shadow-xl shadow-amber-500/20">
                 Aprovar Projeto Piloto
             </button>
             <div class="mt-12 text-sm text-stone-500 border-t border-stone-700 pt-8">
@@ -383,6 +501,15 @@
             </div>
         </div>
     </footer>
+
+    <!-- Botão Voltar ao Topo -->
+    <button id="backToTop"
+        class="fixed bottom-8 right-8 bg-brand-accent text-white p-4 rounded-full shadow-2xl hover:bg-amber-700 transition-all duration-300 opacity-0 pointer-events-none z-50"
+        onclick="window.scrollTo({top: 0, behavior: 'smooth'});" aria-label="Voltar ao topo">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+        </svg>
+    </button>
 
     <!-- Application Logic -->
     <script src="./main.js"></script>

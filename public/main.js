@@ -283,7 +283,7 @@ function initEisenhowerMatrix() {
     };
 
     const layout = {
-        title: 'Matriz Eisenhower (Priorização via Gemini)',
+        // title: 'Matriz Eisenhower (Priorização via Gemini)',
         xaxis: { title: 'Urgência (Prazo)', range: [0, 10], showgrid: false },
         yaxis: { title: 'Importância (Impacto)', range: [0, 10], showgrid: false },
         shapes: [
@@ -293,7 +293,7 @@ function initEisenhowerMatrix() {
         annotations: [
             { x: 2.5, y: 9, text: 'Q2: Planejar', showarrow: false, font: { color: '#3B82F6', size: 14, weight: 'bold' } },
             { x: 7.5, y: 9, text: 'Q1: FAZER AGORA', showarrow: false, font: { color: '#EF4444', size: 14, weight: 'bold' } },
-            { x: 2.5, y: 1, text: 'Q4: Eliminar', showarrow: false, font: { color: '#78716C', size: 14 } },
+            { x: 2.5, y: 1, text: 'Q4: Ficar de olho', showarrow: false, font: { color: '#78716C', size: 14 } },
             { x: 7.5, y: 1, text: 'Q3: Delegar', showarrow: false, font: { color: '#F59E0B', size: 14 } }
         ],
         margin: { t: 40, r: 20, b: 40, l: 40 },
@@ -322,5 +322,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const userSelector = document.getElementById('userRoleSelector');
     if (userSelector) {
         userSelector.addEventListener('change', (e) => handleUserRoleChange(e.target.value));
+    }
+
+    // Controle do botão voltar ao topo
+    const backToTopBtn = document.getElementById('backToTop');
+    if (backToTopBtn) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+                backToTopBtn.classList.add('opacity-100');
+            } else {
+                backToTopBtn.classList.add('opacity-0', 'pointer-events-none');
+                backToTopBtn.classList.remove('opacity-100');
+            }
+        });
     }
 });
