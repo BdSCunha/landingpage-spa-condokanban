@@ -284,8 +284,18 @@ function initEisenhowerMatrix() {
 
     const layout = {
         // title: 'Matriz Eisenhower (Priorização via Gemini)',
-        xaxis: { title: 'Urgência (Prazo)', range: [0, 10], showgrid: false },
-        yaxis: { title: 'Importância (Impacto)', range: [0, 10], showgrid: false },
+        xaxis: { 
+            title: 'Urgência (Prazo)', 
+            range: [0, 10], 
+            showgrid: false,
+            fixedrange: true
+        },
+        yaxis: { 
+            title: 'Importância (Impacto)', 
+            range: [0, 10], 
+            showgrid: false,
+            fixedrange: true
+        },
         shapes: [
             { type: 'line', x0: 5, y0: 0, x1: 5, y1: 10, line: { color: 'grey', width: 1, dash: 'dot' } },
             { type: 'line', x0: 0, y0: 5, x1: 10, y1: 5, line: { color: 'grey', width: 1, dash: 'dot' } }
@@ -298,10 +308,19 @@ function initEisenhowerMatrix() {
         ],
         margin: { t: 40, r: 20, b: 40, l: 40 },
         paper_bgcolor: 'rgba(0,0,0,0)',
-        plot_bgcolor: 'rgba(0,0,0,0)'
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        dragmode: false
     };
 
-    Plotly.newPlot(container, [trace], layout, { responsive: true, displayModeBar: false });
+    const config = { 
+        responsive: true, 
+        displayModeBar: false,
+        staticPlot: false,
+        scrollZoom: false,
+        doubleClick: false
+    };
+
+    Plotly.newPlot(container, [trace], layout, config);
 }
 
 // =====================================================
