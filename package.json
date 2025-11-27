@@ -2,6 +2,7 @@
     "name": "landingpage-spa-condokanban",
     "version": "0.0.1",
     "scripts": {
+        "build": "npm run build",
         "preversion": "npm run build",
         "postversion": "git push && git push --tags"
     }
