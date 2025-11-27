@@ -1,6 +1,6 @@
 {
     "name": "landingpage-spa-condokanban",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "scripts": {
         "build": "npm run build",
         "postversion": "node -e \"const fs=require('fs');const pkg=require('./package.json');fs.writeFileSync('public/package.json',JSON.stringify({name:pkg.name,version:pkg.version},null,2))\" && git add public/package.json && git push && git push --tags"
