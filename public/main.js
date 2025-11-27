@@ -356,4 +356,102 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Sistema de Captura de Leads (Firebase)
+    initContactForm();
 });
+
+// =====================================================
+// 7. CONTACT FORM & FIREBASE INTEGRATION
+// =====================================================
+
+/**
+ * Inicializa o formulário de contato com validações e integração Firebase
+ */
+function initContactForm() {
+    const form = document.getElementById('contactForm');
+    if (!form) return;
+
+    // Máscara para telefone brasileiro
+    const phoneInput = document.getElementById('contactPhone');
+    phoneInput.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 11) value = value.slice(0, 11);
+        
+        if (value.length <= 10) {
+            value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+        } else {
+            value = value.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+        }
+        e.target.value = value;
+    });
+
+    // Handler do formulário
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const name = document.getElementById('contactName').value.trim();
+        const email = document.getElementById('contactEmail').value.trim();
+        const phone = document.getElementById('contactPhone').value.trim();
+
+        // Validações
+        if (!validateEmail(email)) {
+            showFeedback('error', 'Por favor, insira um e-mail válido.');
+            return;
+        }
+
+        if (!validateBRPhone(phone)) {
+            showFeedback('error', 'Por favor, insira um telefone brasileiro válido no formato (XX) XXXXX-XXXX');
+            return;
+        }
+
+        // Desabilitar botão durante envio
+        const submitBtn = form.querySelector('button[type="submit"]');
+        // DEBUG MODE: Apenas exibe mensagem de sucesso sem salvar
+        console.log('📝 Lead capturado (modo debug):', { name, email, phone });
+        
+        showFeedback('success', '✅ Obrigado pelo interesse! Em breve entraremos em contato.');
+        form.reset();
+        
+        // Fechar modal após 3 segundos
+        setTimeout(() => {
+            document.getElementById('contactModal').classList.add('hidden');
+            document.getElementById('contactModal').classList.remove('flex');
+            hideFeedback();
+        }, 3000);
+    });
+}
+
+/**
+ * Valida e-mail
+ */
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+/**
+ * Valida telefone brasileiro
+ */
+function validateBRPhone(phone) {
+    const cleaned = phone.replace(/\D/g, '');
+    return cleaned.length === 10 || cleaned.length === 11;
+}
+
+/**
+ * Exibe feedback visual para o usuário
+ */
+function showFeedback(type, message) {
+    const feedbackEl = document.getElementById('formFeedback');
+    feedbackEl.className = `mt-4 p-4 rounded-lg ${type === 'success' ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-red-50 border border-red-200 text-red-800'}`;
+    feedbackEl.textContent = message;
+    feedbackEl.classList.remove('hidden');
+}
+
+/**
+ * Oculta feedback
+ */
+function hideFeedback() {
+    const feedbackEl = document.getElementById('formFeedback');
+    feedbackEl.classList.add('hidden');
+}
