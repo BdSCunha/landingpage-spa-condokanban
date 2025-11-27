@@ -1,6 +1,6 @@
 {
     "name": "landingpage-spa-condokanban",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "scripts": {
         "build": "npm run build",
         "version:patch": "npm version patch -m '%s'",
