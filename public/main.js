@@ -151,8 +151,8 @@ function renderBoard() {
                 <span class="text-xs font-bold text-stone-400">${task.priority}</span>
                 ${getVisibilityBadge(task)}
             </div>
-            <h4 class="text-sm font-semibold text-brand-text leading-tight mb-1">${task.title}</h4>
-            <p class="text-xs text-stone-500 truncate">${task.description}</p>
+            <h4 class="text-sm font-semibold text-brand-text leading-tight mb-1 truncate" title="${task.title}">${task.title}</h4>
+            <p class="text-xs text-stone-500 line-clamp-2" title="${task.description}">${task.description}</p>
         `;
         columns[task.status].appendChild(card);
     });
