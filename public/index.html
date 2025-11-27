@@ -1,152 +1,391 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Welcome to Firebase Hosting</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="app-version" content="">
+    <title>CondoKanban - A Proposta</title>
 
-  <!-- update the version number as needed -->
-  <script defer src="/__/firebase/12.6.0/firebase-app-compat.js"></script>
-  <!-- include only the Firebase features as you need -->
-  <script defer src="/__/firebase/12.6.0/firebase-auth-compat.js"></script>
-  <script defer src="/__/firebase/12.6.0/firebase-database-compat.js"></script>
-  <script defer src="/__/firebase/12.6.0/firebase-firestore-compat.js"></script>
-  <script defer src="/__/firebase/12.6.0/firebase-functions-compat.js"></script>
-  <script defer src="/__/firebase/12.6.0/firebase-messaging-compat.js"></script>
-  <script defer src="/__/firebase/12.6.0/firebase-storage-compat.js"></script>
-  <script defer src="/__/firebase/12.6.0/firebase-analytics-compat.js"></script>
-  <script defer src="/__/firebase/12.6.0/firebase-remote-config-compat.js"></script>
-  <script defer src="/__/firebase/12.6.0/firebase-performance-compat.js"></script>
-  <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+    <!-- Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Theme Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            bg: '#F5F5F4',       /* Stone 100 - Warm Neutral Background */
+                            card: '#FFFFFF',     /* White */
+                            text: '#292524',     /* Stone 800 */
+                            subtext: '#57534E',  /* Stone 600 */
+                            accent: '#D97706',   /* Amber 600 - Warm Accent */
+                            secondary: '#0EA5E9',/* Sky 500 - Trust/Tech */
+                            success: '#10B981',
+                            warning: '#F59E0B',
+                            danger: '#EF4444'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Chosen Palette: Warm Neutrals (Stone) with Amber/Sky Accents for a professional, calm, yet modern tech feel. -->
+
+    <!-- Application Structure Plan: 
+         The structure mimics a "Shark Tank" pitch deck tailored for a scrolling web experience (10/20/30 rule adaptation).
+         1. The Hook (Hero): Define the problem (Transparency gap).
+         2. The Solution (Interactive Kanban): Show, don't just tell. A live simplified board allowing users to toggle between "Manager" and "Resident" views to understand the privacy logic.
+         3. The Secret Sauce (AI Integration): An interactive Eisenhower Matrix (Plotly) demonstrating how Gemini prioritizes tasks.
+         4. The Market (Charts): Comparing CondoKanban vs Traditional ERPs using charts.
+         5. The Ask/Roadmap: Future steps and scalability.
+         Why this structure? It moves from emotional buy-in (the problem) to logical proof (the demo) to business viability.
     -->
-  <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
-  <style media="screen">
-    body {
-      background: #ECEFF1;
-      color: rgba(0, 0, 0, 0.87);
-      font-family: Roboto, Helvetica, Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
+    <!-- Visualization & Content Choices:
+         1. Interactive Kanban: Goal -> Demonstrate the core USP (Privacy rules). Method -> HTML/JS Grid. Justification -> Static screenshots don't explain the complex visibility logic (Public/Block/Floor/Private).
+         2. Eisenhower Matrix: Goal -> Explain the AI Prioritization. Method -> Plotly Scatter Plot. Justification -> Best way to visualize Q1-Q4 quadrants clearly.
+         3. Market Comparison: Goal -> Show differentiation. Method -> Chart.js Radar Chart. Justification -> Visualizes "Communication" vs "Finance" focus gap.
+         4. Workflow: Goal -> Explain the user journey. Method -> CSS/HTML Flow steps. Justification -> Simple visual cues (Unicode icons) are cleaner than images.
+    -->
 
-    #message {
-      background: white;
-      max-width: 360px;
-      margin: 100px auto 16px;
-      padding: 32px 24px;
-      border-radius: 3px;
-    }
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 
-    #message h2 {
-      color: #ffa100;
-      font-weight: bold;
-      font-size: 16px;
-      margin: 0 0 8px;
-    }
-
-    #message h1 {
-      font-size: 22px;
-      font-weight: 300;
-      color: rgba(0, 0, 0, 0.6);
-      margin: 0 0 16px;
-    }
-
-    #message p {
-      line-height: 140%;
-      margin: 16px 0 24px;
-      font-size: 14px;
-    }
-
-    #message a {
-      display: block;
-      text-align: center;
-      background: #039be5;
-      text-transform: uppercase;
-      text-decoration: none;
-      color: white;
-      padding: 16px;
-      border-radius: 4px;
-    }
-
-    #message,
-    #message a {
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-    }
-
-    #load {
-      color: rgba(0, 0, 0, 0.4);
-      text-align: center;
-      font-size: 13px;
-    }
-
-    @media (max-width: 600px) {
-
-      body,
-      #message {
-        margin-top: 0;
-        background: white;
-        box-shadow: none;
-      }
-
-      body {
-        border-top: 16px solid #ffa100;
-      }
-    }
-  </style>
 </head>
 
-<body>
-  <div id="message">
-    <h2>Welcome</h2>
-    <h1>Firebase Hosting Setup Complete</h1>
-    <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something
-      extraordinary!</p>
-    <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
-  </div>
-  <p id="load">Firebase SDK Loading&hellip;</p>
+<body class="bg-brand-bg text-brand-text antialiased selection:bg-brand-accent selection:text-white">
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const loadEl = document.querySelector('#load');
-      // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-      // // The Firebase SDK is initialized and available here!
-      //
-      // firebase.auth().onAuthStateChanged(user => { });
-      // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-      // firebase.firestore().doc('/foo/bar').get().then(() => { });
-      // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-      // firebase.messaging().requestPermission().then(() => { });
-      // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-      // firebase.analytics(); // call to activate
-      // firebase.analytics().logEvent('tutorial_completed');
-      // firebase.performance(); // call to activate
-      //
-      // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-brand-bg/90 backdrop-blur-sm border-b border-stone-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <div
+                        class="w-8 h-8 bg-brand-accent rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                        C</div>
+                    <span class="font-bold text-xl tracking-tight">CondoKanban</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#problem" class="text-brand-subtext hover:text-brand-accent transition">O Problema</a>
+                    <a href="#demo" class="text-brand-subtext hover:text-brand-accent transition">A Solução</a>
+                    <a href="#ai" class="text-brand-subtext hover:text-brand-accent transition">Inteligência</a>
+                    <a href="#business" class="text-brand-subtext hover:text-brand-accent transition">O Negócio</a>
+                </div>
+                <button onclick="document.getElementById('business').scrollIntoView()"
+                    class="bg-brand-text text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-stone-700 transition">
+                    Ver Proposta
+                </button>
+            </div>
+        </div>
+    </nav>
 
-      try {
-        let app = firebase.app();
-        let features = [
-          'auth',
-          'database',
-          'firestore',
-          'functions',
-          'messaging',
-          'storage',
-          'analytics',
-          'remoteConfig',
-          'performance',
-        ].filter(feature => typeof app[feature] === 'function');
-        loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-      } catch (e) {
-        console.error(e);
-        loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
-      }
-    });
-  </script>
+    <!-- Hero Section -->
+    <section class="relative pt-20 pb-32 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <span
+                class="inline-block py-1 px-3 rounded-full bg-brand-accent/10 text-brand-accent text-xs font-bold tracking-wider uppercase mb-6">
+                Proposta de Projeto Interno
+            </span>
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-brand-text">
+                Transparência não é só<br>mostrar as contas.
+            </h1>
+            <p class="mt-4 text-xl md:text-2xl text-brand-subtext max-w-3xl mx-auto font-light">
+                É mostrar o <span class="font-semibold text-brand-accent">trabalho</span>. Apresentamos o <span
+                    class="font-semibold">CondoKanban</span>: a ferramenta que transforma a caixa preta da gestão
+                condominial em um fluxo claro, priorizado e transparente.
+            </p>
+            <div class="mt-10 flex justify-center gap-4">
+                <a href="#demo"
+                    class="bg-brand-accent text-white px-8 py-4 rounded-lg text-lg font-bold hover:bg-amber-700 transition shadow-lg shadow-amber-500/30">
+                    Ver Como Funciona
+                </a>
+            </div>
+        </div>
+        <!-- Decorative bg element -->
+        <div class="absolute top-0 left-1/2 w-full -translate-x-1/2 h-full z-0 opacity-30 pointer-events-none">
+            <div
+                class="absolute top-20 left-10 w-72 h-72 bg-brand-secondary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob">
+            </div>
+            <div
+                class="absolute top-20 right-10 w-72 h-72 bg-brand-accent rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000">
+            </div>
+        </div>
+    </section>
+
+    <!-- The Problem / Solution (Context) -->
+    <section id="problem" class="py-20 bg-white border-y border-stone-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="text-3xl font-bold mb-6">A "Caixa Preta" da Sindicância</h2>
+                    <p class="text-lg text-brand-subtext mb-6 leading-relaxed">
+                        Os aplicativos atuais focam em boletos e reserva de churrasqueira. Mas quando o elevador quebra
+                        ou há uma infiltração, o condômino fica no escuro.
+                    </p>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <span
+                                class="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-red-100 text-red-500 mt-1 mr-3 text-sm">✕</span>
+                            <span class="text-brand-subtext">Condôminos acham que o síndico "não faz nada".</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span
+                                class="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-red-100 text-red-500 mt-1 mr-3 text-sm">✕</span>
+                            <span class="text-brand-subtext">Grupo Gestor (GG) sobrecarregado respondendo
+                                WhatsApp.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span
+                                class="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-red-100 text-red-500 mt-1 mr-3 text-sm">✕</span>
+                            <span class="text-brand-subtext">Falta de histórico real do trabalho executado (V&A).</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-brand-bg p-8 rounded-2xl border border-stone-200 shadow-sm">
+                    <h3 class="text-xl font-bold mb-4 text-brand-accent">A Solução CondoKanban</h3>
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-lg shadow-sm flex items-center gap-4">
+                            <div class="text-2xl">📋</div>
+                            <div>
+                                <h4 class="font-bold">Quadro Visual</h4>
+                                <p class="text-sm text-brand-subtext">Backlog, Fazendo, Enroscado, Feito.</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm flex items-center gap-4">
+                            <div class="text-2xl">🔒</div>
+                            <div>
+                                <h4 class="font-bold">Privacidade Inteligente</h4>
+                                <p class="text-sm text-brand-subtext">Público, Por Bloco, Por Andar, Privado.</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm flex items-center gap-4">
+                            <div class="text-2xl">🤖</div>
+                            <div>
+                                <h4 class="font-bold">Priorização via IA</h4>
+                                <p class="text-sm text-brand-subtext">Matriz Eisenhower via Gemini API.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demo Section -->
+    <section id="demo" class="py-24 bg-brand-bg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Veja a Lógica na Prática</h2>
+                <p class="text-brand-subtext max-w-2xl mx-auto">
+                    A grande inovação é o sistema de <span class="font-semibold text-brand-text">V&A (Visualização e
+                        Acompanhamento)</span>. O quadro se adapta a quem está vendo.
+                </p>
+            </div>
+
+            <!-- Simulation Controls -->
+            <div class="bg-white rounded-xl shadow-lg border border-stone-200 overflow-hidden">
+                <div
+                    class="p-4 border-b border-stone-100 bg-stone-50 flex flex-wrap justify-between items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-bold text-brand-subtext uppercase tracking-wide">Simular
+                            Usuário:</span>
+                        <select id="userRoleSelector"
+                            class="bg-white border border-stone-300 text-brand-text text-sm rounded-lg focus:ring-brand-accent focus:border-brand-accent block p-2.5">
+                            <option value="manager">👤 Grupo Gestor (Admin)</option>
+                            <option value="resident_b1_f2">🏠 Condômino (Bloco A, 2º Andar)</option>
+                            <option value="resident_b2_f5">🏠 Condômino (Bloco B, 5º Andar)</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2 text-xs">
+                        <span
+                            class="px-2 py-1 rounded bg-green-100 text-green-800 border border-green-200">Publico</span>
+                        <span class="px-2 py-1 rounded bg-blue-100 text-blue-800 border border-blue-200">Bloco</span>
+                        <span
+                            class="px-2 py-1 rounded bg-purple-100 text-purple-800 border border-purple-200">Andar</span>
+                        <span
+                            class="px-2 py-1 rounded bg-stone-200 text-stone-600 border border-stone-300">Privado</span>
+                    </div>
+                </div>
+
+                <!-- Kanban Board HTML Representation -->
+                <div class="p-6 overflow-x-auto">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 min-w-[800px]">
+
+                        <!-- Column: Backlog -->
+                        <div class="flex flex-col h-full bg-stone-100 rounded-lg p-3">
+                            <h3 class="font-bold text-brand-subtext mb-3 flex justify-between items-center">
+                                A Fazer (Backlog)
+                                <span class="bg-stone-200 text-stone-600 px-2 py-0.5 rounded-full text-xs"
+                                    id="count-backlog">0</span>
+                            </h3>
+                            <div id="col-backlog" class="space-y-3">
+                                <!-- Cards injected by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Column: Doing -->
+                        <div class="flex flex-col h-full bg-stone-100 rounded-lg p-3">
+                            <h3 class="font-bold text-blue-600 mb-3 flex justify-between items-center">
+                                Fazendo
+                                <span class="bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full text-xs"
+                                    id="count-doing">0</span>
+                            </h3>
+                            <div id="col-doing" class="space-y-3"></div>
+                        </div>
+
+                        <!-- Column: Stuck -->
+                        <div class="flex flex-col h-full bg-stone-100 rounded-lg p-3">
+                            <h3 class="font-bold text-red-600 mb-3 flex justify-between items-center">
+                                Enroscado
+                                <span class="bg-red-100 text-red-600 px-2 py-0.5 rounded-full text-xs"
+                                    id="count-stuck">0</span>
+                            </h3>
+                            <div id="col-stuck" class="space-y-3"></div>
+                        </div>
+
+                        <!-- Column: Done -->
+                        <div class="flex flex-col h-full bg-stone-100 rounded-lg p-3">
+                            <h3 class="font-bold text-green-600 mb-3 flex justify-between items-center">
+                                Feito
+                                <span class="bg-green-100 text-green-600 px-2 py-0.5 rounded-full text-xs"
+                                    id="count-done">0</span>
+                            </h3>
+                            <div id="col-done" class="space-y-3"></div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="p-4 bg-stone-50 border-t border-stone-200 text-center">
+                    <p id="view-message" class="text-sm text-brand-subtext font-medium italic">
+                        <!-- Dynamic message about visibility -->
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI & Prioritization Section -->
+    <section id="ai" class="py-20 bg-white border-y border-stone-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="flex flex-col justify-center">
+                    <div class="inline-flex items-center gap-2 mb-4">
+                        <span class="bg-brand-secondary/10 text-brand-secondary p-1 rounded">✨ Gemini AI 2.5
+                            Flash</span>
+                    </div>
+                    <h2 class="text-3xl font-bold mb-6">Fim das Brigas por Prioridade</h2>
+                    <p class="text-lg text-brand-subtext mb-6">
+                        O síndico não decide sozinho o que é urgente. Ao abrir um chamado, nossa API conecta ao
+                        <strong>Google Gemini</strong> para classificar automaticamente a tarefa na <strong>Matriz de
+                            Eisenhower</strong>.
+                    </p>
+                    <ul class="space-y-4 text-sm text-brand-subtext">
+                        <li class="p-3 bg-red-50 border-l-4 border-red-500 rounded-r-md">
+                            <strong>Q1: Crítico e Imediato.</strong> (Ex: Vazamento de gás, Portão quebrado). Entra
+                            direto no topo do Backlog.
+                        </li>
+                        <li class="p-3 bg-blue-50 border-l-4 border-blue-500 rounded-r-md">
+                            <strong>Q2: Planejamento.</strong> (Ex: Pintura da fachada, Orçamento anual). Importante,
+                            mas sem prazo fatal.
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="bg-white p-4 rounded-xl shadow-lg border border-stone-100">
+                        <h3 class="text-center font-bold text-sm text-stone-500 mb-2">Visualização da Matriz de
+                            Prioridades (Dados Reais)</h3>
+                        <div class="chart-container" id="matrix-chart-container">
+                            <div id="eisenhowerChart" class="w-full h-full"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Market & Business Section -->
+    <section id="business" class="py-20 bg-brand-bg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold mb-4">Por que investir nisso agora?</h2>
+                <p class="text-brand-subtext">Não estamos construindo mais um ERP. Estamos construindo confiança.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Market Gap Chart -->
+                <div class="col-span-1 md:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                    <h3 class="font-bold text-lg mb-4">Diferencial Competitivo</h3>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="marketChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center mt-4 text-brand-subtext">Comparação com apps tradicionais de
+                        condomínio.</p>
+                </div>
+
+                <!-- Stats/ROI -->
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                        <h4 class="text-sm font-bold text-brand-subtext uppercase mb-2">Potencial de Mercado</h4>
+                        <div class="text-4xl font-extrabold text-brand-text">200k+</div>
+                        <p class="text-sm text-brand-subtext">Condomínios no Brasil carentes de transparência na gestão
+                            operacional.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                        <h4 class="text-sm font-bold text-brand-subtext uppercase mb-2">Escalabilidade</h4>
+                        <div class="text-4xl font-extrabold text-brand-secondary">SaaS</div>
+                        <p class="text-sm text-brand-subtext">Modelo leve. Arquitetura pronta para expansão futura
+                            (auditoria, financeiro).</p>
+                    </div>
+                    <div class="bg-brand-accent p-6 rounded-xl shadow-lg text-white">
+                        <h4 class="text-sm font-bold opacity-80 uppercase mb-2">Custo de Implementação</h4>
+                        <div class="text-3xl font-extrabold">Baixo</div>
+                        <p class="text-sm opacity-90">Stack Serverless (Firebase/Supabase), Gemini API (baixo
+                            custo/token).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer / Call to Action -->
+    <footer class="bg-brand-text text-stone-300 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold text-white mb-6">Vamos tirar essa ideia do papel?</h2>
+            <div class="max-w-2xl mx-auto mb-10">
+                <p class="text-lg mb-4">O CondoKanban resolve a maior dor de cabeça do síndico: provar que está
+                    trabalhando.</p>
+                <p class="text-sm text-stone-400">MVP pronto para desenvolvimento em 4 semanas.</p>
+            </div>
+            <button
+                class="bg-brand-accent text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white hover:text-brand-accent transition duration-300">
+                Aprovar Projeto Piloto
+            </button>
+            <div class="mt-12 text-sm text-stone-500 border-t border-stone-700 pt-8">
+                <span id="app-version" style="opacity: 0.5; font-size: 10pxs;"></span>
+                <p>&copy; 2025 Proposta de Inovação Interna. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Application Logic -->
+    <script src="./main.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,49 @@
+/* Chart Container Utilities */
+.chart-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    height: 400px;
+    /* Default height */
+    max-height: 500px;
+}
+
+@media (max-width: 640px) {
+    .chart-container {
+        height: 300px;
+    }
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #F5F5F4;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #D6D3D1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #A8A29E;
+}
+
+.kanban-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.kanban-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
