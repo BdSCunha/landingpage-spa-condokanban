@@ -3,9 +3,9 @@
     "version": "0.0.9",
     "scripts": {
         "build": "npm run build",
-        "version:patch": "npm version patch -m '%s'",
-        "version:minor": "npm version minor -m '%s'",
-        "version:major": "npm version major -m '%s'",
-        "postversion": "node -e \"const fs=require('fs');const pkg=require('./package.json');fs.writeFileSync('public/package.json',JSON.stringify({name:pkg.name,version:pkg.version},null,2))\" && git add public/package.json && git commit --amend --no-edit && git push && git push --tags"
+        "version:patch": "npm version patch -m \"chore: release v%s\"",
+        "version:minor": "npm version minor -m \"chore: release v%s\"",
+        "version:major": "npm version major -m \"chore: release v%s\"",
+        "postversion": "node -e \"const fs=require('fs');const pkg=require('./package.json');fs.writeFileSync('public/package.json',JSON.stringify({name:pkg.name,version:pkg.version},null,2))\" && git add public/package.json && git commit --amend --no-edit && git push --force-with-lease && git push --tags"
     }
 }
