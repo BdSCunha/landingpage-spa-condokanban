@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CondoKanban - Board</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {sans: ['Inter', 'sans-serif']},
+                    colors: {
+                        brand: {
+                            bg: '#F5F5F4', card: '#FFFFFF', text: '#292524', subtext: '#57534E',
+                            accent: '#D97706', secondary: '#0EA5E9', success: '#10B981', warning: '#F59E0B', danger: '#EF4444'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .kanban-col {
+            min-width: 280px;
+            height: calc(100vh - 180px);
+        }
+
+        .kanban-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .kanban-card:active {
+            transform: scale(0.98);
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 40;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-enter {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        .modal-enter-active {
+            opacity: 1;
+            transform: scale(1);
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #d6d3d1;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        @keyframes pulse-badge {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .badge-pulse {
+            animation: pulse-badge 2s infinite;
+        }
+    </style>
+</head>
+
+<body class="bg-brand-bg text-brand-text h-screen overflow-hidden flex flex-col">
+
+    <!-- Top Bar -->
+    <header class="bg-white border-b border-stone-200 z-30 shadow-sm flex-none">
+        <div class="max-w-full mx-auto px-4 h-16 flex items-center justify-between">
+
+            <!-- LEFT: Logo -->
+            <div class="flex items-center gap-2 w-1/3" onclick="window.location.href='index.html'"
+                style="cursor: pointer;">
+                <div
+                    class="w-8 h-8 bg-brand-accent rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                    C</div>
+                <span class="font-bold text-lg tracking-tight hidden md:block">CondoKanban</span>
+            </div>
+
+            <!-- CENTER: Controls -->
+            <div class="flex items-center justify-center gap-2 sm:gap-4 flex-1 w-1/3">
+                <div class="flex items-center gap-2 bg-stone-100 p-1 rounded-lg border border-stone-200 shadow-inner">
+                    <i class="fas fa-user-circle text-stone-400 ml-2"></i>
+                    <select id="simulatedUser"
+                        class="bg-transparent text-sm font-semibold text-brand-text border-none focus:ring-0 cursor-pointer outline-none w-auto max-w-[150px] sm:max-w-none"
+                        onchange="app.switchUser(this.value)">
+                        <option value="manager">Grupo Gestor - GG</option>
+                        <option value="resident_A_2">Morador (Bl A - 2º Andar)</option>
+                        <option value="resident_B_5">Morador (Bl B - 5º Andar)</option>
+                    </select>
+                </div>
+
+                <div id="viewFilterContainer"
+                    class="hidden flex items-center gap-2 bg-white p-1 rounded-lg border border-stone-200 shadow-sm transition-all">
+                    <i class="fas fa-filter text-brand-accent ml-2 text-xs"></i>
+                    <select id="viewFilter"
+                        class="bg-transparent text-xs font-semibold text-brand-text border-none focus:ring-0 cursor-pointer outline-none w-24 sm:w-auto"
+                        onchange="app.render()">
+                        <option value="all">Ver Tudo</option>
+                        <option value="custom">★ Meus/Seguindo</option>
+                        <option value="private">Privado</option>
+                        <option value="floor">Meu Andar</option>
+                        <option value="block">Meu Bloco</option>
+                        <option value="public">Público</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- RIGHT: Actions -->
+            <div class="flex items-center justify-end gap-1 sm:gap-2 w-1/3">
+
+                <button onclick="app.openArchiveListModal()"
+                    class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
+                    title="Arquivo">
+                    <i class="fas fa-archive"></i>
+                </button>
+
+                <button onclick="app.openLogModal()"
+                    class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
+                    title="Histórico">
+                    <i class="fas fa-history"></i>
+                </button>
+
+                <div id="managerMenu" class="hidden flex gap-1 sm:gap-2 items-center">
+                    <button onclick="app.openTriageModal()"
+                        class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group mr-1"
+                        title="Triagem">
+                        <i class="fas fa-tasks"></i>
+                        <span id="triageBadge"
+                            class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white badge-pulse">0</span>
+                    </button>
+
+                    <div class="h-4 w-px bg-stone-300 mx-1"></div>
+
+                    <button onclick="app.openUserModal()"
+                        class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition"
+                        title="Usuários">
+                        <i class="fas fa-users"></i>
+                    </button>
+                    <button onclick="app.downloadLog()"
+                        class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition"
+                        title="Baixar Log">
+                        <i class="fas fa-file-csv"></i>
+                    </button>
+                </div>
+
+                <div class="h-6 w-px bg-stone-200 mx-1 hidden sm:block"></div>
+
+                <button onclick="window.location.href='index.html'"
+                    class="text-sm font-semibold text-stone-500 hover:text-brand-danger transition px-2">
+                    <i class="fas fa-sign-out-alt"></i> <span class="hidden sm:inline ml-1">Sair</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Kanban Board -->
+    <main class="flex-1 overflow-x-auto overflow-y-hidden bg-brand-bg p-4 flex items-center justify-center" id="mainBoard">
+        <div class="flex gap-4 h-full" style="width: max-content;">
+            <!-- BACKLOG -->
+            <div class="kanban-col w-72 md:w-80 flex flex-col bg-stone-100/50 rounded-xl border border-stone-200">
+                <div
+                    class="p-3 border-b border-stone-200/50 flex justify-between items-center bg-stone-100 rounded-t-xl sticky top-0">
+                    <h3 class="font-bold text-stone-600 flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-stone-400"></div> A Fazer
+                    </h3>
+                    <span
+                        class="bg-white text-stone-600 px-2 py-0.5 rounded text-xs font-bold border border-stone-200 shadow-sm"
+                        id="count-backlog">0</span>
+                </div>
+                <div class="flex-1 overflow-y-auto p-2 space-y-2" id="col-backlog"></div>
+            </div>
+            <!-- DOING -->
+            <div class="kanban-col w-72 md:w-80 flex flex-col bg-blue-50/50 rounded-xl border border-blue-100">
+                <div
+                    class="p-3 border-b border-blue-100 flex justify-between items-center bg-blue-50 rounded-t-xl sticky top-0">
+                    <h3 class="font-bold text-blue-700 flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div> Fazendo
+                    </h3>
+                    <span
+                        class="bg-white text-blue-600 px-2 py-0.5 rounded text-xs font-bold border border-blue-100 shadow-sm"
+                        id="count-doing">0</span>
+                </div>
+                <div class="flex-1 overflow-y-auto p-2 space-y-2" id="col-doing"></div>
+            </div>
+            <!-- STUCK -->
+            <div class="kanban-col w-72 md:w-80 flex flex-col bg-red-50/50 rounded-xl border border-red-100">
+                <div
+                    class="p-3 border-b border-red-100 flex justify-between items-center bg-red-50 rounded-t-xl sticky top-0">
+                    <h3 class="font-bold text-red-700 flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-red-500"></div> Enroscado
+                    </h3>
+                    <span
+                        class="bg-white text-red-600 px-2 py-0.5 rounded text-xs font-bold border border-red-100 shadow-sm"
+                        id="count-stuck">0</span>
+                </div>
+                <div class="flex-1 overflow-y-auto p-2 space-y-2" id="col-stuck"></div>
+            </div>
+            <!-- DONE -->
+            <div class="kanban-col w-72 md:w-80 flex flex-col bg-green-50/50 rounded-xl border border-green-100">
+                <div
+                    class="p-3 border-b border-green-100 flex justify-between items-center bg-green-50 rounded-t-xl sticky top-0">
+                    <h3 class="font-bold text-green-700 flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-green-500"></div> Feito
+                    </h3>
+                    <span
+                        class="bg-white text-green-600 px-2 py-0.5 rounded text-xs font-bold border border-green-100 shadow-sm"
+                        id="count-done">0</span>
+                </div>
+                <div class="flex-1 overflow-y-auto p-2 space-y-2" id="col-done"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FAB -->
+    <button id="newTicketFab" onclick="app.openNewTicketModal()"
+        class="fab w-14 h-14 bg-brand-accent hover:bg-amber-600 text-white rounded-full flex items-center justify-center text-2xl transition-transform hover:scale-110 active:scale-95 hidden">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- MODAL: Archive List (NEW IMPLEMENTATION AS MODAL) -->
+    <div id="archiveListModal"
+        class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div
+            class="bg-white w-full max-w-5xl mx-4 rounded-xl shadow-2xl flex flex-col max-h-[90vh] transform scale-95 transition-transform duration-300">
+            <!-- Header -->
+            <div
+                class="p-6 border-b border-stone-200 flex justify-between items-center bg-stone-50 rounded-t-xl relative">
+                <!-- Title Centered -->
+                <div class="absolute left-0 right-0 text-center pointer-events-none">
+                    <h2 class="text-xl font-bold text-brand-text flex items-center justify-center gap-2">
+                        <i class="fas fa-archive text-stone-400"></i> Arquivo Morto
+                    </h2>
+                </div>
+                <!-- Spacers to balance -->
+                <div></div>
+                <!-- Close Button -->
+                <button onclick="app.closeModals()"
+                    class="text-stone-400 hover:text-red-500 text-2xl z-10">&times;</button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-0">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-stone-50 border-b border-stone-200 text-stone-500 sticky top-0 shadow-sm">
+                        <tr>
+                            <th class="px-6 py-4 font-semibold">Título</th>
+                            <th class="px-6 py-4 font-semibold">Data</th>
+                            <th class="px-6 py-4 font-semibold">Quem Abriu</th>
+                            <th class="px-6 py-4 font-semibold text-right">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-stone-100" id="archiveTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Global Log Viewer -->
+    <div id="logModal"
+        class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div
+            class="bg-white w-full max-w-4xl mx-4 rounded-xl shadow-2xl flex flex-col max-h-[90vh] transform scale-95 transition-transform duration-300">
+            <div class="p-6 border-b border-stone-200 flex justify-between items-center bg-stone-50 rounded-t-xl">
+                <div>
+                    <h2 class="text-xl font-bold text-brand-text flex items-center gap-2">
+                        <i class="fas fa-list-alt text-brand-accent"></i> Registro de Atividades
+                    </h2>
+                    <p id="logSubtitle" class="text-xs text-stone-500 mt-1">Visualizando todas as movimentações</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="app.downloadLog()"
+                        class="text-xs flex items-center gap-1 bg-stone-100 hover:bg-stone-200 text-stone-600 px-3 py-1.5 rounded-lg transition mr-4"
+                        title="Baixar Visualização Atual">
+                        <i class="fas fa-download"></i> Baixar CSV
+                    </button>
+                    <button onclick="app.closeModals()"
+                        class="text-stone-400 hover:text-red-500 text-2xl">&times;</button>
+                </div>
+            </div>
+            <div class="p-4 border-b border-stone-100 flex justify-between items-center bg-white">
+                <div class="flex items-center gap-2 text-sm text-stone-600">
+                    <span>Exibir</span>
+                    <select id="logPageSize"
+                        onchange="app.logState.pageSize = parseInt(this.value); app.logState.page = 1; app.renderLogs();"
+                        class="border border-stone-300 rounded p-1 text-sm bg-white focus:ring-1 focus:ring-brand-accent outline-none">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                    <span>por página</span>
+                </div>
+                <div class="text-xs font-bold text-stone-400 uppercase tracking-wider" id="logTotalCount"></div>
+            </div>
+            <div class="flex-1 overflow-y-auto p-0">
+                <table class="w-full text-left text-sm border-collapse">
+                    <thead class="bg-stone-50 text-stone-500 sticky top-0 shadow-sm">
+                        <tr>
+                            <th class="px-6 py-3 font-semibold w-32">Data</th>
+                            <th class="px-6 py-3 font-semibold w-48">Contexto</th>
+                            <th class="px-6 py-3 font-semibold w-32">Usuário</th>
+                            <th class="px-6 py-3 font-semibold w-40">Ação</th>
+                            <th class="px-6 py-3 font-semibold">Detalhes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logTableBody" class="divide-y divide-stone-100"></tbody>
+                </table>
+            </div>
+            <div class="p-4 border-t border-stone-200 bg-stone-50 rounded-b-xl flex justify-between items-center">
+                <button onclick="app.changeLogPage(-1)" id="btnPrevLog"
+                    class="px-4 py-2 bg-white border border-stone-300 rounded-lg text-sm text-stone-600 hover:bg-stone-100 disabled:opacity-50">Anterior</button>
+                <span id="logPageInfo" class="text-sm font-medium text-stone-600">Página 1</span>
+                <button onclick="app.changeLogPage(1)" id="btnNextLog"
+                    class="px-4 py-2 bg-white border border-stone-300 rounded-lg text-sm text-stone-600 hover:bg-stone-100 disabled:opacity-50">Próximo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Card Details -->
+    <div id="cardModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div
+            class="bg-white w-full max-w-2xl mx-4 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] transform scale-95 transition-transform duration-300 border border-stone-200">
+            <div class="p-6 pb-4 border-b border-stone-100 bg-white z-10 shrink-0">
+                <div class="flex justify-between items-start gap-4">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span id="modalPriority"
+                                class="text-xs font-bold px-2 py-0.5 rounded bg-stone-100 text-stone-600">Q?</span>
+                            <div id="modalVisibilityContainer"></div>
+                        </div>
+                        <h2 id="modalTitle" class="text-xl font-bold text-brand-text leading-tight"></h2>
+                    </div>
+                    <button onclick="app.closeModals()"
+                        class="text-stone-400 hover:text-stone-600 text-2xl leading-none">&times;</button>
+                </div>
+            </div>
+            <div class="flex-1 overflow-y-auto px-6 py-4 bg-stone-50/30">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-white p-3 rounded-lg border border-stone-200 shadow-sm">
+                        <p class="text-xs font-bold text-stone-400 uppercase mb-1">Status Atual</p>
+                        <span id="modalStatus" class="font-bold text-sm uppercase text-brand-accent"></span>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg border border-stone-200 shadow-sm">
+                        <p class="text-xs font-bold text-stone-400 uppercase mb-1">Detalhes</p>
+                        <div class="text-xs space-y-1">
+                            <div class="flex justify-between" id="modalOwnerRow">
+                                <span class="text-stone-500">Solicitante:</span> <span id="modalOwner"
+                                    class="font-medium"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-stone-500">Criado em:</span> <span id="modalDate"
+                                    class="font-medium"></span>
+                            </div>
+                            <div id="modalFollowersContainer" class="hidden border-t border-stone-100 pt-1 mt-1">
+                                <span class="block text-stone-500 mb-0.5">Seguidores:</span>
+                                <span id="modalFollowersList"
+                                    class="font-medium text-stone-700 block leading-tight"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="modalStuckReasonContainer"
+                    class="hidden mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                    <h4 class="text-red-700 font-bold text-sm mb-1 flex items-center gap-2"><i
+                            class="fas fa-exclamation-circle"></i> Motivo do Enrosco</h4>
+                    <p id="modalStuckReason" class="text-sm text-red-600 italic"></p>
+                </div>
+                <div class="mb-6">
+                    <h5 class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">Descrição</h5>
+                    <p id="modalDesc"
+                        class="text-sm text-stone-700 leading-relaxed bg-white p-4 rounded-lg border border-stone-200">
+                    </p>
+                </div>
+                <div id="modalAttachments" class="mb-6">
+                    <h5 class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">Anexos</h5>
+                    <div id="attachmentsList" class="flex gap-2 overflow-x-auto pb-2 no-scrollbar"></div>
+                </div>
+                <div class="pt-4 border-t border-stone-200">
+                    <h5 class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <i class="fas fa-history"></i> Histórico de Atividades
+                    </h5>
+                    <div id="auditTrail"
+                        class="space-y-4 relative before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-stone-200">
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-stone-200 bg-white shrink-0 z-10">
+                <div id="triageReasonContainer" class="hidden mb-3">
+                    <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Observação da Triagem (Opcional
+                        p/ Backlog)</label>
+                    <textarea id="triageReasonInput"
+                        class="w-full border border-stone-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-brand-accent outline-none"
+                        rows="2" placeholder="Motivo da aprovação ou arquivamento..."></textarea>
+                </div>
+                <div class="flex gap-2 mb-3" id="commentsSection">
+                    <input type="text" id="newCommentInput"
+                        class="flex-1 border border-stone-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-accent focus:border-transparent outline-none transition"
+                        placeholder="Adicionar comentário...">
+                    <button onclick="app.addComment()"
+                        class="bg-stone-100 text-stone-600 px-4 py-2 rounded-lg hover:bg-stone-200 font-bold text-sm transition"><i
+                            class="fas fa-paper-plane"></i></button>
+                </div>
+                <div id="modalActions" class="space-y-2">
+                    <div id="actionButtonsGrid" class="grid grid-cols-4 gap-2"></div>
+                    <button id="archiveActionBtn" onclick="app.archiveCurrentTask()"
+                        class="w-full mt-2 p-2 text-stone-400 hover:text-red-500 text-xs font-semibold flex items-center justify-center gap-2 transition">
+                        <i class="fas fa-archive"></i> Arquivar este chamado
+                    </button>
+                </div>
+                <div id="modalReadOnlyMsg" class="hidden text-center text-xs text-stone-400 italic py-2">
+                    Somente leitura de status. Comentários permitidos.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Triage List -->
+    <div id="triageModal"
+        class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div
+            class="bg-white w-full max-w-3xl mx-4 rounded-xl shadow-2xl flex flex-col max-h-[80vh] transform scale-95 transition-transform duration-300">
+            <div class="p-6 border-b border-stone-200 flex justify-between items-center bg-stone-50 rounded-t-xl">
+                <div>
+                    <h2 class="text-xl font-bold text-brand-text flex items-center gap-2">
+                        <i class="fas fa-tasks text-brand-accent"></i> Triagem de Chamados
+                    </h2>
+                    <p class="text-xs text-stone-500 mt-1">Chamados abertos aguardando classificação e aprovação.</p>
+                </div>
+                <button onclick="app.closeModals()"
+                    class="text-stone-400 hover:text-stone-600 text-2xl">&times;</button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-0">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-stone-50 text-stone-500 sticky top-0 shadow-sm">
+                        <tr>
+                            <th class="px-6 py-3 font-semibold">Data</th>
+                            <th class="px-6 py-3 font-semibold">Título</th>
+                            <th class="px-6 py-3 font-semibold">Solicitante</th>
+                            <th class="px-6 py-3 font-semibold">Prioridade (IA)</th>
+                            <th class="px-6 py-3 font-semibold text-right">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="triageTableBody" class="divide-y divide-stone-100"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Archive Confirm (Renamed from archiveModal) -->
+    <div id="archiveConfirmModal"
+        class="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div
+            class="bg-white w-full max-w-sm mx-4 rounded-xl p-6 shadow-xl transform scale-95 transition-transform duration-300">
+            <h3 class="font-bold text-lg mb-2 text-stone-700">Arquivar Chamado?</h3>
+            <p class="text-sm text-stone-500 mb-4">O chamado será movido para o Arquivo Morto.</p>
+            <textarea id="archiveReasonInput"
+                class="w-full border border-stone-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-stone-500 focus:border-stone-500 outline-none mb-4 hidden"
+                rows="2" placeholder="Motivo do arquivamento (Obrigatório)..."></textarea>
+            <div class="flex justify-end gap-2">
+                <button onclick="app.closeModals()"
+                    class="px-4 py-2 text-stone-500 font-semibold hover:bg-stone-100 rounded">Cancelar</button>
+                <button onclick="app.confirmArchive()"
+                    class="px-4 py-2 bg-stone-600 text-white font-semibold rounded hover:bg-stone-700">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Stuck Reason -->
+    <div id="stuckModal"
+        class="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div
+            class="bg-white w-full max-w-sm mx-4 rounded-xl p-6 shadow-xl transform scale-95 transition-transform duration-300">
+            <h3 class="font-bold text-lg mb-2 text-red-600">Por que está enroscado?</h3>
+            <textarea id="stuckReasonInput"
+                class="w-full border border-stone-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none mb-4"
+                rows="3" placeholder="Ex: Aguardando peça, falta de verba..."></textarea>
+            <div class="flex justify-end gap-2">
+                <button onclick="app.closeModals()"
+                    class="px-4 py-2 text-stone-500 font-semibold hover:bg-stone-100 rounded">Cancelar</button>
+                <button onclick="app.confirmStuck()"
+                    class="px-4 py-2 bg-red-600 text-white font-semibold rounded hover:bg-red-700">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: User Management -->
+    <div id="userModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div
+            class="bg-white w-full max-w-2xl mx-4 rounded-xl shadow-2xl flex flex-col max-h-[90vh] transform scale-95 transition-transform duration-300">
+            <div class="p-6 border-b border-stone-200 flex justify-between items-center">
+                <h2 class="text-xl font-bold">Gestão de Condôminos</h2>
+                <button onclick="app.closeModals()" class="text-stone-400 hover:text-stone-600"><i
+                        class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 bg-stone-50 border-b border-stone-200">
+                <h4 class="text-xs font-bold uppercase text-stone-500 mb-2">Adicionar Novo</h4>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
+                    <input type="text" id="uName" placeholder="Nome Completo"
+                        class="text-sm p-2 rounded border border-stone-300">
+                    <input type="email" id="uEmail" placeholder="E-mail"
+                        class="text-sm p-2 rounded border border-stone-300">
+                    <input type="text" id="uUnit" placeholder="Unid (Bl A - 202)"
+                        class="text-sm p-2 rounded border border-stone-300">
+                    <button onclick="app.addUser()"
+                        class="bg-brand-success text-white rounded text-sm font-bold hover:bg-emerald-600">Adicionar</button>
+                </div>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6">
+                <table class="w-full text-left text-sm">
+                    <thead>
+                        <tr class="text-stone-500 border-b">
+                            <th class="pb-2">Nome</th>
+                            <th class="pb-2">Unidade</th>
+                            <th class="pb-2">Email</th>
+                            <th class="pb-2 text-right">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: New Ticket -->
+    <div id="newTicketModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div
+            class="bg-white w-full max-w-md mx-4 rounded-xl p-6 shadow-2xl transform scale-95 transition-transform duration-300">
+            <h2 class="text-xl font-bold mb-4">Novo Chamado</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-stone-500 uppercase mb-1">O que está acontecendo?</label>
+                    <input type="text" id="newTitle"
+                        class="w-full border border-stone-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-accent outline-none"
+                        placeholder="Ex: Luz do corredor queimada">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Detalhes</label>
+                    <textarea id="newDesc"
+                        class="w-full border border-stone-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-accent outline-none"
+                        rows="3" placeholder="Descreva melhor o problema..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Visibilidade</label>
+                    <select id="newVisibility" class="w-full border border-stone-300 rounded-lg p-2.5 text-sm bg-white">
+                        <option value="public">Público (Todos veem)</option>
+                        <option value="block">Meu Bloco</option>
+                        <option value="floor">Meu Andar</option>
+                        <option value="private">Privado (Só eu e o Síndico)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 mt-6">
+                <button onclick="app.closeModals()"
+                    class="px-4 py-2 text-stone-500 font-semibold hover:bg-stone-100 rounded">Cancelar</button>
+                <button onclick="app.createNewTicket()"
+                    class="px-4 py-2 bg-brand-accent text-white font-semibold rounded hover:bg-amber-700">Abrir
+                    Chamado</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"
+        class="fixed top-4 right-4 z-[100] flex flex-col gap-3 pointer-events-none p-4 w-full max-w-sm"></div>
+
+    <script>
+        const app = {
+            data: {
+                tasks: [],
+                users: [
+                    {name: 'João Silva', email: 'joao@email.com', unit: 'Bl A - 202', role: 'resident'},
+                    {name: 'Maria Souza', email: 'maria@email.com', unit: 'Bl B - 501', role: 'resident'}
+                ],
+                systemLogs: [],
+                currentUser: 'manager',
+                currentTask: null
+            },
+
+            logState: {
+                logs: [],
+                page: 1,
+                pageSize: 10
+            },
+
+            init() {
+                this.loadData();
+                this.render();
+                this.updateUserInterface();
+            },
+
+            loadData() {
+                const storedTasks = sessionStorage.getItem('condoTasks');
+                const storedUsers = sessionStorage.getItem('condoUsers');
+                const storedLogs = sessionStorage.getItem('condoSystemLogs');
+
+                if (storedTasks) this.data.tasks = JSON.parse(storedTasks);
+                else this.generateMockData();
+
+                if (storedUsers) this.data.users = JSON.parse(storedUsers);
+                if (storedLogs) this.data.systemLogs = JSON.parse(storedLogs);
+            },
+
+            saveData() {
+                sessionStorage.setItem('condoTasks', JSON.stringify(this.data.tasks));
+                sessionStorage.setItem('condoUsers', JSON.stringify(this.data.users));
+                sessionStorage.setItem('condoSystemLogs', JSON.stringify(this.data.systemLogs));
+                this.render();
+            },
+
+            generateMockData() {
+                const titles = ['Vazamento', 'Lâmpada Queimada', 'Barulho', 'Portão Quebrado', 'Limpeza', 'Encomenda', 'Reunião', 'Multa', 'Pintura', 'Jardinagem'];
+                const locales = ['Hall', 'Garagem', 'Piscina', 'Salão de Festas', 'Bloco A', 'Bloco B', 'Entrada'];
+                const now = new Date();
+
+                for (let i = 0; i < 100; i++) {
+                    const statusList = ['backlog', 'doing', 'stuck', 'done', 'archived'];
+                    const status = statusList[Math.floor(Math.random() * statusList.length)];
+                    const visList = ['public', 'public', 'public', 'block', 'floor', 'private'];
+                    const vis = visList[Math.floor(Math.random() * visList.length)];
+                    const owner = Math.random() > 0.8 ? 'resident_A_2' : (Math.random() > 0.5 ? 'resident_B_5' : 'other');
+
+                    const daysAgo = Math.floor(Math.random() * 20);
+                    const creationDate = new Date();
+                    creationDate.setDate(now.getDate() - daysAgo);
+
+                    const history = [{
+                        date: creationDate.toISOString(),
+                        user: owner === 'manager' ? 'Gestão' : 'Condômino',
+                        action: 'Chamado Criado',
+                        details: `Status inicial: ${status}`
+                    }];
+
+                    if (Math.random() > 0.5) {
+                        const moveDate = new Date(creationDate);
+                        moveDate.setHours(moveDate.getHours() + 2);
+                        history.unshift({
+                            date: moveDate.toISOString(),
+                            user: 'Gestor',
+                            action: 'Mudança de Status',
+                            details: `De BACKLOG para DOING`
+                        });
+                    }
+
+                    const attachments = [];
+                    if (Math.random() > 0.7) {
+                        attachments.push({type: 'image', name: 'foto_evidencia.jpg', private: Math.random() > 0.5});
+                    }
+
+                    const followers = [];
+                    if (vis !== 'private') {
+                        if (Math.random() > 0.7) followers.push('resident_A_2');
+                        if (Math.random() > 0.7) followers.push('resident_B_5');
+                    }
+
+                    this.data.tasks.push({
+                        id: i + 1,
+                        title: `${titles[Math.floor(Math.random() * titles.length)]} - ${locales[Math.floor(Math.random() * locales.length)]}`,
+                        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Problema recorrente reportado pelos moradores.',
+                        status: status,
+                        visibility: vis,
+                        priority: `Q${Math.floor(Math.random() * 4) + 1}`,
+                        block: Math.random() > 0.5 ? 'A' : 'B',
+                        floor: Math.floor(Math.random() * 10).toString(),
+                        owner_id: owner,
+                        stuck_reason: status === 'stuck' ? 'Aguardando aprovação de orçamento da administradora.' : null,
+                        followers: followers,
+                        created_at: creationDate.toISOString(),
+                        history: history,
+                        attachments: attachments
+                    });
+                }
+
+                this.data.tasks.push({
+                    id: 999,
+                    title: 'Lixo no corredor Bloco B',
+                    description: 'Saco de lixo deixado na porta do 203.',
+                    status: 'triage',
+                    visibility: 'block',
+                    priority: 'Q3',
+                    block: 'B', floor: '2',
+                    owner_id: 'resident_B_5',
+                    followers: [],
+                    created_at: new Date().toISOString(),
+                    history: [{date: new Date().toISOString(), user: 'Condômino', action: 'Chamado Aguardando Triagem', details: 'Criado pelo morador.'}],
+                    attachments: []
+                });
+
+                this.saveData();
+            },
+
+            // --- FUNCTION DEFINITIONS (STRICTLY COMMA SEPARATED) ---
+
+            openTriageModal: function () {
+                const triageList = this.data.tasks.filter(t => t.status === 'triage');
+                const tbody = document.getElementById('triageTableBody');
+
+                if (triageList.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-stone-400 italic">Nenhum chamado aguardando triagem.</td></tr>';
+                } else {
+                    tbody.innerHTML = triageList.map(t => `
+                        <tr class="hover:bg-stone-50 border-b border-stone-50 cursor-pointer" onclick="app.closeModals(); app.openCardModal(${t.id})">
+                            <td class="px-6 py-3 text-stone-500">${new Date(t.created_at).toLocaleDateString()}</td>
+                            <td class="px-6 py-3 font-medium text-stone-800">${t.title}</td>
+                            <td class="px-6 py-3 text-stone-600">${t.owner_id.startsWith('resident') ? 'Condômino' : 'Outro'}</td>
+                            <td class="px-6 py-3"><span class="px-2 py-1 bg-stone-100 rounded text-xs font-bold text-stone-600">${t.priority}</span></td>
+                            <td class="px-6 py-3 text-right"><button class="text-brand-accent hover:underline text-xs font-bold uppercase">Analisar</button></td>
+                        </tr>
+                    `).join('');
+                }
+
+                app.openModal('triageModal');
+            },
+
+            render: function () {
+                const cols = {backlog: [], doing: [], stuck: [], done: []};
+                const counts = {backlog: 0, doing: 0, stuck: 0, done: 0};
+                let triageCount = 0;
+
+                const isManager = this.data.currentUser === 'manager';
+                const userBlock = this.data.currentUser === 'resident_A_2' ? 'A' : 'B';
+                const userFloor = this.data.currentUser === 'resident_A_2' ? '2' : '5';
+
+                const filterEl = document.getElementById('viewFilter');
+                const viewFilter = (!isManager && filterEl) ? filterEl.value : 'all';
+
+                const filtered = this.data.tasks.filter(t => {
+                    if (t.status === 'archived') return false;
+
+                    if (t.status === 'triage') {
+                        triageCount++;
+                        return false;
+                    }
+
+                    let canSee = false;
+                    if (isManager) {
+                        canSee = true;
+                    } else {
+                        if (t.visibility === 'public') canSee = true;
+                        else if (t.visibility === 'block' && t.block === userBlock) canSee = true;
+                        else if (t.visibility === 'floor' && t.block === userBlock && t.floor === userFloor) canSee = true;
+                        else if (t.visibility === 'private' && t.owner_id === this.data.currentUser) canSee = true;
+                    }
+
+                    if (!canSee) return false;
+
+                    if (!isManager) {
+                        if (viewFilter === 'custom') {
+                            const isMyPrivate = t.visibility === 'private' && t.owner_id === this.data.currentUser;
+                            const isFollowed = t.followers && t.followers.includes(this.data.currentUser);
+                            return isMyPrivate || isFollowed;
+                        }
+                        if (viewFilter === 'private') return t.visibility === 'private' && t.owner_id === this.data.currentUser;
+                        if (viewFilter === 'floor') return t.visibility === 'floor';
+                        if (viewFilter === 'block') return t.visibility === 'block';
+                        if (viewFilter === 'public') return t.visibility === 'public';
+                    }
+
+                    return true;
+                });
+
+                filtered.forEach(t => {
+                    if (cols[t.status]) {
+                        cols[t.status].push(t);
+                        counts[t.status]++;
+                    }
+                });
+
+                ['backlog', 'doing', 'stuck', 'done'].forEach(status => {
+                    const el = document.getElementById(`col-${status}`);
+                    document.getElementById(`count-${status}`).innerText = counts[status];
+                    el.innerHTML = cols[status].map(t => this.createCardHTML(t)).join('');
+                });
+
+                const badge = document.getElementById('triageBadge');
+                if (triageCount > 0) {
+                    badge.classList.remove('hidden');
+                    badge.innerText = triageCount;
+                } else {
+                    badge.classList.add('hidden');
+                }
+            },
+
+            createNewTicket: function () {
+                const title = document.getElementById('newTitle').value;
+                const desc = document.getElementById('newDesc').value;
+                const vis = document.getElementById('newVisibility').value;
+
+                if (!title) return alert('Título é obrigatório');
+
+                const isManager = this.data.currentUser === 'manager';
+                const initialStatus = isManager ? 'backlog' : 'triage';
+                const initialAction = isManager ? 'Criação Direta' : 'Chamado Aguardando Triagem';
+
+                const creationDate = new Date().toISOString();
+
+                const newTask = {
+                    id: Date.now(),
+                    title: title,
+                    description: desc || 'Sem descrição.',
+                    status: initialStatus,
+                    visibility: vis,
+                    priority: 'Q' + (Math.floor(Math.random() * 4) + 1),
+                    block: this.data.currentUser === 'resident_A_2' ? 'A' : 'B',
+                    floor: this.data.currentUser === 'resident_A_2' ? '2' : '5',
+                    owner_id: this.data.currentUser,
+                    followers: [],
+                    created_at: creationDate,
+                    history: [{
+                        date: creationDate,
+                        user: isManager ? 'Gestor' : 'Condômino',
+                        action: initialAction,
+                        details: isManager ? 'Criado e aprovado pelo gestor.' : 'Enviado para análise do gestor.'
+                    }],
+                    attachments: []
+                };
+
+                this.data.tasks.unshift(newTask);
+                this.saveData();
+                this.closeModals();
+
+                document.getElementById('newTitle').value = '';
+                document.getElementById('newDesc').value = '';
+
+                const msg = isManager ? 'Chamado criado no quadro.' : 'Chamado enviado para triagem.';
+                this.showToast('success', 'Sucesso', msg);
+            },
+
+            moveTaskTo: function (newStatus) {
+                if (!this.data.currentTask) return;
+
+                const oldStatus = this.data.currentTask.status;
+                const userName = this.data.currentUser === 'manager' ? 'Gestor' : 'Usuário';
+                let actionText = 'Mudança de Status';
+                let details = `De ${oldStatus.toUpperCase()} para ${newStatus.toUpperCase()}`;
+
+                if (oldStatus === 'triage') {
+                    actionText = 'Aprovação / Triagem';
+                    const triageNote = document.getElementById('triageReasonInput').value.trim();
+                    if (triageNote) details += `. Obs: ${triageNote}`;
+                }
+
+                if (!this.data.currentTask.history) this.data.currentTask.history = [];
+                this.data.currentTask.history.unshift({
+                    date: new Date().toISOString(),
+                    user: userName,
+                    action: actionText,
+                    details: details
+                });
+
+                this.data.currentTask.status = newStatus;
+                this.data.currentTask.stuck_reason = null;
+                this.saveData();
+                this.closeModals();
+                this.showToast('success', 'Movimentado!', `Chamado atualizado com sucesso.`);
+            },
+
+            archiveCurrentTask: function () {
+                const task = this.data.currentTask;
+                const isTriage = task.status === 'triage';
+
+                const input = document.getElementById('archiveReasonInput');
+                input.classList.remove('hidden');
+                input.placeholder = isTriage ? "Motivo da rejeição/arquivamento (Obrigatório)..." : "Motivo do arquivamento...";
+                input.value = '';
+
+                app.openModal('archiveConfirmModal');
+            },
+
+            confirmArchive: function () {
+                if (!this.data.currentTask) return;
+
+                const task = this.data.currentTask;
+                const isTriage = task.status === 'triage';
+                const reason = document.getElementById('archiveReasonInput').value.trim();
+
+                if (isTriage && !reason) {
+                    alert("Por favor, informe o motivo do arquivamento/rejeição.");
+                    return;
+                }
+
+                const action = isTriage ? 'Rejeitado / Arquivado' : 'Arquivado';
+                const details = reason ? `Motivo: ${reason}` : 'Chamado movido para arquivo morto.';
+
+                if (!task.history) task.history = [];
+                task.history.unshift({
+                    date: new Date().toISOString(),
+                    user: this.data.currentUser === 'manager' ? 'Gestor' : 'Dono',
+                    action: action,
+                    details: details
+                });
+
+                task.status = 'archived';
+                this.saveData();
+                this.closeModals();
+                this.showToast('info', 'Arquivado', 'O chamado foi enviado para o Arquivo Morto.');
+            },
+
+            openArchiveListModal: function () {
+                this.renderArchive();
+                app.openModal('archiveListModal');
+            },
+
+            renderArchive: function () {
+                const tbody = document.getElementById('archiveTableBody');
+                const archived = this.data.tasks.filter(t => {
+                    if (t.status !== 'archived') return false;
+                    if (this.data.currentUser === 'manager') return true;
+                    const isOwner = t.owner_id === this.data.currentUser;
+                    const isFollowing = t.followers && t.followers.includes(this.data.currentUser);
+                    return isOwner || isFollowing;
+                });
+
+                if (archived.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-stone-400">Nenhum item visível no arquivo.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = archived.map(t => {
+                    const restoreBtn = this.data.currentUser === 'manager'
+                        ? `<button onclick="app.restoreTask(${t.id})" class="text-brand-accent hover:text-amber-700 font-bold text-xs uppercase">Restaurar</button>`
+                        : '<span class="text-xs text-stone-400">Arquivado</span>';
+
+                    let ownerName = 'Condômino';
+                    if (this.data.currentUser === 'manager' || t.owner_id === this.data.currentUser) {
+                        ownerName = t.owner_id === 'manager' ? 'Gestão' : (t.owner_id === this.data.currentUser ? 'Você' : 'Condômino');
+                    }
+
+                    return `
+                    <tr class="hover:bg-stone-50">
+                        <td class="px-6 py-4 font-medium text-stone-900">${t.title}</td>
+                        <td class="px-6 py-4 text-stone-500">${new Date(t.created_at).toLocaleDateString()}</td>
+                        <td class="px-6 py-4 text-stone-500 text-xs">${ownerName}</td>
+                        <td class="px-6 py-4 text-right">${restoreBtn}</td>
+                    </tr>
+                `}).join('');
+            },
+
+            restoreTask: function (id) {
+                const task = this.data.tasks.find(t => t.id === id);
+                if (task) {
+                    if (!task.history) task.history = [];
+                    task.history.unshift({
+                        date: new Date().toISOString(),
+                        user: 'Gestor',
+                        action: 'Restaurado',
+                        details: 'Restaurado do Arquivo Morto para Backlog.'
+                    });
+
+                    task.status = 'backlog';
+                    this.saveData();
+                    this.renderArchive();
+                    this.showToast('success', 'Restaurado', 'Enviado de volta para o Backlog.');
+                }
+            },
+
+            openLogModal: function () {
+                this.logState.page = 1;
+                this.logState.logs = this.collectLogs();
+                this.logState.logs.sort((a, b) => new Date(b.date) - new Date(a.date));
+                this.renderLogs();
+                app.openModal('logModal');
+            },
+
+            downloadLog: function () {
+                const logs = this.collectLogs();
+                logs.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                if (logs.length === 0) {
+                    this.showToast('warning', 'Download', 'Não há registros para baixar.');
+                    return;
+                }
+
+                const header = ["Data", "Contexto/Card", "Usuário", "Ação", "Detalhes"];
+                const rows = logs.map(log => {
+                    const clean = (text) => text ? `"${text.toString().replace(/"/g, '""')}"` : '""';
+                    return [
+                        clean(new Date(log.date).toLocaleString('pt-BR')),
+                        clean(log.taskTitle || "N/A"),
+                        clean(log.user),
+                        clean(log.action),
+                        clean(log.details)
+                    ].join(",");
+                });
+
+                const csvContent = "\uFEFF" + [header.join(","), ...rows].join("\n");
+                const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'});
+                const url = URL.createObjectURL(blob);
+
+                const link = document.createElement("a");
+                const filename = `condokanban_logs_${new Date().toISOString().split('T')[0]}.csv`;
+
+                link.setAttribute("href", url);
+                link.setAttribute("download", filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                this.showToast('success', 'Download', `Arquivo ${filename} gerado.`);
+            },
+
+            // --- Existing methods that were stable ---
+
+            toggleArchiveView: function () {
+                // This function is now mapped to openArchiveListModal but kept for backwards compatibility if called elsewhere
+                app.openArchiveListModal();
+            },
+
+            openNewTicketModal: function () {
+                this.openModal('newTicketModal');
+            },
+
+            openUserModal: function () {
+                this.openModal('userModal');
+                this.renderUsers();
+            },
+
+            renderUsers: function () {
+                const tbody = document.getElementById('userTableBody');
+                tbody.innerHTML = this.data.users.map((u, index) => `
+                    <tr class="border-b border-stone-100">
+                        <td class="py-3">${u.name}</td>
+                        <td class="py-3 text-stone-500">${u.unit}</td>
+                        <td class="py-3 text-stone-500">${u.email}</td>
+                        <td class="py-3 text-right">
+                            <button onclick="app.deleteUser(${index})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            },
+
+            addUser: function () {
+                const name = document.getElementById('uName').value;
+                const email = document.getElementById('uEmail').value;
+                const unit = document.getElementById('uUnit').value;
+
+                if (name && email && unit) {
+                    this.data.users.push({name, email, unit, role: 'resident'});
+                    this.data.systemLogs.push({date: new Date().toISOString(), user: 'Gestor', action: 'Usuário Adicionado', details: `Novo: ${name} (${unit})`, taskTitle: 'Sistema Geral', taskId: null});
+                    document.getElementById('uName').value = '';
+                    document.getElementById('uEmail').value = '';
+                    document.getElementById('uUnit').value = '';
+                    this.renderUsers();
+                    this.saveData();
+                    this.showToast('success', 'Usuário', 'Adicionado com sucesso.');
+                }
+            },
+
+            deleteUser: function (index) {
+                if (confirm('Remover usuário?')) {
+                    const removedUser = this.data.users[index];
+                    this.data.users.splice(index, 1);
+                    this.data.systemLogs.push({date: new Date().toISOString(), user: 'Gestor', action: 'Usuário Removido', details: `Removido: ${removedUser.name} (${removedUser.unit})`, taskTitle: 'Sistema Geral', taskId: null});
+                    this.renderUsers();
+                    this.saveData();
+                    this.showToast('warning', 'Usuário', 'Removido do sistema.');
+                }
+            },
+
+            collectLogs: function () {
+                let logs = [];
+                const isManager = this.data.currentUser === 'manager';
+                const subTitle = document.getElementById('logSubtitle');
+
+                if (isManager) {
+                    if (subTitle) subTitle.textContent = "Visão Global de Administração (Todos os registros)";
+                    this.data.tasks.forEach(task => {
+                        if (task.history) {
+                            task.history.forEach(log => {
+                                logs.push({...log, taskTitle: task.title, taskId: task.id});
+                            });
+                        }
+                    });
+                    if (this.data.systemLogs) {
+                        logs = logs.concat(this.data.systemLogs);
+                    }
+                } else {
+                    if (subTitle) subTitle.textContent = "Seus Chamados e Chamados Seguidos";
+                    this.data.tasks.forEach(task => {
+                        const isMine = task.owner_id === this.data.currentUser;
+                        const isFollowed = task.followers && task.followers.includes(this.data.currentUser);
+                        if (isMine || isFollowed) {
+                            if (task.history) {
+                                task.history.forEach(log => {
+                                    logs.push({...log, taskTitle: task.title, taskId: task.id});
+                                });
+                            }
+                        }
+                    });
+                }
+                return logs;
+            },
+
+            renderLogs: function () {
+                const {logs, page, pageSize} = this.logState;
+                const tbody = document.getElementById('logTableBody');
+                const start = (page - 1) * pageSize;
+                const end = start + pageSize;
+                const paginatedLogs = logs.slice(start, end);
+
+                document.getElementById('logTotalCount').textContent = `${logs.length} Registros`;
+                document.getElementById('logPageInfo').textContent = `Página ${page} de ${Math.ceil(logs.length / pageSize) || 1}`;
+
+                document.getElementById('btnPrevLog').disabled = page === 1;
+                document.getElementById('btnNextLog').disabled = end >= logs.length;
+
+                if (paginatedLogs.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-stone-400 italic">Nenhum registro encontrado.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = paginatedLogs.map(log => `
+                    <tr class="hover:bg-stone-50 border-b border-stone-50">
+                        <td class="px-6 py-3 text-stone-500 whitespace-nowrap">${new Date(log.date).toLocaleString('pt-BR')}</td>
+                        <td class="px-6 py-3 font-medium text-stone-800 truncate max-w-[200px]" title="${log.taskTitle}">
+                            ${log.taskId ? `<a href="#" onclick="app.closeModals(); app.openCardModal(${log.taskId})" class="hover:text-brand-accent hover:underline">${log.taskTitle}</a>` : `<span class="text-stone-500">${log.taskTitle}</span>`}
+                        </td>
+                        <td class="px-6 py-3 text-stone-600">${log.user}</td>
+                        <td class="px-6 py-3"><span class="px-2 py-1 bg-stone-100 rounded text-xs font-bold text-stone-600 uppercase">${log.action}</span></td>
+                        <td class="px-6 py-3 text-stone-500 italic truncate max-w-[250px]" title="${log.details}">${log.details}</td>
+                    </tr>
+                `).join('');
+            },
+
+            changeLogPage: function (dir) {
+                this.logState.page += dir;
+                this.renderLogs();
+            },
+
+            createCardHTML: function (task) {
+                const priorityColors = {'Q1': 'border-l-red-500', 'Q2': 'border-l-blue-500', 'Q3': 'border-l-yellow-500', 'Q4': 'border-l-stone-300'};
+                const badges = {
+                    'public': '<span class="text-[10px] uppercase font-bold text-green-600 bg-green-100 px-1.5 py-0.5 rounded border border-green-200">Público</span>',
+                    'block': '<span class="text-[10px] uppercase font-bold text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded border border-blue-200">Bloco</span>',
+                    'floor': '<span class="text-[10px] uppercase font-bold text-purple-600 bg-purple-100 px-1.5 py-0.5 rounded border border-purple-200">Andar</span>',
+                    'private': '<span class="text-[10px] uppercase font-bold text-stone-500 bg-stone-200 px-1.5 py-0.5 rounded border border-stone-300">Privado</span>'
+                };
+
+                const isManager = this.data.currentUser === 'manager';
+                const isPrivate = task.visibility === 'private';
+                let followBtn = '';
+
+                if (!isManager && !isPrivate) {
+                    const isFollowing = task.followers && task.followers.includes(this.data.currentUser);
+                    const iconClass = isFollowing ? 'fas fa-star text-amber-400' : 'far fa-star text-stone-300 hover:text-amber-400';
+                    const title = isFollowing ? 'Deixar de Seguir' : 'Seguir Chamado';
+                    followBtn = `<button onclick="event.stopPropagation(); app.toggleFollow(${task.id})" class="absolute top-2 right-2 p-1.5 transition-transform active:scale-95" title="${title}"><i class="${iconClass}"></i></button>`;
+                }
+
+                let stuckHTML = '';
+                if (task.status === 'stuck' && task.stuck_reason) {
+                    stuckHTML = `<div class="mt-2 text-[11px] text-red-600 bg-red-50 p-1.5 rounded border border-red-100 italic truncate"><i class="fas fa-exclamation-circle mr-1"></i>${task.stuck_reason}</div>`;
+                }
+
+                const createdDate = new Date(task.created_at);
+                const diffTime = Math.abs(new Date() - createdDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                let agingHTML = '';
+                if (diffDays > 10 && task.status !== 'done') {
+                    agingHTML = `<span class="text-[10px] text-red-500 font-bold ml-2 flex items-center gap-1"><i class="far fa-clock"></i> ${diffDays}d</span>`;
+                }
+
+                let attachHTML = '';
+                if (task.attachments && task.attachments.length > 0) {
+                    attachHTML = `<i class="fas fa-paperclip text-stone-400 text-xs ml-2"></i>`;
+                }
+
+                return `
+                <div onclick="app.openCardModal(${task.id})" class="kanban-card bg-white p-3 rounded-lg shadow-sm border border-stone-100 border-l-4 ${priorityColors[task.priority]} mb-2 relative group pr-8">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-xs font-bold text-stone-400 flex items-center">${task.priority} ${agingHTML}</span>
+                        <div class="flex items-center">
+                            ${attachHTML}
+                            <div class="ml-2">${badges[task.visibility]}</div>
+                        </div>
+                    </div>
+                    ${followBtn}
+                    <h4 class="text-sm font-semibold text-brand-text leading-tight mb-1 line-clamp-2">${task.title}</h4>
+                    <p class="text-xs text-stone-500 line-clamp-2">${task.description}</p>
+                    ${stuckHTML}
+                </div>`;
+            },
+
+            toggleFollow: function (taskId) {
+                const task = this.data.tasks.find(t => t.id === taskId);
+                if (!task) return;
+                if (!task.followers) task.followers = [];
+                const userId = this.data.currentUser;
+                const idx = task.followers.indexOf(userId);
+                const isManager = this.data.currentUser === 'manager';
+                const userName = isManager ? 'Gestor' : 'Você';
+
+                if (idx > -1) {
+                    task.followers.splice(idx, 1);
+                    this.showToast('info', 'Deixou de Seguir', 'Você não receberá mais atualizações deste chamado.');
+                    if (!isManager) {
+                        if (!task.history) task.history = [];
+                        task.history.unshift({
+                            date: new Date().toISOString(),
+                            user: userName,
+                            action: 'Monitoramento',
+                            details: 'Deixou de seguir este chamado.'
+                        });
+                    }
+                } else {
+                    task.followers.push(userId);
+                    this.showToast('success', 'Seguindo', 'Adicionado à sua visualização personalizada.');
+                    if (!isManager) {
+                        if (!task.history) task.history = [];
+                        task.history.unshift({
+                            date: new Date().toISOString(),
+                            user: userName,
+                            action: 'Monitoramento',
+                            details: 'Começou a seguir este chamado.'
+                        });
+                    }
+                }
+                this.saveData();
+            },
+
+            switchUser: function (role) {
+                this.data.currentUser = role;
+                const filterEl = document.getElementById('viewFilter');
+                if (filterEl) filterEl.value = 'all';
+                this.updateUserInterface();
+                this.render();
+                this.showToast('success', 'Perfil Alterado', `Agora simulando: ${role === 'manager' ? 'Gestor' : 'Morador'}`);
+            },
+
+            updateUserInterface: function () {
+                const isManager = this.data.currentUser === 'manager';
+
+                const elements = {
+                    managerMenu: document.getElementById('managerMenu'),
+                    mobileMenu: document.getElementById('mobileManagerMenu'),
+                    fab: document.getElementById('newTicketFab'),
+                    filterContainer: document.getElementById('viewFilterContainer'),
+                    mainBoard: document.getElementById('mainBoard'),
+                    archiveView: document.getElementById('archiveView')
+                };
+
+                const safeToggle = (el, cls, condition) => {
+                    if (el) el.classList.toggle(cls, condition);
+                };
+
+                safeToggle(elements.managerMenu, 'hidden', !isManager);
+                safeToggle(elements.mobileMenu, 'hidden', !isManager);
+                safeToggle(elements.fab, 'hidden', isManager);
+                safeToggle(elements.filterContainer, 'hidden', isManager);
+
+                if (elements.mainBoard) elements.mainBoard.classList.remove('hidden');
+                if (elements.archiveView) elements.archiveView.classList.add('hidden');
+            },
+
+            openModal: function (modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.remove('hidden');
+                    setTimeout(() => {
+                        modal.classList.remove('opacity-0');
+                        if (modal.querySelector('div')) {
+                            modal.querySelector('div').classList.remove('scale-95');
+                            modal.querySelector('div').classList.add('scale-100');
+                        }
+                    }, 10);
+                    modal.children[0].classList.add('modal-enter-active');
+                }
+            },
+
+            openCardModal: function (id) {
+                const task = this.data.tasks.find(t => t.id === id);
+                if (!task) return;
+                this.data.currentTask = task;
+
+                const isManager = this.data.currentUser === 'manager';
+                const isOwner = task.owner_id === this.data.currentUser;
+                let ownerDisplay = '';
+
+                const showOwner = isManager || isOwner;
+                const ownerRow = document.getElementById('modalOwnerRow');
+
+                if (showOwner) {
+                    ownerRow.classList.remove('hidden');
+                    if (task.owner_id === 'other') {
+                        ownerDisplay = isManager ? 'Outro Morador (Bloco C - 101)' : 'Condômino (Bloco C)';
+                    } else if (task.owner_id === 'manager') {
+                        ownerDisplay = 'Gestão / Síndico';
+                    } else if (isOwner) {
+                        ownerDisplay = 'Você';
+                    } else {
+                        if (isManager) {
+                            ownerDisplay = task.owner_id === 'resident_A_2' ? 'João Silva (Bl A - 202)' : 'Maria Souza (Bl B - 501)';
+                        } else {
+                            ownerDisplay = task.owner_id === 'resident_A_2' ? 'Condômino (Bloco A)' : 'Condômino (Bloco B)';
+                        }
+                    }
+                    document.getElementById('modalOwner').innerText = ownerDisplay;
+                } else {
+                    ownerRow.classList.add('hidden');
+                }
+
+                document.getElementById('modalTitle').innerText = task.title;
+                document.getElementById('modalDesc').innerText = task.description;
+                document.getElementById('modalPriority').innerText = task.priority;
+                document.getElementById('modalStatus').innerText = task.status;
+                document.getElementById('modalDate').innerText = new Date(task.created_at).toLocaleDateString('pt-BR');
+
+                const followersContainer = document.getElementById('modalFollowersContainer');
+                if (isManager && task.visibility !== 'private' && task.followers && task.followers.length > 0) {
+                    followersContainer.classList.remove('hidden');
+                    const followerNames = task.followers.map(fid => {
+                        if (fid === 'resident_A_2') return 'João Silva (Bl A)';
+                        if (fid === 'resident_B_5') return 'Maria Souza (Bl B)';
+                        return 'Outro Condômino';
+                    }).join(', ');
+                    document.getElementById('modalFollowersList').innerText = followerNames;
+                } else {
+                    if (followersContainer) followersContainer.classList.add('hidden');
+                }
+
+                const visContainer = document.getElementById('modalVisibilityContainer');
+                if (isManager) {
+                    visContainer.innerHTML = `
+                        <select onchange="app.changeVisibility(this.value)" class="bg-white border border-stone-300 text-xs font-bold text-stone-600 rounded p-1.5 shadow-sm focus:ring-2 focus:ring-brand-accent outline-none">
+                            <option value="public" ${task.visibility === 'public' ? 'selected' : ''}>Público</option>
+                            <option value="block" ${task.visibility === 'block' ? 'selected' : ''}>Bloco</option>
+                            <option value="floor" ${task.visibility === 'floor' ? 'selected' : ''}>Andar</option>
+                            <option value="private" ${task.visibility === 'private' ? 'selected' : ''}>Privado</option>
+                        </select>
+                    `;
+                } else {
+                    const badges = {
+                        'public': '<span class="text-[10px] uppercase font-bold text-green-600 bg-green-100 px-2 py-1 rounded border border-green-200">Público</span>',
+                        'block': '<span class="text-[10px] uppercase font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded border border-blue-200">Bloco</span>',
+                        'floor': '<span class="text-[10px] uppercase font-bold text-purple-600 bg-purple-100 px-2 py-1 rounded border border-purple-200">Andar</span>',
+                        'private': '<span class="text-[10px] uppercase font-bold text-stone-500 bg-stone-200 px-2 py-1 rounded border border-stone-300">Privado</span>'
+                    };
+                    visContainer.innerHTML = badges[task.visibility];
+                }
+
+                const auditContainer = document.getElementById('auditTrail');
+                if (task.history && task.history.length > 0) {
+                    auditContainer.innerHTML = task.history.map(h => `
+                        <div class="flex gap-4 border-l-2 border-stone-300 pl-4 py-1 relative">
+                            <div class="absolute -left-[5px] top-2 w-2 h-2 rounded-full bg-stone-300"></div>
+                            <div class="flex-1">
+                                <p class="text-xs font-bold text-stone-700">${h.action}</p>
+                                <p class="text-xs text-stone-500 italic">${h.details}</p>
+                            </div>
+                            <div class="text-[10px] text-stone-400 text-right">
+                                <p class="font-semibold">${h.user}</p>
+                                <p>${new Date(h.date).toLocaleString('pt-BR', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'})}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    auditContainer.innerHTML = '<p class="italic text-stone-400 text-xs">Sem histórico registrado.</p>';
+                }
+
+                const attachList = document.getElementById('attachmentsList');
+                if (task.attachments && task.attachments.length > 0) {
+                    attachList.innerHTML = task.attachments.map(att => {
+                        const canSeeContent = isManager || isOwner || !att.private;
+                        if (canSeeContent) {
+                            return `
+                                <div class="w-16 h-16 bg-white rounded-lg border border-stone-200 flex flex-col items-center justify-center text-stone-500 shrink-0 cursor-pointer hover:bg-stone-50 hover:border-brand-accent transition shadow-sm group">
+                                    <i class="fas fa-file-image text-lg mb-1 group-hover:text-brand-accent"></i>
+                                    <span class="text-[8px] truncate w-full text-center px-1 font-medium">${att.name}</span>
+                                </div>`;
+                        } else {
+                            return `
+                                <div class="w-16 h-16 bg-red-50 rounded-lg border border-red-100 flex flex-col items-center justify-center text-red-400 shrink-0 shadow-sm" title="Apenas Gestor e Dono podem ver">
+                                    <i class="fas fa-lock text-lg mb-1"></i>
+                                    <span class="text-[8px] font-bold">Privado</span>
+                                </div>`;
+                        }
+                    }).join('');
+                } else {
+                    attachList.innerHTML = '<span class="text-xs text-stone-400 italic">Nenhum anexo disponível.</span>';
+                }
+
+                const stuckContainer = document.getElementById('modalStuckReasonContainer');
+                if (task.status === 'stuck' && task.stuck_reason) {
+                    stuckContainer.classList.remove('hidden');
+                    document.getElementById('modalStuckReason').innerText = task.stuck_reason;
+                } else {
+                    stuckContainer.classList.add('hidden');
+                }
+
+                const actionsContainer = document.getElementById('modalActions');
+                const buttonsGrid = document.getElementById('actionButtonsGrid');
+                const readOnlyMsg = document.getElementById('modalReadOnlyMsg');
+                const triageInput = document.getElementById('triageReasonContainer');
+                const archiveBtn = document.getElementById('archiveActionBtn');
+                const commentSec = document.getElementById('commentsSection');
+
+                if (isManager) {
+                    actionsContainer.classList.remove('hidden');
+                    readOnlyMsg.classList.add('hidden');
+
+                    if (task.status === 'triage') {
+                        buttonsGrid.innerHTML = `<button onclick="app.moveTaskTo('backlog')" class="col-span-4 p-3 rounded-lg bg-green-600 hover:bg-green-700 text-white font-bold text-sm shadow-md transition">Aprovar (Enviar para Backlog)</button>`;
+                        triageInput.classList.remove('hidden');
+                        archiveBtn.innerText = "Rejeitar / Arquivar";
+                        archiveBtn.classList.remove('text-stone-400', 'hover:text-red-500');
+                        archiveBtn.classList.add('text-red-600', 'bg-red-50', 'hover:bg-red-100', 'border', 'border-red-200', 'rounded-lg', 'mt-2', 'py-3');
+                        commentSec.classList.add('hidden');
+                    } else {
+                        triageInput.classList.add('hidden');
+                        commentSec.classList.remove('hidden');
+                        archiveBtn.innerHTML = '<i class="fas fa-archive"></i> Arquivar este chamado';
+                        archiveBtn.className = "w-full mt-2 p-2 text-stone-400 hover:text-red-500 text-xs font-semibold flex items-center justify-center gap-2 transition";
+
+                        const statuses = {
+                            'backlog': {label: 'Backlog', class: 'border-stone-200 hover:bg-stone-50 text-stone-600'},
+                            'doing': {label: 'Fazendo', class: 'border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100'},
+                            'stuck': {label: 'Enroscado', class: 'border-red-200 bg-red-50 text-red-700 hover:bg-red-100'},
+                            'done': {label: 'Feito', class: 'border-green-200 bg-green-50 text-green-700 hover:bg-green-100'}
+                        };
+
+                        let html = '';
+                        Object.keys(statuses).forEach(key => {
+                            const style = statuses[key];
+                            if (task.status === key) {
+                                html += `<button disabled class="p-2.5 rounded-lg border bg-stone-100 text-stone-400 font-bold text-xs cursor-not-allowed opacity-60">${style.label}</button>`;
+                            } else {
+                                const action = key === 'stuck' ? 'app.requestStuckReason()' : `app.moveTaskTo('${key}')`;
+                                html += `<button onclick="${action}" class="p-2.5 rounded-lg border ${style.class} font-bold text-xs transition">${style.label}</button>`;
+                            }
+                        });
+                        buttonsGrid.innerHTML = html;
+                    }
+
+                } else {
+                    actionsContainer.classList.add('hidden');
+                    triageInput.classList.add('hidden');
+                    readOnlyMsg.classList.remove('hidden');
+                    commentSec.classList.remove('hidden');
+                }
+
+                app.openModal('cardModal');
+            },
+
+            changeVisibility: function (newVis) {
+                if (!this.data.currentTask) return;
+                const oldVis = this.data.currentTask.visibility;
+                if (oldVis === newVis) return;
+
+                const visLabels = {public: 'Público', block: 'Bloco', floor: 'Andar', private: 'Privado'};
+
+                if (!this.data.currentTask.history) this.data.currentTask.history = [];
+                this.data.currentTask.history.unshift({
+                    date: new Date().toISOString(),
+                    user: 'Gestor',
+                    action: 'Visibilidade',
+                    details: `Alterada de ${visLabels[oldVis]} para ${visLabels[newVis]}`
+                });
+
+                this.data.currentTask.visibility = newVis;
+                this.saveData();
+                this.showToast('success', 'Atualizado', 'Visibilidade do chamado alterada.');
+                this.openCardModal(this.data.currentTask.id);
+            },
+
+            addComment: function () {
+                const input = document.getElementById('newCommentInput');
+                const text = input.value.trim();
+                if (!text || !this.data.currentTask) return;
+
+                const userName = this.data.currentUser === 'manager' ? 'Gestor' : 'Você';
+
+                if (!this.data.currentTask.history) this.data.currentTask.history = [];
+                this.data.currentTask.history.unshift({
+                    date: new Date().toISOString(),
+                    user: userName,
+                    action: 'Comentário',
+                    details: text
+                });
+
+                this.saveData();
+                input.value = '';
+                this.openCardModal(this.data.currentTask.id);
+            },
+
+            requestStuckReason: function () {
+                app.openModal('stuckModal');
+            },
+
+            confirmStuck: function () {
+                const reason = document.getElementById('stuckReasonInput').value;
+                if (!reason.trim()) {
+                    alert('Por favor, informe o motivo.');
+                    return;
+                }
+                if (this.data.currentTask) {
+                    if (!this.data.currentTask.history) this.data.currentTask.history = [];
+                    this.data.currentTask.history.unshift({
+                        date: new Date().toISOString(),
+                        user: 'Gestor',
+                        action: 'Marcado como Enroscado',
+                        details: reason
+                    });
+
+                    this.data.currentTask.status = 'stuck';
+                    this.data.currentTask.stuck_reason = reason;
+                    this.saveData();
+                    document.getElementById('stuckReasonInput').value = '';
+                    app.closeModals();
+                    this.showToast('warning', 'Enroscado', 'Motivo registrado com sucesso.');
+                }
+            },
+
+            archiveCurrentTask: function () {
+                const task = this.data.currentTask;
+                const isTriage = task.status === 'triage';
+
+                const input = document.getElementById('archiveReasonInput');
+                input.classList.remove('hidden');
+                input.placeholder = isTriage ? "Motivo da rejeição/arquivamento (Obrigatório)..." : "Motivo do arquivamento...";
+                input.value = '';
+
+                app.openModal('archiveConfirmModal');
+            },
+
+            confirmArchive: function () {
+                if (!this.data.currentTask) return;
+
+                const task = this.data.currentTask;
+                const isTriage = task.status === 'triage';
+                const reason = document.getElementById('archiveReasonInput').value.trim();
+
+                if (isTriage && !reason) {
+                    alert("Por favor, informe o motivo do arquivamento/rejeição.");
+                    return;
+                }
+
+                const action = isTriage ? 'Rejeitado / Arquivado' : 'Arquivado';
+                const details = reason ? `Motivo: ${reason}` : 'Chamado movido para arquivo morto.';
+
+                if (!task.history) task.history = [];
+                task.history.unshift({
+                    date: new Date().toISOString(),
+                    user: this.data.currentUser === 'manager' ? 'Gestor' : 'Dono',
+                    action: action,
+                    details: details
+                });
+
+                task.status = 'archived';
+                this.saveData();
+                app.closeModals();
+                this.showToast('info', 'Arquivado', 'O chamado foi enviado para o Arquivo Morto.');
+            },
+
+            closeModals: function () {
+                const modals = document.querySelectorAll('[id$="Modal"]');
+                modals.forEach(m => {
+                    m.classList.add('hidden');
+                    m.classList.add('opacity-0');
+                    if (m.querySelector('div')) {
+                        m.querySelector('div').classList.remove('scale-100');
+                        m.querySelector('div').classList.add('scale-95');
+                    }
+                });
+            },
+
+            showToast: function (type, title, msg) {
+                const container = document.getElementById('toast-container');
+                const config = {
+                    success: {border: 'border-l-green-500', icon: '<i class="fas fa-check-circle text-green-500 text-xl"></i>', bar: 'bg-green-500'},
+                    warning: {border: 'border-l-amber-500', icon: '<i class="fas fa-exclamation-triangle text-amber-500 text-xl"></i>', bar: 'bg-amber-500'},
+                    info: {border: 'border-l-blue-500', icon: '<i class="fas fa-info-circle text-blue-500 text-xl"></i>', bar: 'bg-blue-500'}
+                };
+                const conf = config[type];
+                const toast = document.createElement('div');
+                toast.className = `transform transition-all duration-300 bg-white border-l-4 rounded shadow-lg overflow-hidden flex flex-col shadow-stone-300 ${conf.border} translate-x-full pointer-events-auto shrink-0`;
+                toast.innerHTML = `
+                    <div class="p-4 flex items-start gap-3 relative bg-white">
+                        <div class="mt-0.5 shrink-0">${conf.icon}</div>
+                        <div class="flex-1 pr-4">
+                            <h4 class="font-bold text-sm text-stone-800">${title}</h4>
+                            <p class="text-xs text-stone-500 mt-1 leading-relaxed">${msg}</p>
+                        </div>
+                        <button class="absolute top-2 right-2 text-stone-400 hover:text-stone-600 p-1.5 rounded-full hover:bg-stone-50 transition" onclick="this.closest('.pointer-events-auto').remove()">
+                            <i class="fas fa-times text-sm"></i>
+                        </button>
+                    </div>
+                    <div class="w-full bg-stone-100 h-1">
+                        <div class="h-full w-full ${conf.bar}" style="width: 100%"></div>
+                    </div>
+                `;
+                container.appendChild(toast);
+                void toast.offsetWidth;
+                toast.classList.remove('translate-x-full');
+                toast.classList.add('translate-x-0');
+                const progressBar = toast.querySelector('div[style="width: 100%"]');
+                progressBar.style.transition = 'width 3000ms linear';
+                requestAnimationFrame(() => {progressBar.style.width = '0%';});
+                setTimeout(() => {
+                    if (toast.parentElement) {
+                        toast.classList.remove('translate-x-0');
+                        toast.classList.add('translate-x-full');
+                        toast.classList.add('opacity-0');
+                        setTimeout(() => {if (toast.parentElement) toast.remove();}, 300);
+                    }
+                }, 3000);
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+    </script>
+</body>
+
+</html>
