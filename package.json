@@ -1,6 +1,6 @@
 {
     "name": "landingpage-spa-condokanban",
-    "version": "0.0.7",
+    "version": "0.1.0",
     "scripts": {
         "build": "powershell -Command \"Write-Host 'Building project...' -ForegroundColor Cyan; if (!(Test-Path dist)) { New-Item -ItemType Directory -Path dist | Out-Null }; Copy-Item -Path public\\* -Destination dist\\ -Recurse -Force; Write-Host 'Build complete! Output: dist/' -ForegroundColor Green\"",
         "version:patch": "npm version patch -m \"chore: release v%s\"",
