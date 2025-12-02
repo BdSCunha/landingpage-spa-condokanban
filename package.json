@@ -1,6 +1,6 @@
 {
     "name": "landingpage-spa-condokanban",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "scripts": {
         "dev": "vite",
         "build": "powershell -Command \"Write-Host 'Building project...' -ForegroundColor Cyan; if (!(Test-Path dist)) { New-Item -ItemType Directory -Path dist | Out-Null }; Copy-Item -Path public\\* -Destination dist\\ -Recurse -Force; Write-Host 'Build complete! Output: dist/' -ForegroundColor Green\"",
