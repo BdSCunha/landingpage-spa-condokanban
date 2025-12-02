@@ -54,6 +54,14 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
         }
 
+        #filterFab {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        #filterFab:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+        }
+
         .modal-enter {
             opacity: 0;
             transform: scale(0.95);
@@ -97,7 +105,7 @@
             animation: pulse-badge 2s infinite;
         }
 
-        /* MARCA D'ÁGUA */
+        /* MARCA D'ÁGUA DE SEGURANÇA */
         .security-layer {
             pointer-events: none !important;
             user-select: none !important;
@@ -109,6 +117,7 @@
             z-index: 9999 !important;
             mix-blend-mode: multiply;
             opacity: 0.02 !important;
+            /* Quase invisível na tela */
             transition: opacity 0.3s;
         }
 
@@ -118,126 +127,176 @@
                 print-color-adjust: exact;
             }
 
+            /* Aumenta opacidade para aparecer na impressão */
             .security-layer {
                 opacity: 0.1 !important;
                 display: block !important;
                 visibility: visible !important;
             }
 
+            /* Esconde elementos de UI na impressão */
             header,
-            .fab {
+            .fab,
+            button {
                 display: none !important;
+            }
+        }
+
+        /* Limitação de selects de categoria em telas pequenas */
+        @media (max-width: 640px) {
+
+            #newCategory,
+            #modalCategorySelect {
+                max-width: 100%;
+                width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            #newCategory option,
+            #modalCategorySelect option {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
         }
     </style>
 </head>
 
-<body class="bg-brand-bg text-brand-text h-screen overflow-hidden flex flex-col relative">
+<body class="bg-brand-bg text-brand-text h-[100dvh] overflow-hidden flex flex-col relative">
 
     <header class="bg-white border-b border-stone-200 z-30 shadow-sm flex-none relative">
-        <div class="max-w-full mx-auto px-4 min-h-[64px] flex flex-wrap items-center justify-between py-2 md:py-0">
+        <div class="max-w-full mx-auto px-4">
+            <div class="h-[64px] flex items-center justify-between">
+                <div class="flex items-center gap-2 w-auto cursor-pointer z-20"
+                    onclick="window.location.href='index.html'">
+                    <div
+                        class="w-8 h-8 bg-brand-accent rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                        C</div>
+                    <span class="font-bold text-lg tracking-tight block">CondoKanban</span>
+                </div>
 
-            <div class="flex items-center gap-2 w-auto cursor-pointer z-20" onclick="window.location.href='index.html'">
-                <div
-                    class="w-8 h-8 bg-brand-accent rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-sm">
-                    C</div>
-                <span class="font-bold text-lg tracking-tight block">CondoKanban</span>
-            </div>
+                <button onclick="app.toggleMobileMenu()"
+                    class="md:hidden p-2 text-stone-500 hover:text-brand-accent focus:outline-none z-20">
+                    <i id="mobileMenuIcon" class="fas fa-bars text-xl transition-transform duration-300"></i>
+                </button>
 
-            <button onclick="app.toggleMobileMenu()"
-                class="md:hidden p-2 text-stone-500 hover:text-brand-accent focus:outline-none z-20">
-                <i id="mobileMenuIcon" class="fas fa-bars text-xl transition-transform duration-300"></i>
-            </button>
-
-            <div id="navbarContent"
-                class="hidden w-full md:flex md:flex-1 md:items-center md:justify-between md:w-auto mt-4 md:mt-0 border-t md:border-t-0 border-stone-100 pt-4 md:pt-0">
-
-                <div
-                    class="flex flex-col md:flex-row items-start md:items-center justify-center gap-3 md:gap-4 w-full md:w-auto mb-4 md:mb-0 md:mx-auto">
+                <div id="navbarContent"
+                    class="hidden md:flex md:flex-1 md:items-center md:justify-between md:w-auto md:ml-4 transition-all duration-300 ease-in-out overflow-hidden opacity-0 max-h-0 md:opacity-100 md:max-h-full absolute md:relative top-[64px] md:top-0 left-0 right-0 bg-white md:bg-transparent border-t md:border-t-0 border-stone-100 px-4 md:px-0 pb-4 md:pb-0">
 
                     <div
-                        class="w-full md:w-auto flex items-center gap-2 bg-stone-100 p-1 rounded-lg border border-stone-200 shadow-inner">
-                        <i class="fas fa-user-circle text-stone-400 ml-2"></i>
-                        <select id="simulatedUser"
-                            class="bg-transparent text-sm font-semibold text-brand-text border-none focus:ring-0 cursor-pointer outline-none w-full md:w-auto max-w-none md:max-w-[150px]"
-                            onchange="app.switchUser(this.value)">
-                            <option value="manager">Grupo Gestor - GG</option>
-                            <option value="resident_A_2">Morador (Bl A - 2º Andar)</option>
-                            <option value="resident_B_5">Morador (Bl B - 5º Andar)</option>
-                        </select>
+                        class="flex flex-col md:flex-row flex-wrap items-start md:items-center justify-center gap-3 md:gap-4 w-full md:w-auto mt-4 md:mt-0 mb-4 md:mb-0 md:mx-auto">
+
+                        <!-- Linha 1: Dropdown de usuários (mobile) -->
+                        <div class="w-full md:w-auto flex items-center justify-center">
+                            <div
+                                class="w-full md:w-auto flex items-center gap-2 bg-stone-100 p-1 rounded-lg border border-stone-200 shadow-inner">
+                                <i class="fas fa-user-circle text-stone-400 ml-2"></i>
+                                <select id="simulatedUser"
+                                    class="bg-transparent text-sm font-semibold text-brand-text border-none focus:ring-0 cursor-pointer outline-none w-full md:w-auto"
+                                    onchange="app.switchUser(this.value)">
+                                    <option value="manager">Grupo Gestor - GG</option>
+                                    <option value="resident_A_2">Morador (Bl A - 2º Andar)</option>
+                                    <option value="resident_B_5">Morador (Bl B - 5º Andar)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Linha 2: Botões do menu (mobile) -->
+                        <div class="w-full md:w-auto flex items-center justify-center gap-2 md:hidden">
+                            <button onclick="app.openArchiveListModal()"
+                                class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
+                                title="Arquivo">
+                                <i class="fas fa-archive"></i>
+                            </button>
+
+                            <button onclick="app.openLogModal()"
+                                class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
+                                title="Histórico">
+                                <i class="fas fa-history"></i>
+                            </button>
+
+                            <div id="managerMenuMobile" class="hidden flex gap-2 items-center">
+                                <button onclick="app.openTriageModal()"
+                                    class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
+                                    title="Triagem">
+                                    <i class="fas fa-tasks"></i>
+                                    <span id="triageBadgeMobile"
+                                        class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white badge-pulse">0</span>
+                                </button>
+
+                                <button onclick="app.openUserModal()"
+                                    class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition"
+                                    title="Usuários">
+                                    <i class="fas fa-users"></i>
+                                </button>
+
+                                <button onclick="app.downloadLog()"
+                                    class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition"
+                                    title="Baixar Log">
+                                    <i class="fas fa-file-csv"></i>
+                                </button>
+                            </div>
+
+                            <button onclick="window.location.href='index.html'"
+                                class="p-2 text-stone-500 hover:text-brand-danger hover:bg-stone-50 rounded-full transition"
+                                title="Sair">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <div id="filterButtonsContainer" class="hidden flex flex-wrap items-center gap-1.5 p-1">
-                        <button onclick="app.toggleFilter('following')" id="btn-filter-following"
-                            class="px-3 py-1 text-xs font-bold rounded-lg border transition-all flex items-center gap-1">
-                            <i class="fas fa-star text-[10px]"></i> Seguindo
-                        </button>
-                        <button onclick="app.toggleFilter('floor')" id="btn-filter-floor"
-                            class="px-3 py-1 text-xs font-bold rounded-lg border transition-all">
-                            Andar
-                        </button>
-                        <button onclick="app.toggleFilter('block')" id="btn-filter-block"
-                            class="px-3 py-1 text-xs font-bold rounded-lg border transition-all">
-                            Bloco
-                        </button>
-                        <button onclick="app.toggleFilter('public')" id="btn-filter-public"
-                            class="px-3 py-1 text-xs font-bold rounded-lg border transition-all">
-                            Público
-                        </button>
-                    </div>
-                </div>
-
-                <div
-                    class="flex items-center justify-end gap-2 w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-3 md:pt-0">
-                    <button onclick="app.openArchiveListModal()"
-                        class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
-                        title="Arquivo">
-                        <i class="fas fa-archive"></i>
-                    </button>
-
-                    <button onclick="app.openLogModal()"
-                        class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
-                        title="Histórico">
-                        <i class="fas fa-history"></i>
-                    </button>
-
-                    <div id="managerMenu" class="hidden flex gap-2 items-center">
-                        <button onclick="app.openTriageModal()"
+                    <div
+                        class="flex items-center justify-end gap-2 w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-3 md:pt-0 hidden md:flex">
+                        <button onclick="app.openArchiveListModal()"
                             class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
-                            title="Triagem">
-                            <i class="fas fa-tasks"></i>
-                            <span id="triageBadge"
-                                class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white badge-pulse">0</span>
+                            title="Arquivo">
+                            <i class="fas fa-archive"></i>
                         </button>
 
-                        <div class="h-4 w-px bg-stone-300 mx-1 hidden md:block"></div>
-
-                        <button onclick="app.openUserModal()"
-                            class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition"
-                            title="Usuários">
-                            <i class="fas fa-users"></i>
+                        <button onclick="app.openLogModal()"
+                            class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
+                            title="Histórico">
+                            <i class="fas fa-history"></i>
                         </button>
-                        <button onclick="app.downloadLog()"
-                            class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition"
-                            title="Baixar Log">
-                            <i class="fas fa-file-csv"></i>
+
+                        <div id="managerMenu" class="hidden flex gap-2 items-center">
+                            <button onclick="app.openTriageModal()"
+                                class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
+                                title="Triagem">
+                                <i class="fas fa-tasks"></i>
+                                <span id="triageBadge"
+                                    class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white badge-pulse">0</span>
+                            </button>
+
+                            <div class="h-4 w-px bg-stone-300 mx-1 hidden md:block"></div>
+
+                            <button onclick="app.openUserModal()"
+                                class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition"
+                                title="Usuários">
+                                <i class="fas fa-users"></i>
+                            </button>
+                            <button onclick="app.downloadLog()"
+                                class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition"
+                                title="Baixar Log">
+                                <i class="fas fa-file-csv"></i>
+                            </button>
+                        </div>
+
+                        <div class="h-6 w-px bg-stone-200 mx-1 hidden md:block"></div>
+
+                        <button onclick="window.location.href='index.html'"
+                            class="text-sm font-semibold text-stone-500 hover:text-brand-danger transition px-2 flex items-center gap-2">
+                            <i class="fas fa-sign-out-alt"></i> <span class="hidden sm:inline">Sair</span>
                         </button>
                     </div>
-
-                    <div class="h-6 w-px bg-stone-200 mx-1 hidden md:block"></div>
-
-                    <button onclick="window.location.href='index.html'"
-                        class="text-sm font-semibold text-stone-500 hover:text-brand-danger transition px-2 flex items-center gap-2">
-                        <i class="fas fa-sign-out-alt"></i> <span class="hidden sm:inline">Sair</span>
-                    </button>
                 </div>
             </div>
-        </div>
     </header>
 
-    <main class="flex-1 overflow-x-auto overflow-y-hidden bg-brand-bg p-4 flex items-center justify-center"
-        id="mainBoard">
-        <div class="flex gap-4 h-full items-start" style="width: max-content;">
+    <main class="flex-1 overflow-x-auto overflow-y-hidden bg-brand-bg p-4" id="mainBoard">
+        <div class="flex gap-4 h-full items-start min-w-max mx-auto" style="max-width: fit-content;">
             <div class="kanban-col w-72 md:w-80 bg-stone-100/50 rounded-xl border border-stone-200">
                 <div
                     class="p-3 border-b border-stone-200/50 flex justify-between items-center bg-stone-100 rounded-t-xl sticky top-0 flex-none">
@@ -248,7 +307,7 @@
                         class="bg-white text-stone-600 px-2 py-0.5 rounded text-xs font-bold border border-stone-200 shadow-sm"
                         id="count-backlog">0</span>
                 </div>
-                <div class="flex-1 overflow-y-auto p-2 space-y-2" id="col-backlog"></div>
+                <div class="flex-1 overflow-y-auto p-2 space-y-2 pb-20" id="col-backlog"></div>
             </div>
             <div class="kanban-col w-72 md:w-80 bg-blue-50/50 rounded-xl border border-blue-100">
                 <div
@@ -260,7 +319,7 @@
                         class="bg-white text-blue-600 px-2 py-0.5 rounded text-xs font-bold border border-blue-100 shadow-sm"
                         id="count-doing">0</span>
                 </div>
-                <div class="flex-1 overflow-y-auto p-2 space-y-2" id="col-doing"></div>
+                <div class="flex-1 overflow-y-auto p-2 space-y-2 pb-20" id="col-doing"></div>
             </div>
             <div class="kanban-col w-72 md:w-80 bg-red-50/50 rounded-xl border border-red-100">
                 <div
@@ -272,7 +331,7 @@
                         class="bg-white text-red-600 px-2 py-0.5 rounded text-xs font-bold border border-red-100 shadow-sm"
                         id="count-stuck">0</span>
                 </div>
-                <div class="flex-1 overflow-y-auto p-2 space-y-2" id="col-stuck"></div>
+                <div class="flex-1 overflow-y-auto p-2 space-y-2 pb-20" id="col-stuck"></div>
             </div>
             <div class="kanban-col w-72 md:w-80 bg-green-50/50 rounded-xl border border-green-100">
                 <div
@@ -284,10 +343,16 @@
                         class="bg-white text-green-600 px-2 py-0.5 rounded text-xs font-bold border border-green-100 shadow-sm"
                         id="count-done">0</span>
                 </div>
-                <div class="flex-1 overflow-y-auto p-2 space-y-2" id="col-done"></div>
+                <div class="flex-1 overflow-y-auto p-2 space-y-2 pb-20" id="col-done"></div>
             </div>
         </div>
     </main>
+
+    <button id="filterFab" onclick="app.openFilterModal()"
+        class="fixed bottom-[96px] right-6 z-40 w-14 h-14 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center text-xl transition-transform hover:scale-110 active:scale-95 shadow-lg hidden"
+        title="Filtros de Visualização">
+        <i class="fas fa-eye"></i>
+    </button>
 
     <button id="newTicketFab" onclick="app.openNewTicketModal()"
         class="fab w-14 h-14 bg-brand-accent hover:bg-amber-600 text-white rounded-full flex items-center justify-center text-2xl transition-transform hover:scale-110 active:scale-95 hidden">
@@ -297,7 +362,7 @@
     <div id="archiveListModal"
         class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div
-            class="bg-white w-full max-w-5xl mx-4 rounded-xl shadow-2xl flex flex-col max-h-[90vh] transform scale-95 transition-transform duration-300">
+            class="bg-white w-[95%] md:w-full max-w-5xl mx-auto rounded-xl shadow-2xl flex flex-col max-h-[90vh] transform scale-95 transition-transform duration-300">
             <div
                 class="p-6 border-b border-stone-200 flex justify-between items-center bg-stone-50 rounded-t-xl relative">
                 <div class="absolute left-0 right-0 text-center pointer-events-none">
@@ -306,7 +371,7 @@
                     </h2>
                 </div>
                 <div></div>
-                <button onclick="app.closeModals()"
+                <button onclick="app.closeTopModal()"
                     class="text-stone-400 hover:text-red-500 text-2xl z-10">&times;</button>
             </div>
             <div class="flex-1 overflow-y-auto p-0">
@@ -328,7 +393,7 @@
     <div id="logModal"
         class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div
-            class="bg-white w-full max-w-4xl mx-4 rounded-xl shadow-2xl flex flex-col max-h-[90vh] transform scale-95 transition-transform duration-300">
+            class="bg-white w-[95%] md:w-full max-w-4xl mx-auto rounded-xl shadow-2xl flex flex-col max-h-[90vh] transform scale-95 transition-transform duration-300">
             <div class="p-6 border-b border-stone-200 flex justify-between items-center bg-stone-50 rounded-t-xl">
                 <div>
                     <h2 class="text-xl font-bold text-brand-text flex items-center gap-2">
@@ -342,7 +407,7 @@
                         title="Baixar Visualização Atual">
                         <i class="fas fa-download"></i> Baixar CSV
                     </button>
-                    <button onclick="app.closeModals()"
+                    <button onclick="app.closeTopModal()"
                         class="text-stone-400 hover:text-red-500 text-2xl">&times;</button>
                 </div>
             </div>
@@ -392,14 +457,158 @@
             <div class="p-6 pb-4 border-b border-stone-100 bg-white z-10 shrink-0">
                 <div class="flex justify-between items-start gap-4">
                     <div class="flex-1">
-                        <div class="flex items-center gap-2 mb-2">
+                        <div class="flex items-center gap-2 mb-2 flex-wrap">
                             <span id="modalPriority"
-                                class="h-8 inline-flex items-center justify-center text-xs font-bold px-3 rounded bg-stone-100 text-stone-600 border border-stone-200">Q?</span>
+                                class="h-8 inline-flex items-center justify-center text-xs font-bold px-3 rounded border">Q?</span>
+                            <span id="modalCategory"
+                                class="h-8 inline-flex items-center gap-1.5 text-xs font-bold px-3 rounded border"></span>
+                            <div id="modalCategoryEdit" class="hidden">
+                                <select id="modalCategorySelect" onchange="app.updateTaskCategory()"
+                                    class="h-8 max-w-full text-xs font-medium px-2 rounded border border-stone-300 bg-white focus:ring-2 focus:ring-brand-accent outline-none overflow-hidden">
+                                    <optgroup label="⚡ Elétrica">
+                                        <option value="eletrica_geral">⚡ Elétrica (Geral/Outros)</option>
+                                        <option value="lampada_queimada">💡 Lâmpada Queimada (Área Comum)</option>
+                                        <option value="disjuntor_caindo">📉 Disjuntor Caindo / Queda de Energia</option>
+                                        <option value="tomada_defeito">🔌 Tomada / Interruptor com Defeito</option>
+                                        <option value="sensor_presenca">🚶 Sensor de Presença Falhando</option>
+                                        <option value="interfone_mudo">📞 Interfone Mudo / Chiando</option>
+                                        <option value="portao_motor">⚙️ Motor do Portão Travado</option>
+                                        <option value="cerca_eletrica">⚡ Cerca Elétrica (Estalando/Rompida)</option>
+                                        <option value="para_raios">🌩️ Para-raios / Aterramento</option>
+                                        <option value="gerador">🔋 Gerador (Falha/Combustível)</option>
+                                        <option value="timer_minuteria">⏱️ Timer / Minuteria Travada</option>
+                                        <option value="luz_emergencia">🔦 Luz de Emergência Queimada</option>
+                                    </optgroup>
+                                    <optgroup label="💧 Hidráulica e Gás">
+                                        <option value="hidraulica_geral">💧 Hidráulica (Geral/Outros)</option>
+                                        <option value="vazamento_agua">💦 Vazamento de Água Visível</option>
+                                        <option value="infiltracao_parede">🌫️ Infiltração / Umidade em Parede</option>
+                                        <option value="torneira_pingando">🚰 Torneira Pingando / Quebrada</option>
+                                        <option value="chuveiro_comum">🚿 Chuveiro (Vestiário/Piscina)</option>
+                                        <option value="vaso_entupido">🚽 Vaso Sanitário Entupido</option>
+                                        <option value="ralo_entupido">🛁 Ralo / Calha Entupida</option>
+                                        <option value="pressao_agua">📉 Pressão da Água (Baixa/Alta)</option>
+                                        <option value="bomba_dagua">⚙️ Bomba d'água (Barulho/Defeito)</option>
+                                        <option value="falta_agua">🚱 Falta de Água</option>
+                                        <option value="cheiro_gas">⛽ Cheiro de Gás / Tubulação</option>
+                                        <option value="hidrante">🚒 Hidrante / Mangueira Danificada</option>
+                                    </optgroup>
+                                    <optgroup label="🏗️ Estrutura e Predial">
+                                        <option value="estrutura_geral">🏗️ Estrutura (Geral/Outros)</option>
+                                        <option value="piso_quebrado">🧱 Piso Quebrado / Solto</option>
+                                        <option value="vidro_quebrado">🪟 Vidro Quebrado / Trincado</option>
+                                        <option value="porta_fechadura">🚪 Porta / Maçaneta / Mola</option>
+                                        <option value="janela_basculante">🪟 Janela / Basculante Emperrado</option>
+                                        <option value="telhado_telha">🏠 Telhado / Telha Solta</option>
+                                        <option value="calhas_rufos">🌧️ Calhas e Rufos</option>
+                                        <option value="fachada_pastilha">🏢 Fachada / Pastilha Caindo</option>
+                                        <option value="pintura_descascando">🎨 Pintura Descascando / Suja</option>
+                                        <option value="muro_cerca">🧱 Muro / Grade Danificada</option>
+                                        <option value="acessibilidade">♿ Rampa / Acessibilidade</option>
+                                        <option value="escada_corrimao">🪜 Escada / Corrimão Solto</option>
+                                    </optgroup>
+                                    <optgroup label="🛡️ Segurança">
+                                        <option value="seguranca_geral">🛡️ Segurança (Geral/Outros)</option>
+                                        <option value="camera_cftv">📹 Câmera sem Imagem / CFTV</option>
+                                        <option value="alarme_disparado">🚨 Alarme Disparando</option>
+                                        <option value="controle_acesso">🆔 Tag / Biometria / Facial Falhando</option>
+                                        <option value="chaves_controles">🔑 Chaves e Controles Remotos</option>
+                                        <option value="extintor_vencido">🧯 Extintor Vencido/Vazio</option>
+                                        <option value="acesso_estranho">🕵️ Presença de Estranhos</option>
+                                        <option value="veiculo_suspeito">🚙 Veículo Suspeito</option>
+                                        <option value="furto_roubo">💰 Furto ou Roubo</option>
+                                    </optgroup>
+                                    <optgroup label="🧹 Limpeza e Conservação">
+                                        <option value="limpeza_geral">🧹 Limpeza (Geral/Outros)</option>
+                                        <option value="coleta_lixo">🗑️ Lixo Acumulado / Não Coletado</option>
+                                        <option value="mau_cheiro">🤢 Mau Cheiro</option>
+                                        <option value="pragas">🦗 Pragas (Baratas, Ratos, Formigas)</option>
+                                        <option value="limpeza_elevador">🛗 Limpeza do Elevador</option>
+                                        <option value="limpeza_escadas">🪜 Limpeza de Escadas/Corredores</option>
+                                        <option value="limpeza_hall">✨ Limpeza do Hall de Entrada</option>
+                                        <option value="oleo_garagem">⚫ Mancha de Óleo na Garagem</option>
+                                        <option value="limpeza_vidros">🪟 Vidros Sujos</option>
+                                    </optgroup>
+                                    <optgroup label="🌿 Jardinagem">
+                                        <option value="jardinagem_geral">🌿 Jardinagem (Geral/Outros)</option>
+                                        <option value="grama_alta">✂️ Grama Alta</option>
+                                        <option value="poda_arvore">🌳 Poda de Árvore / Galho Perigoso</option>
+                                        <option value="plantas_mortas">🥀 Plantas Secas / Mortas</option>
+                                        <option value="irrigacao">🚿 Sistema de Irrigação</option>
+                                        <option value="vasos_jardineiras">🏺 Vasos e Jardineiras</option>
+                                        <option value="folhas_sujeira">🍂 Excesso de Folhas Secas</option>
+                                    </optgroup>
+                                    <optgroup label="🛗 Elevadores">
+                                        <option value="elevador_geral">🛗 Elevador (Geral/Outros)</option>
+                                        <option value="elevador_parado">🛑 Elevador Parado / Travado</option>
+                                        <option value="elevador_barulho">🔊 Barulho Anormal no Elevador</option>
+                                        <option value="elevador_luz">💡 Luz Interna do Elevador</option>
+                                        <option value="elevador_botoes">🔢 Botões do Painel Falhando</option>
+                                        <option value="elevador_porta">🚪 Porta não abre/fecha</option>
+                                        <option value="elevador_ventilador">💨 Ventilador/Exaustor do Elevador</option>
+                                    </optgroup>
+                                    <optgroup label="⚽ Áreas de Lazer">
+                                        <option value="lazer_geral">⚽ Áreas de Lazer (Geral/Outros)</option>
+                                        <option value="piscina_agua">🏊 Piscina (Água Suja/Turva)</option>
+                                        <option value="piscina_fisica">🧩 Piscina (Azulejo/Borda/Escada)</option>
+                                        <option value="academia_equipamento">🏋️ Academia (Equipamento Quebrado)
+                                        </option>
+                                        <option value="salao_festas">🎉 Salão de Festas (Limpeza/Danos)</option>
+                                        <option value="churrasqueira">🍖 Churrasqueira (Grelha/Exaustor)</option>
+                                        <option value="playground">🛝 Playground / Brinquedo Quebrado</option>
+                                        <option value="quadra_esportiva">🥅 Quadra (Rede/Piso/Iluminação)</option>
+                                        <option value="sauna">🧖 Sauna (Não Esquenta)</option>
+                                        <option value="salao_jogos">🎱 Salão de Jogos (Sinuca/Mesa)</option>
+                                    </optgroup>
+                                    <optgroup label="🔇 Convivência e Regras">
+                                        <option value="convivencia_geral">🔇 Convivência (Geral/Outros)</option>
+                                        <option value="barulho_som">🔊 Barulho Excessivo (Som/Gritos)</option>
+                                        <option value="barulho_obra">🔨 Barulho de Obra (Fora de Horário)</option>
+                                        <option value="barulho_passos">👠 Barulho de Passos/Móveis</option>
+                                        <option value="animais_barulho">🐶 Animais (Latidos/Barulho)</option>
+                                        <option value="animais_sujeira">💩 Animais (Dejetos/Sem Guia)</option>
+                                        <option value="cigarro">🚬 Cigarro em Área Proibida</option>
+                                        <option value="objeto_corredor">🚲 Objeto em Corredor/Área Comum</option>
+                                        <option value="uso_indevido">🚫 Uso Indevido de Área Comum</option>
+                                    </optgroup>
+                                    <optgroup label="🚗 Garagem e Veículos">
+                                        <option value="garagem_geral">🚗 Garagem (Geral/Outros)</option>
+                                        <option value="vaga_indevida">🚫 Carro na Vaga Errada</option>
+                                        <option value="vaga_ocupacao">📏 Carro Ocupando 2 Vagas</option>
+                                        <option value="bicicletario">🚲 Bicicletário (Lotado/Desorganizado)</option>
+                                        <option value="carro_abandonado">🕸️ Veículo Abandonado</option>
+                                        <option value="batida_veiculo">💥 Colisão / Dano em Veículo</option>
+                                        <option value="portao_garagem_uso">🚧 Uso Indevido do Portão</option>
+                                    </optgroup>
+                                    <optgroup label="📦 Portaria e Encomendas">
+                                        <option value="portaria_geral">📦 Portaria (Geral/Outros)</option>
+                                        <option value="encomenda_sumida">❓ Encomenda Não Localizada</option>
+                                        <option value="delivery_problema">🍕 Problema com Delivery</option>
+                                        <option value="correspondencia">📬 Correspondência Trocada</option>
+                                        <option value="atendimento_staff">🤝 Atendimento / Postura do Funcionário
+                                        </option>
+                                    </optgroup>
+                                    <optgroup label="📂 Administrativo">
+                                        <option value="admin_geral">📂 Administrativo (Geral/Outros)</option>
+                                        <option value="segunda_via_boleto">📄 2ª Via de Boleto / Cota</option>
+                                        <option value="atualizacao_cadastral">📝 Atualização de Cadastro</option>
+                                        <option value="reserva_espaco">📅 Reserva de Espaço</option>
+                                        <option value="agendamento_mudanca">🚛 Agendamento de Mudança</option>
+                                        <option value="multa_recurso">⚠️ Recurso de Multa</option>
+                                        <option value="assembleia_ata">📋 Dúvida sobre Assembleia/Ata</option>
+                                    </optgroup>
+                                    <optgroup label="❓ Diversos">
+                                        <option value="sugestao">💡 Sugestão de Melhoria</option>
+                                        <option value="elogio">👏 Elogio</option>
+                                        <option value="outros">❓ Outros Assuntos</option>
+                                    </optgroup>
+                                </select>
+                            </div>
                             <div id="modalVisibilityContainer" class="h-8 flex items-center"></div>
                         </div>
                         <h2 id="modalTitle" class="text-xl font-bold text-brand-text leading-tight"></h2>
                     </div>
-                    <button onclick="app.closeModals()"
+                    <button onclick="app.closeTopModal()"
                         class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-stone-100 text-stone-400 hover:text-stone-600 text-2xl leading-none transition">&times;</button>
                 </div>
             </div>
@@ -510,7 +719,7 @@
                             class="fas fa-paper-plane"></i></button>
                 </div>
                 <div id="modalActions" class="space-y-2">
-                    <div id="actionButtonsGrid" class="grid grid-cols-4 gap-2"></div>
+                    <div id="actionButtonsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
                     <button id="archiveActionBtn" onclick="app.archiveCurrentTask()"
                         class="w-full mt-2 p-2 text-stone-400 hover:text-red-500 text-xs font-semibold flex items-center justify-center gap-2 transition">
                         <i class="fas fa-archive"></i> Arquivar este chamado
@@ -526,7 +735,7 @@
     <div id="triageModal"
         class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div
-            class="bg-white w-full max-w-3xl mx-4 rounded-xl shadow-2xl flex flex-col max-h-[80vh] transform scale-95 transition-transform duration-300">
+            class="bg-white w-[95%] md:w-full max-w-3xl mx-auto rounded-xl shadow-2xl flex flex-col max-h-[80vh] transform scale-95 transition-transform duration-300">
             <div class="p-6 border-b border-stone-200 flex justify-between items-center bg-stone-50 rounded-t-xl">
                 <div>
                     <h2 class="text-xl font-bold text-brand-text flex items-center gap-2">
@@ -534,7 +743,7 @@
                     </h2>
                     <p class="text-xs text-stone-500 mt-1">Chamados abertos aguardando classificação e aprovação.</p>
                 </div>
-                <button onclick="app.closeModals()"
+                <button onclick="app.closeTopModal()"
                     class="text-stone-400 hover:text-stone-600 text-2xl">&times;</button>
             </div>
             <div class="flex-1 overflow-y-auto p-0">
@@ -543,7 +752,7 @@
                         <tr>
                             <th class="px-6 py-3 font-semibold">Data</th>
                             <th class="px-6 py-3 font-semibold">Título</th>
-                            <th class="px-6 py-3 font-semibold">Solicitante</th>
+                            <th class="px-6 py-3 font-semibold">Categoria</th>
                             <th class="px-6 py-3 font-semibold">Prioridade (IA)</th>
                             <th class="px-6 py-3 font-semibold text-right">Ação</th>
                         </tr>
@@ -564,7 +773,7 @@
                 class="w-full border border-stone-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-stone-500 focus:border-stone-500 outline-none mb-4 hidden"
                 rows="2" placeholder="Motivo do arquivamento (Obrigatório)..."></textarea>
             <div class="flex justify-end gap-2">
-                <button onclick="app.closeModals()"
+                <button onclick="app.closeTopModal()"
                     class="px-4 py-2 text-stone-500 font-semibold hover:bg-stone-100 rounded">Cancelar</button>
                 <button onclick="app.confirmArchive()"
                     class="px-4 py-2 bg-stone-600 text-white font-semibold rounded hover:bg-stone-700">Confirmar</button>
@@ -581,7 +790,7 @@
                 class="w-full border border-stone-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none mb-4"
                 rows="3" placeholder="Ex: Aguardando peça, falta de verba..."></textarea>
             <div class="flex justify-end gap-2">
-                <button onclick="app.closeModals()"
+                <button onclick="app.closeTopModal()"
                     class="px-4 py-2 text-stone-500 font-semibold hover:bg-stone-100 rounded">Cancelar</button>
                 <button onclick="app.confirmStuck()"
                     class="px-4 py-2 bg-red-600 text-white font-semibold rounded hover:bg-red-700">Confirmar</button>
@@ -595,7 +804,7 @@
             class="bg-white w-full max-w-2xl mx-4 rounded-xl shadow-2xl flex flex-col max-h-[90vh] transform scale-95 transition-transform duration-300">
             <div class="p-6 border-b border-stone-200 flex justify-between items-center">
                 <h2 class="text-xl font-bold">Gestão de Condôminos</h2>
-                <button onclick="app.closeModals()" class="text-stone-400 hover:text-stone-600"><i
+                <button onclick="app.closeTopModal()" class="text-stone-400 hover:text-stone-600"><i
                         class="fas fa-times"></i></button>
             </div>
             <div class="p-6 bg-stone-50 border-b border-stone-200">
@@ -608,7 +817,7 @@
                     <input type="text" id="uUnit" placeholder="Unid (Bl A - 202)"
                         class="text-sm p-2 rounded border border-stone-300">
                     <button onclick="app.addUser()"
-                        class="bg-brand-success text-white rounded text-sm font-bold hover:bg-emerald-600">Adicionar</button>
+                        class="bg-brand-success text-white rounded text-sm font-bold hover:bg-emerald-600 h-10">Adicionar</button>
                 </div>
             </div>
             <div class="flex-1 overflow-y-auto p-6">
@@ -647,6 +856,161 @@
                         rows="3" placeholder="Descreva melhor o problema..."></textarea>
                 </div>
                 <div>
+                    <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Categoria</label>
+                    <select id="newCategory"
+                        class="w-full max-w-full border border-stone-300 rounded-lg p-2.5 text-sm bg-white overflow-hidden">
+                        <option value="" disabled selected>Selecione a categoria do chamado...</option>
+
+                        <optgroup label="⚡ Elétrica">
+                            <option value="eletrica_geral">⚡ Elétrica (Geral/Outros)</option>
+                            <option value="lampada_queimada">💡 Lâmpada Queimada (Área Comum)</option>
+                            <option value="disjuntor_caindo">📉 Disjuntor Caindo / Queda de Energia</option>
+                            <option value="tomada_defeito">🔌 Tomada / Interruptor com Defeito</option>
+                            <option value="sensor_presenca">🚶 Sensor de Presença Falhando</option>
+                            <option value="interfone_mudo">📞 Interfone Mudo / Chiando</option>
+                            <option value="portao_motor">⚙️ Motor do Portão Travado</option>
+                            <option value="cerca_eletrica">⚡ Cerca Elétrica (Estalando/Rompida)</option>
+                            <option value="para_raios">🌩️ Para-raios / Aterramento</option>
+                            <option value="gerador">🔋 Gerador (Falha/Combustível)</option>
+                            <option value="timer_minuteria">⏱️ Timer / Minuteria Travada</option>
+                            <option value="luz_emergencia">🔦 Luz de Emergência Queimada</option>
+                        </optgroup>
+
+                        <optgroup label="💧 Hidráulica e Gás">
+                            <option value="hidraulica_geral">💧 Hidráulica (Geral/Outros)</option>
+                            <option value="vazamento_agua">💦 Vazamento de Água Visível</option>
+                            <option value="infiltracao_parede">🌫️ Infiltração / Umidade em Parede</option>
+                            <option value="torneira_pingando">🚰 Torneira Pingando / Quebrada</option>
+                            <option value="chuveiro_comum">🚿 Chuveiro (Vestiário/Piscina)</option>
+                            <option value="vaso_entupido">🚽 Vaso Sanitário Entupido</option>
+                            <option value="ralo_entupido">🛁 Ralo / Calha Entupida</option>
+                            <option value="pressao_agua">📉 Pressão da Água (Baixa/Alta)</option>
+                            <option value="bomba_dagua">⚙️ Bomba d'água (Barulho/Defeito)</option>
+                            <option value="falta_agua">🚱 Falta de Água</option>
+                            <option value="cheiro_gas">⛽ Cheiro de Gás / Tubulação</option>
+                            <option value="hidrante">🚒 Hidrante / Mangueira Danificada</option>
+                        </optgroup>
+
+                        <optgroup label="🏗️ Estrutura e Predial">
+                            <option value="estrutura_geral">🏗️ Estrutura (Geral/Outros)</option>
+                            <option value="piso_quebrado">🧱 Piso Quebrado / Solto</option>
+                            <option value="vidro_quebrado">🪟 Vidro Quebrado / Trincado</option>
+                            <option value="porta_fechadura">🚪 Porta / Maçaneta / Mola</option>
+                            <option value="janela_basculante">🪟 Janela / Basculante Emperrado</option>
+                            <option value="telhado_telha">🏠 Telhado / Telha Solta</option>
+                            <option value="calhas_rufos">🌧️ Calhas e Rufos</option>
+                            <option value="fachada_pastilha">🏢 Fachada / Pastilha Caindo</option>
+                            <option value="pintura_descascando">🎨 Pintura Descascando / Suja</option>
+                            <option value="muro_cerca">🧱 Muro / Grade Danificada</option>
+                            <option value="acessibilidade">♿ Rampa / Acessibilidade</option>
+                            <option value="escada_corrimao">🪜 Escada / Corrimão Solto</option>
+                        </optgroup>
+
+                        <optgroup label="🛡️ Segurança">
+                            <option value="seguranca_geral">🛡️ Segurança (Geral/Outros)</option>
+                            <option value="camera_cftv">📹 Câmera sem Imagem / CFTV</option>
+                            <option value="alarme_disparado">🚨 Alarme Disparando</option>
+                            <option value="controle_acesso">🆔 Tag / Biometria / Facial Falhando</option>
+                            <option value="chaves_controles">🔑 Chaves e Controles Remotos</option>
+                            <option value="extintor_vencido">🧯 Extintor Vencido/Vazio</option>
+                            <option value="acesso_estranho">🕵️ Presença de Estranhos</option>
+                            <option value="veiculo_suspeito">🚙 Veículo Suspeito</option>
+                            <option value="furto_roubo">💰 Furto ou Roubo</option>
+                        </optgroup>
+
+                        <optgroup label="🧹 Limpeza e Conservação">
+                            <option value="limpeza_geral">🧹 Limpeza (Geral/Outros)</option>
+                            <option value="coleta_lixo">🗑️ Lixo Acumulado / Não Coletado</option>
+                            <option value="mau_cheiro">🤢 Mau Cheiro</option>
+                            <option value="pragas">🦗 Pragas (Baratas, Ratos, Formigas)</option>
+                            <option value="limpeza_elevador">🛗 Limpeza do Elevador</option>
+                            <option value="limpeza_escadas">🪜 Limpeza de Escadas/Corredores</option>
+                            <option value="limpeza_hall">✨ Limpeza do Hall de Entrada</option>
+                            <option value="oleo_garagem">⚫ Mancha de Óleo na Garagem</option>
+                            <option value="limpeza_vidros">🪟 Vidros Sujos</option>
+                        </optgroup>
+
+                        <optgroup label="🌿 Jardinagem">
+                            <option value="jardinagem_geral">🌿 Jardinagem (Geral/Outros)</option>
+                            <option value="grama_alta">✂️ Grama Alta</option>
+                            <option value="poda_arvore">🌳 Poda de Árvore / Galho Perigoso</option>
+                            <option value="plantas_mortas">🥀 Plantas Secas / Mortas</option>
+                            <option value="irrigacao">🚿 Sistema de Irrigação</option>
+                            <option value="vasos_jardineiras">🏺 Vasos e Jardineiras</option>
+                            <option value="folhas_sujeira">🍂 Excesso de Folhas Secas</option>
+                        </optgroup>
+
+                        <optgroup label="🛗 Elevadores">
+                            <option value="elevador_geral">🛗 Elevador (Geral/Outros)</option>
+                            <option value="elevador_parado">🛑 Elevador Parado / Travado</option>
+                            <option value="elevador_barulho">🔊 Barulho Anormal no Elevador</option>
+                            <option value="elevador_luz">💡 Luz Interna do Elevador</option>
+                            <option value="elevador_botoes">🔢 Botões do Painel Falhando</option>
+                            <option value="elevador_porta">🚪 Porta não abre/fecha</option>
+                            <option value="elevador_ventilador">💨 Ventilador/Exaustor do Elevador</option>
+                        </optgroup>
+
+                        <optgroup label="⚽ Áreas de Lazer">
+                            <option value="lazer_geral">⚽ Áreas de Lazer (Geral/Outros)</option>
+                            <option value="piscina_agua">🏊 Piscina (Água Suja/Turva)</option>
+                            <option value="piscina_fisica">🧩 Piscina (Azulejo/Borda/Escada)</option>
+                            <option value="academia_equipamento">🏋️ Academia (Equipamento Quebrado)</option>
+                            <option value="salao_festas">🎉 Salão de Festas (Limpeza/Danos)</option>
+                            <option value="churrasqueira">🍖 Churrasqueira (Grelha/Exaustor)</option>
+                            <option value="playground">🛝 Playground / Brinquedo Quebrado</option>
+                            <option value="quadra_esportiva">🥅 Quadra (Rede/Piso/Iluminação)</option>
+                            <option value="sauna">🧖 Sauna (Não Esquenta)</option>
+                            <option value="salao_jogos">🎱 Salão de Jogos (Sinuca/Mesa)</option>
+                        </optgroup>
+
+                        <optgroup label="🔇 Convivência e Regras">
+                            <option value="convivencia_geral">🔇 Convivência (Geral/Outros)</option>
+                            <option value="barulho_som">🔊 Barulho Excessivo (Som/Gritos)</option>
+                            <option value="barulho_obra">🔨 Barulho de Obra (Fora de Horário)</option>
+                            <option value="barulho_passos">👠 Barulho de Passos/Móveis</option>
+                            <option value="animais_barulho">🐶 Animais (Latidos/Barulho)</option>
+                            <option value="animais_sujeira">💩 Animais (Dejetos/Sem Guia)</option>
+                            <option value="cigarro">🚬 Cigarro em Área Proibida</option>
+                            <option value="objeto_corredor">🚲 Objeto em Corredor/Área Comum</option>
+                            <option value="uso_indevido">🚫 Uso Indevido de Área Comum</option>
+                        </optgroup>
+
+                        <optgroup label="🚗 Garagem e Veículos">
+                            <option value="garagem_geral">🚗 Garagem (Geral/Outros)</option>
+                            <option value="vaga_indevida">🚫 Carro na Vaga Errada</option>
+                            <option value="vaga_ocupacao">📏 Carro Ocupando 2 Vagas</option>
+                            <option value="bicicletario">🚲 Bicicletário (Lotado/Desorganizado)</option>
+                            <option value="carro_abandonado">🕸️ Veículo Abandonado</option>
+                            <option value="batida_veiculo">💥 Colisão / Dano em Veículo</option>
+                            <option value="portao_garagem_uso">🚧 Uso Indevido do Portão</option>
+                        </optgroup>
+
+                        <optgroup label="📦 Portaria e Encomendas">
+                            <option value="portaria_geral">📦 Portaria (Geral/Outros)</option>
+                            <option value="encomenda_sumida">❓ Encomenda Não Localizada</option>
+                            <option value="delivery_problema">🍕 Problema com Delivery</option>
+                            <option value="correspondencia">📬 Correspondência Trocada</option>
+                            <option value="atendimento_staff">🤝 Atendimento / Postura do Funcionário</option>
+                        </optgroup>
+
+                        <optgroup label="📂 Administrativo">
+                            <option value="admin_geral">📂 Administrativo (Geral/Outros)</option>
+                            <option value="segunda_via_boleto">📄 2ª Via de Boleto / Cota</option>
+                            <option value="atualizacao_cadastral">📝 Atualização de Cadastro</option>
+                            <option value="reserva_espaco">📅 Reserva de Espaço</option>
+                            <option value="agendamento_mudanca">🚛 Agendamento de Mudança</option>
+                            <option value="multa_recurso">⚠️ Recurso de Multa</option>
+                            <option value="assembleia_ata">📋 Dúvida sobre Assembleia/Ata</option>
+                        </optgroup>
+
+                        <optgroup label="❓ Diversos">
+                            <option value="sugestao">💡 Sugestão de Melhoria</option>
+                            <option value="elogio">👏 Elogio</option>
+                            <option value="outros">❓ Outros Assuntos</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div>
                     <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Visibilidade</label>
                     <select id="newVisibility" class="w-full border border-stone-300 rounded-lg p-2.5 text-sm bg-white">
                         <option value="public">Público (Todos veem)</option>
@@ -657,7 +1021,7 @@
                 </div>
             </div>
             <div class="flex justify-end gap-2 mt-6">
-                <button onclick="app.closeModals()"
+                <button onclick="app.closeTopModal()"
                     class="px-4 py-2 text-stone-500 font-semibold hover:bg-stone-100 rounded">Cancelar</button>
                 <button onclick="app.createNewTicket()"
                     class="px-4 py-2 bg-brand-accent text-white font-semibold rounded hover:bg-amber-700">Abrir
@@ -666,10 +1030,484 @@
         </div>
     </div>
 
+    <div id="filterModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div
+            class="bg-white w-full max-w-md mx-4 rounded-xl p-6 shadow-2xl transform scale-95 transition-transform duration-300">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-eye text-blue-500"></i> Filtros de Visualização
+            </h2>
+            <p class="text-sm text-stone-500 mb-4">Escolha quais tipos de chamados você deseja visualizar:</p>
+            <div class="space-y-3">
+                <button onclick="app.toggleFilter('private')" id="btn-filter-private-modal"
+                    class="w-full px-4 py-3 text-sm font-bold rounded-lg border border-stone-300 text-stone-700 bg-stone-50 hover:bg-stone-100 transition-all flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <i class="fas fa-user-lock text-base"></i>
+                        <span>Meus Chamados</span>
+                    </span>
+                    <span id="badge-private-modal"
+                        class="bg-stone-600 text-white text-xs font-bold px-2 py-1 rounded-full">0</span>
+                </button>
+
+                <button onclick="app.toggleFilter('following')" id="btn-filter-following-modal"
+                    class="w-full px-4 py-3 text-sm font-bold rounded-lg border border-amber-200 text-amber-700 bg-amber-50 hover:bg-amber-100 transition-all flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <i class="fas fa-star text-base"></i>
+                        <span>Seguindo</span>
+                    </span>
+                    <span id="badge-following-modal"
+                        class="bg-amber-600 text-white text-xs font-bold px-2 py-1 rounded-full">0</span>
+                </button>
+
+                <button onclick="app.toggleFilter('floor')" id="btn-filter-floor-modal"
+                    class="w-full px-4 py-3 text-sm font-bold rounded-lg border border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100 transition-all flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <i class="fas fa-layer-group text-base"></i>
+                        <span>Meu Andar</span>
+                    </span>
+                    <span id="badge-floor-modal"
+                        class="bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded-full">0</span>
+                </button>
+
+                <button onclick="app.toggleFilter('block')" id="btn-filter-block-modal"
+                    class="w-full px-4 py-3 text-sm font-bold rounded-lg border border-blue-200 text-blue-700 bg-blue-50 hover:bg-blue-100 transition-all flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <i class="fas fa-building text-base"></i>
+                        <span>Meu Bloco</span>
+                    </span>
+                    <span id="badge-block-modal"
+                        class="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full">0</span>
+                </button>
+
+                <button onclick="app.toggleFilter('public')" id="btn-filter-public-modal"
+                    class="w-full px-4 py-3 text-sm font-bold rounded-lg border border-green-200 text-green-700 bg-green-50 hover:bg-green-100 transition-all flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <i class="fas fa-globe text-base"></i>
+                        <span>Público</span>
+                    </span>
+                    <span id="badge-public-modal"
+                        class="bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-full">0</span>
+                </button>
+            </div>
+            <div class="flex justify-end gap-2 mt-6">
+                <button onclick="app.closeTopModal()"
+                    class="px-4 py-2 text-stone-500 font-semibold hover:bg-stone-100 rounded">Fechar</button>
+            </div>
+        </div>
+    </div>
+
     <div id="toast-container"
         class="fixed top-4 right-4 z-[100] flex flex-col gap-3 pointer-events-none p-4 w-full max-w-sm"></div>
 
     <script>
+        // ========================================
+        // CONSTANTES E CONFIGURAÇÕES
+        // ========================================
+        const CONFIG = {
+            PRIORITY_COLORS: {
+                'Q1': 'border-l-red-500',
+                'Q2': 'border-l-blue-500',
+                'Q3': 'border-l-yellow-500',
+                'Q4': 'border-l-stone-300'
+            },
+            PRIORITY_TEXT_COLORS: {
+                'Q1': 'text-red-600',
+                'Q2': 'text-blue-600',
+                'Q3': 'text-yellow-600',
+                'Q4': 'text-stone-500'
+            },
+            PRIORITY_BADGE_STYLES: {
+                'Q1': {text: 'text-red-700', bg: 'bg-red-100', border: 'border-red-200'},
+                'Q2': {text: 'text-blue-700', bg: 'bg-blue-100', border: 'border-blue-200'},
+                'Q3': {text: 'text-yellow-700', bg: 'bg-yellow-100', border: 'border-yellow-200'},
+                'Q4': {text: 'text-stone-600', bg: 'bg-stone-100', border: 'border-stone-200'}
+            },
+            VISIBILITY_BADGES: {
+                'public': '<span class="text-[10px] uppercase font-bold text-green-600 bg-green-100 px-1.5 py-0.5 rounded border border-green-200">Público</span>',
+                'block': '<span class="text-[10px] uppercase font-bold text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded border border-blue-200">Bloco</span>',
+                'floor': '<span class="text-[10px] uppercase font-bold text-purple-600 bg-purple-100 px-1.5 py-0.5 rounded border border-purple-200">Andar</span>',
+                'private': '<span class="text-[10px] uppercase font-bold text-stone-500 bg-stone-200 px-1.5 py-0.5 rounded border border-stone-300">Privado</span>'
+            },
+            VISIBILITY_LABELS: {
+                public: 'Público',
+                block: 'Bloco',
+                floor: 'Andar',
+                private: 'Privado'
+            },
+            VISIBILITY_MODAL_STYLES: {
+                'public': 'bg-green-100 text-green-600 border-green-200',
+                'block': 'bg-blue-100 text-blue-600 border-blue-200',
+                'floor': 'bg-purple-100 text-purple-600 border-purple-200',
+                'private': 'bg-stone-200 text-stone-600 border-stone-300'
+            },
+            FILTER_CONFIGS: {
+                'private': {
+                    activeClass: 'bg-stone-200 border-stone-400 text-stone-900 ring-2 ring-stone-300',
+                    inactiveClass: 'bg-stone-50 border-stone-300 text-stone-700 hover:bg-stone-100',
+                    badgeColor: 'bg-stone-600'
+                },
+                'following': {
+                    activeClass: 'bg-amber-200 border-amber-400 text-amber-900 ring-2 ring-amber-300',
+                    inactiveClass: 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100',
+                    badgeColor: 'bg-amber-600'
+                },
+                'floor': {
+                    activeClass: 'bg-purple-200 border-purple-400 text-purple-900 ring-2 ring-purple-300',
+                    inactiveClass: 'bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100',
+                    badgeColor: 'bg-purple-600'
+                },
+                'block': {
+                    activeClass: 'bg-blue-200 border-blue-400 text-blue-900 ring-2 ring-blue-300',
+                    inactiveClass: 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100',
+                    badgeColor: 'bg-blue-600'
+                },
+                'public': {
+                    activeClass: 'bg-green-200 border-green-400 text-green-900 ring-2 ring-green-300',
+                    inactiveClass: 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100',
+                    badgeColor: 'bg-green-600'
+                }
+            },
+            STATUS_STYLES: {
+                'backlog': {label: 'Backlog', class: 'border-stone-200 hover:bg-stone-50 text-stone-600'},
+                'doing': {label: 'Fazendo', class: 'border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100'},
+                'stuck': {label: 'Enroscado', class: 'border-red-200 bg-red-50 text-red-700 hover:bg-red-100'},
+                'done': {label: 'Feito', class: 'border-green-200 bg-green-50 text-green-700 hover:bg-green-100'}
+            },
+            TOAST_CONFIG: {
+                success: {border: 'border-l-green-500', icon: '<i class="fas fa-check-circle text-green-500 text-xl"></i>', bar: 'bg-green-500'},
+                warning: {border: 'border-l-amber-500', icon: '<i class="fas fa-exclamation-triangle text-amber-500 text-xl"></i>', bar: 'bg-amber-500'},
+                info: {border: 'border-l-blue-500', icon: '<i class="fas fa-info-circle text-blue-500 text-xl"></i>', bar: 'bg-blue-500'}
+            },
+            USER_BLOCKS: {
+                'resident_A_2': {block: 'A', floor: '2', name: 'João Silva', unit: 'Bl A - 202'},
+                'resident_B_5': {block: 'B', floor: '5', name: 'Maria Souza', unit: 'Bl B - 501'}
+            },
+            CATEGORIES: {
+                'eletrica': {
+                    label: 'Elétrica',
+                    icon: 'fas fa-bolt',
+                    emoji: '⚡',
+                    color: 'text-yellow-600',
+                    bgColor: 'bg-yellow-50',
+                    borderColor: 'border-yellow-300',
+                    badgeBg: 'bg-yellow-100',
+                    badgeText: 'text-yellow-700',
+                    badgeBorder: 'border-yellow-200'
+                },
+                'hidraulica': {
+                    label: 'Hidráulica',
+                    icon: 'fas fa-droplet',
+                    emoji: '💧',
+                    color: 'text-blue-600',
+                    bgColor: 'bg-blue-50',
+                    borderColor: 'border-blue-300',
+                    badgeBg: 'bg-blue-100',
+                    badgeText: 'text-blue-700',
+                    badgeBorder: 'border-blue-200'
+                },
+                'seguranca': {
+                    label: 'Segurança',
+                    icon: 'fas fa-shield-halved',
+                    emoji: '🛡️',
+                    color: 'text-red-600',
+                    bgColor: 'bg-red-50',
+                    borderColor: 'border-red-300',
+                    badgeBg: 'bg-red-100',
+                    badgeText: 'text-red-700',
+                    badgeBorder: 'border-red-200'
+                },
+                'limpeza': {
+                    label: 'Limpeza',
+                    icon: 'fas fa-broom',
+                    emoji: '🧹',
+                    color: 'text-emerald-600',
+                    bgColor: 'bg-emerald-50',
+                    borderColor: 'border-emerald-300',
+                    badgeBg: 'bg-emerald-100',
+                    badgeText: 'text-emerald-700',
+                    badgeBorder: 'border-emerald-200'
+                },
+                'estrutura': {
+                    label: 'Estrutura',
+                    icon: 'fas fa-hammer',
+                    emoji: '🏗️',
+                    color: 'text-orange-600',
+                    bgColor: 'bg-orange-50',
+                    borderColor: 'border-orange-300',
+                    badgeBg: 'bg-orange-100',
+                    badgeText: 'text-orange-700',
+                    badgeBorder: 'border-orange-200'
+                },
+                'outros': {
+                    label: 'Outros',
+                    icon: 'fas fa-circle-question',
+                    emoji: '❓',
+                    color: 'text-stone-600',
+                    bgColor: 'bg-stone-50',
+                    borderColor: 'border-stone-300',
+                    badgeBg: 'bg-stone-100',
+                    badgeText: 'text-stone-700',
+                    badgeBorder: 'border-stone-200'
+                }
+            },
+            // Mapeamento de categorias detalhadas para categorias principais
+            CATEGORY_MAPPING: {
+                // Elétrica
+                'eletrica_geral': 'eletrica',
+                'lampada_queimada': 'eletrica',
+                'disjuntor_caindo': 'eletrica',
+                'tomada_defeito': 'eletrica',
+                'sensor_presenca': 'eletrica',
+                'interfone_mudo': 'eletrica',
+                'portao_motor': 'eletrica',
+                'cerca_eletrica': 'eletrica',
+                'para_raios': 'eletrica',
+                'gerador': 'eletrica',
+                'timer_minuteria': 'eletrica',
+                'luz_emergencia': 'eletrica',
+                // Hidráulica
+                'hidraulica_geral': 'hidraulica',
+                'vazamento_agua': 'hidraulica',
+                'infiltracao_parede': 'hidraulica',
+                'torneira_pingando': 'hidraulica',
+                'chuveiro_comum': 'hidraulica',
+                'vaso_entupido': 'hidraulica',
+                'ralo_entupido': 'hidraulica',
+                'pressao_agua': 'hidraulica',
+                'bomba_dagua': 'hidraulica',
+                'falta_agua': 'hidraulica',
+                'cheiro_gas': 'hidraulica',
+                'hidrante': 'hidraulica',
+                // Estrutura
+                'estrutura_geral': 'estrutura',
+                'piso_quebrado': 'estrutura',
+                'vidro_quebrado': 'estrutura',
+                'porta_fechadura': 'estrutura',
+                'janela_basculante': 'estrutura',
+                'telhado_telha': 'estrutura',
+                'calhas_rufos': 'estrutura',
+                'fachada_pastilha': 'estrutura',
+                'pintura_descascando': 'estrutura',
+                'muro_cerca': 'estrutura',
+                'acessibilidade': 'estrutura',
+                'escada_corrimao': 'estrutura',
+                // Segurança
+                'seguranca_geral': 'seguranca',
+                'camera_cftv': 'seguranca',
+                'alarme_disparado': 'seguranca',
+                'controle_acesso': 'seguranca',
+                'chaves_controles': 'seguranca',
+                'extintor_vencido': 'seguranca',
+                'acesso_estranho': 'seguranca',
+                'veiculo_suspeito': 'seguranca',
+                'furto_roubo': 'seguranca',
+                // Limpeza
+                'limpeza_geral': 'limpeza',
+                'coleta_lixo': 'limpeza',
+                'mau_cheiro': 'limpeza',
+                'pragas': 'limpeza',
+                'limpeza_elevador': 'limpeza',
+                'limpeza_escadas': 'limpeza',
+                'limpeza_hall': 'limpeza',
+                'oleo_garagem': 'limpeza',
+                'limpeza_vidros': 'limpeza',
+                // Jardinagem -> Limpeza
+                'jardinagem_geral': 'limpeza',
+                'grama_alta': 'limpeza',
+                'poda_arvore': 'limpeza',
+                'plantas_mortas': 'limpeza',
+                'irrigacao': 'limpeza',
+                'vasos_jardineiras': 'limpeza',
+                'folhas_sujeira': 'limpeza',
+                // Elevadores -> Estrutura
+                'elevador_geral': 'estrutura',
+                'elevador_parado': 'estrutura',
+                'elevador_barulho': 'estrutura',
+                'elevador_luz': 'estrutura',
+                'elevador_botoes': 'estrutura',
+                'elevador_porta': 'estrutura',
+                'elevador_ventilador': 'estrutura',
+                // Áreas de Lazer -> Limpeza/Estrutura
+                'lazer_geral': 'limpeza',
+                'piscina_agua': 'limpeza',
+                'piscina_fisica': 'estrutura',
+                'academia_equipamento': 'estrutura',
+                'salao_festas': 'limpeza',
+                'churrasqueira': 'estrutura',
+                'playground': 'estrutura',
+                'quadra_esportiva': 'estrutura',
+                'sauna': 'estrutura',
+                'salao_jogos': 'estrutura',
+                // Convivência -> Outros
+                'convivencia_geral': 'outros',
+                'barulho_som': 'outros',
+                'barulho_obra': 'outros',
+                'barulho_passos': 'outros',
+                'animais_barulho': 'outros',
+                'animais_sujeira': 'outros',
+                'cigarro': 'outros',
+                'objeto_corredor': 'outros',
+                'uso_indevido': 'outros',
+                // Garagem -> Outros
+                'garagem_geral': 'outros',
+                'vaga_indevida': 'outros',
+                'vaga_ocupacao': 'outros',
+                'bicicletario': 'outros',
+                'carro_abandonado': 'outros',
+                'batida_veiculo': 'outros',
+                'portao_garagem_uso': 'outros',
+                // Portaria -> Outros
+                'portaria_geral': 'outros',
+                'encomenda_sumida': 'outros',
+                'delivery_problema': 'outros',
+                'correspondencia': 'outros',
+                'atendimento_staff': 'outros',
+                // Administrativo -> Outros
+                'admin_geral': 'outros',
+                'segunda_via_boleto': 'outros',
+                'atualizacao_cadastral': 'outros',
+                'reserva_espaco': 'outros',
+                'agendamento_mudanca': 'outros',
+                'multa_recurso': 'outros',
+                'assembleia_ata': 'outros',
+                // Diversos -> Outros
+                'sugestao': 'outros',
+                'elogio': 'outros',
+                'outros': 'outros'
+            },
+            // Labels detalhados para todas as categorias
+            CATEGORY_LABELS: {
+                // Elétrica
+                'eletrica_geral': 'Elétrica (Geral/Outros)',
+                'lampada_queimada': 'Elétrica (Lâmpada Queimada)',
+                'disjuntor_caindo': 'Elétrica (Disjuntor Caindo)',
+                'tomada_defeito': 'Elétrica (Tomada com Defeito)',
+                'sensor_presenca': 'Elétrica (Sensor de Presença)',
+                'interfone_mudo': 'Elétrica (Interfone Mudo/Falhando)',
+                'portao_motor': 'Elétrica (Portão/Motor)',
+                'cerca_eletrica': 'Elétrica (Cerca Elétrica)',
+                'para_raios': 'Elétrica (Para-raios/SPDA)',
+                'gerador': 'Elétrica (Gerador)',
+                'timer_minuteria': 'Elétrica (Timer/Minuteria)',
+                'luz_emergencia': 'Elétrica (Luz de Emergência)',
+                // Hidráulica
+                'hidraulica_geral': 'Hidráulica (Geral/Outros)',
+                'vazamento_agua': 'Hidráulica (Vazamento Visível)',
+                'infiltracao_parede': 'Hidráulica (Infiltração/Mancha)',
+                'torneira_pingando': 'Hidráulica (Torneira Pingando)',
+                'chuveiro_comum': 'Hidráulica (Chuveiro Comum)',
+                'vaso_entupido': 'Hidráulica (Vaso Entupido)',
+                'ralo_entupido': 'Hidráulica (Ralo Entupido)',
+                'pressao_agua': 'Hidráulica (Pressão da Água)',
+                'bomba_dagua': 'Hidráulica (Bomba d\'Água)',
+                'falta_agua': 'Hidráulica (Falta de Água)',
+                'cheiro_gas': 'Hidráulica (Cheiro de Gás)',
+                'hidrante': 'Hidráulica (Hidrante)',
+                // Estrutura
+                'estrutura_geral': 'Estrutura (Geral/Outros)',
+                'piso_quebrado': 'Estrutura (Piso Quebrado/Solto)',
+                'vidro_quebrado': 'Estrutura (Vidro Quebrado)',
+                'porta_fechadura': 'Estrutura (Porta/Fechadura)',
+                'janela_basculante': 'Estrutura (Janela/Basculante)',
+                'telhado_telha': 'Estrutura (Telhado/Telha)',
+                'calhas_rufos': 'Estrutura (Calhas/Rufos)',
+                'fachada_pastilha': 'Estrutura (Fachada/Pastilha)',
+                'pintura_descascando': 'Estrutura (Pintura Descascando)',
+                'muro_cerca': 'Estrutura (Muro/Cerca)',
+                'acessibilidade': 'Estrutura (Acessibilidade)',
+                'escada_corrimao': 'Estrutura (Escada/Corrimão)',
+                // Segurança
+                'seguranca_geral': 'Segurança (Geral/Outros)',
+                'camera_cftv': 'Segurança (Câmera CFTV)',
+                'alarme_disparado': 'Segurança (Alarme Disparado)',
+                'controle_acesso': 'Segurança (Tag/Biometria/Facial falhando)',
+                'chaves_controles': 'Segurança (Chaves/Controles)',
+                'extintor_vencido': 'Segurança (Extintor Vencido)',
+                'acesso_estranho': 'Segurança (Acesso de Estranho)',
+                'veiculo_suspeito': 'Segurança (Veículo Suspeito)',
+                'furto_roubo': 'Segurança (Furto/Roubo)',
+                // Limpeza
+                'limpeza_geral': 'Limpeza (Geral/Outros)',
+                'coleta_lixo': 'Limpeza (Coleta de Lixo)',
+                'mau_cheiro': 'Limpeza (Mau Cheiro)',
+                'pragas': 'Limpeza (Pragas/Dedetização)',
+                'limpeza_elevador': 'Limpeza (Elevador)',
+                'limpeza_escadas': 'Limpeza (Escadas)',
+                'limpeza_hall': 'Limpeza (Hall/Corredores)',
+                'oleo_garagem': 'Limpeza (Óleo na Garagem)',
+                'limpeza_vidros': 'Limpeza (Vidros/Espelhos)',
+                // Jardinagem
+                'jardinagem_geral': 'Jardinagem (Geral/Outros)',
+                'grama_alta': 'Jardinagem (Grama Alta)',
+                'poda_arvore': 'Jardinagem (Poda de Árvore)',
+                'plantas_mortas': 'Jardinagem (Plantas Mortas)',
+                'irrigacao': 'Jardinagem (Irrigação)',
+                'vasos_jardineiras': 'Jardinagem (Vasos/Jardineiras)',
+                'folhas_sujeira': 'Jardinagem (Folhas/Sujeira)',
+                // Elevadores
+                'elevador_geral': 'Elevadores (Geral/Outros)',
+                'elevador_parado': 'Elevadores (Elevador Parado)',
+                'elevador_barulho': 'Elevadores (Barulho Estranho)',
+                'elevador_luz': 'Elevadores (Luz Interna)',
+                'elevador_botoes': 'Elevadores (Botões)',
+                'elevador_porta': 'Elevadores (Porta)',
+                'elevador_ventilador': 'Elevadores (Ventilador)',
+                // Áreas de Lazer
+                'lazer_geral': 'Áreas de Lazer (Geral/Outros)',
+                'piscina_agua': 'Áreas de Lazer (Piscina - Água)',
+                'piscina_fisica': 'Áreas de Lazer (Piscina - Estrutura Física)',
+                'academia_equipamento': 'Áreas de Lazer (Academia/Equipamento)',
+                'salao_festas': 'Áreas de Lazer (Salão de Festas)',
+                'churrasqueira': 'Áreas de Lazer (Churrasqueira)',
+                'playground': 'Áreas de Lazer (Playground)',
+                'quadra_esportiva': 'Áreas de Lazer (Quadra Esportiva)',
+                'sauna': 'Áreas de Lazer (Sauna)',
+                'salao_jogos': 'Áreas de Lazer (Salão de Jogos)',
+                // Convivência e Regras
+                'convivencia_geral': 'Convivência (Geral/Outros)',
+                'barulho_som': 'Convivência (Barulho de Som)',
+                'barulho_obra': 'Convivência (Barulho de Obra)',
+                'barulho_passos': 'Convivência (Barulho de Passos)',
+                'animais_barulho': 'Convivência (Animais - Barulho)',
+                'animais_sujeira': 'Convivência (Animais - Sujeira)',
+                'cigarro': 'Convivência (Cigarro)',
+                'objeto_corredor': 'Convivência (Objeto em Corredor)',
+                'uso_indevido': 'Convivência (Uso Indevido de Área)',
+                // Garagem e Veículos
+                'garagem_geral': 'Garagem (Geral/Outros)',
+                'vaga_indevida': 'Garagem (Vaga Indevida)',
+                'vaga_ocupacao': 'Garagem (Ocupação de Vaga)',
+                'bicicletario': 'Garagem (Bicicletário)',
+                'carro_abandonado': 'Garagem (Carro Abandonado)',
+                'batida_veiculo': 'Garagem (Batida de Veículo)',
+                'portao_garagem_uso': 'Garagem (Portão - Uso Indevido)',
+                // Portaria e Encomendas
+                'portaria_geral': 'Portaria (Geral/Outros)',
+                'encomenda_sumida': 'Portaria (Encomenda Sumida)',
+                'delivery_problema': 'Portaria (Delivery com Problema)',
+                'correspondencia': 'Portaria (Correspondência)',
+                'atendimento_staff': 'Portaria (Atendimento/Staff)',
+                // Administrativo
+                'admin_geral': 'Administrativo (Geral/Outros)',
+                'segunda_via_boleto': 'Administrativo (2ª Via de Boleto)',
+                'atualizacao_cadastral': 'Administrativo (Atualização Cadastral)',
+                'reserva_espaco': 'Administrativo (Reserva de Espaço)',
+                'agendamento_mudanca': 'Administrativo (Agendamento de Mudança)',
+                'multa_recurso': 'Administrativo (Multa/Recurso)',
+                'assembleia_ata': 'Administrativo (Assembleia/Ata)',
+                // Diversos
+                'sugestao': 'Diversos (Sugestão)',
+                'elogio': 'Diversos (Elogio)',
+                'outros': 'Diversos (Outros)'
+            },
+            AGING_THRESHOLD_DAYS: 10,
+            TOAST_DURATION_MS: 3000,
+            WATERMARK_CHECK_INTERVAL_MS: 2000
+        };
+
+        // ========================================
+        // APLICAÇÃO PRINCIPAL
+        // ========================================
         const app = {
             data: {
                 tasks: [],
@@ -691,14 +1529,104 @@
                 pageSize: 10
             },
 
+            // ========================================
+            // FUNÇÕES AUXILIARES
+            // ========================================
+            getUserInfo(userId) {
+                if (userId === 'manager') return {block: null, floor: null, name: 'Gestor', unit: 'Gestão'};
+                return CONFIG.USER_BLOCKS[userId] || {block: 'B', floor: '5', name: 'Outro', unit: 'Outro'};
+            },
+
+            getMainCategory(detailedCategory) {
+                // Retorna a categoria principal baseada na categoria detalhada
+                return CONFIG.CATEGORY_MAPPING[detailedCategory] || detailedCategory || 'outros';
+            },
+
+            isManager() {
+                return this.data.currentUser === 'manager';
+            },
+
+            isOwner(task) {
+                return task.owner_id === this.data.currentUser;
+            },
+
+            canSeeTask(task) {
+                if (this.isManager()) {
+                    // Para chamados privados de outros usuários, verificar se o filtro está ativo
+                    if (task.visibility === 'private' && task.owner_id !== 'manager') {
+                        return this.activeFilters.includes('private');
+                    }
+                    return true;
+                }
+
+                const userInfo = this.getUserInfo(this.data.currentUser);
+                if (task.visibility === 'public') return true;
+                if (task.visibility === 'block' && task.block === userInfo.block) return true;
+                if (task.visibility === 'floor' && task.block === userInfo.block && task.floor === userInfo.floor) return true;
+                if (task.visibility === 'private' && this.isOwner(task)) return true;
+
+                return false;
+            },
+
+            addToHistory(task, action, details) {
+                if (!task.history) task.history = [];
+                const historyEntry = {
+                    date: new Date().toISOString(),
+                    user: this.isManager() ? 'Gestor' : 'Você',
+                    action: action,
+                    details: details
+                };
+                task.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema (histórico do board)
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: task.title,
+                    taskId: task.id
+                });
+            },
+
+            getTaskAge(task) {
+                const createdDate = new Date(task.created_at);
+                const diffTime = Math.abs(new Date() - createdDate);
+                return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            },
+
+            // ========================================
+            // INICIALIZAÇÃO
+            // ========================================
             init() {
                 this.loadData();
-                this.render();
                 this.updateUserInterface();
+                this.updateFilterButtons();
+                this.render();
                 this.initWatermark();
+                this.initGlobalKeyboardHandler();
+            },
+
+            initGlobalKeyboardHandler() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' || e.key === 'Esc') {
+                        if (this.modalStack.length > 0) {
+                            e.preventDefault();
+                            this.closeTopModal();
+                        }
+                    }
+                });
             },
 
             loadData() {
+                // Força regeneração uma única vez para atualizar categorias
+                const categoryVersion = sessionStorage.getItem('categoryVersion');
+                if (categoryVersion !== '2.0') {
+                    sessionStorage.clear();
+                    sessionStorage.setItem('categoryVersion', '2.0');
+                }
+
                 const storedTasks = sessionStorage.getItem('condoTasks');
                 const storedUsers = sessionStorage.getItem('condoUsers');
                 const storedLogs = sessionStorage.getItem('condoSystemLogs');
@@ -718,7 +1646,128 @@
             },
 
             generateMockData() {
-                const titles = ['Vazamento', 'Lâmpada Queimada', 'Barulho', 'Portão Quebrado', 'Limpeza', 'Encomenda', 'Reunião', 'Multa', 'Pintura', 'Jardinagem'];
+                // Títulos organizados por categoria detalhada
+                const taskTemplates = [
+                    // Elétrica
+                    {title: 'Lâmpada Queimada no Corredor', category: 'lampada_queimada'},
+                    {title: 'Disjuntor Caindo Repetidamente', category: 'disjuntor_caindo'},
+                    {title: 'Tomada sem Energia na Garagem', category: 'tomada_defeito'},
+                    {title: 'Sensor de Presença não Acende', category: 'sensor_presenca'},
+                    {title: 'Interfone com Chiado', category: 'interfone_mudo'},
+                    {title: 'Motor do Portão Travando', category: 'portao_motor'},
+                    {title: 'Cerca Elétrica Estalando', category: 'cerca_eletrica'},
+                    {title: 'Timer da Iluminação Travado', category: 'timer_minuteria'},
+                    {title: 'Luz de Emergência Queimada', category: 'luz_emergencia'},
+                    {title: 'Problema Elétrico Geral no Hall', category: 'eletrica_geral'},
+
+                    // Hidráulica
+                    {title: 'Vazamento Visível no Banheiro', category: 'vazamento_agua'},
+                    {title: 'Infiltração na Parede', category: 'infiltracao_parede'},
+                    {title: 'Torneira Pingando', category: 'torneira_pingando'},
+                    {title: 'Vaso Sanitário Entupido', category: 'vaso_entupido'},
+                    {title: 'Ralo Entupido na Garagem', category: 'ralo_entupido'},
+                    {title: 'Pressão da Água Baixa', category: 'pressao_agua'},
+                    {title: 'Bomba d\'água com Barulho', category: 'bomba_dagua'},
+                    {title: 'Falta de Água no Bloco', category: 'falta_agua'},
+                    {title: 'Chuveiro Vestiário Quebrado', category: 'chuveiro_comum'},
+                    {title: 'Problema Hidráulico na Piscina', category: 'hidraulica_geral'},
+
+                    // Estrutura
+                    {title: 'Piso Quebrado no Hall', category: 'piso_quebrado'},
+                    {title: 'Vidro Trincado na Porta', category: 'vidro_quebrado'},
+                    {title: 'Maçaneta Solta', category: 'porta_fechadura'},
+                    {title: 'Janela Emperrada', category: 'janela_basculante'},
+                    {title: 'Telha Solta no Telhado', category: 'telhado_telha'},
+                    {title: 'Calha Entupida', category: 'calhas_rufos'},
+                    {title: 'Pastilha Caindo da Fachada', category: 'fachada_pastilha'},
+                    {title: 'Pintura Descascando', category: 'pintura_descascando'},
+                    {title: 'Grade Danificada', category: 'muro_cerca'},
+                    {title: 'Corrimão Solto na Escada', category: 'escada_corrimao'},
+
+                    // Segurança
+                    {title: 'Câmera sem Imagem', category: 'camera_cftv'},
+                    {title: 'Alarme Disparando', category: 'alarme_disparado'},
+                    {title: 'Biometria Falhando', category: 'controle_acesso'},
+                    {title: 'Controle Remoto Perdido', category: 'chaves_controles'},
+                    {title: 'Extintor Vencido', category: 'extintor_vencido'},
+                    {title: 'Presença de Estranhos', category: 'acesso_estranho'},
+                    {title: 'Veículo Suspeito', category: 'veiculo_suspeito'},
+                    {title: 'Tentativa de Furto', category: 'furto_roubo'},
+                    {title: 'Problema de Segurança Geral', category: 'seguranca_geral'},
+
+                    // Limpeza
+                    {title: 'Lixo Acumulado no Corredor', category: 'coleta_lixo'},
+                    {title: 'Mau Cheiro na Garagem', category: 'mau_cheiro'},
+                    {title: 'Baratas no Salão', category: 'pragas'},
+                    {title: 'Elevador Sujo', category: 'limpeza_elevador'},
+                    {title: 'Escada Suja', category: 'limpeza_escadas'},
+                    {title: 'Hall de Entrada Sujo', category: 'limpeza_hall'},
+                    {title: 'Mancha de Óleo na Garagem', category: 'oleo_garagem'},
+                    {title: 'Vidros Sujos', category: 'limpeza_vidros'},
+                    {title: 'Necessidade de Limpeza Geral', category: 'limpeza_geral'},
+
+                    // Jardinagem
+                    {title: 'Grama Alta', category: 'grama_alta'},
+                    {title: 'Poda de Árvore Necessária', category: 'poda_arvore'},
+                    {title: 'Plantas Mortas', category: 'plantas_mortas'},
+                    {title: 'Sistema de Irrigação Quebrado', category: 'irrigacao'},
+                    {title: 'Excesso de Folhas Secas', category: 'folhas_sujeira'},
+                    {title: 'Jardinagem Geral', category: 'jardinagem_geral'},
+
+                    // Elevadores
+                    {title: 'Elevador Parado', category: 'elevador_parado'},
+                    {title: 'Barulho Anormal no Elevador', category: 'elevador_barulho'},
+                    {title: 'Luz Interna do Elevador', category: 'elevador_luz'},
+                    {title: 'Botões do Elevador Falhando', category: 'elevador_botoes'},
+                    {title: 'Porta do Elevador não Fecha', category: 'elevador_porta'},
+                    {title: 'Problema Geral no Elevador', category: 'elevador_geral'},
+
+                    // Áreas de Lazer
+                    {title: 'Piscina com Água Turva', category: 'piscina_agua'},
+                    {title: 'Azulejo Solto na Piscina', category: 'piscina_fisica'},
+                    {title: 'Equipamento de Academia Quebrado', category: 'academia_equipamento'},
+                    {title: 'Salão de Festas Sujo', category: 'salao_festas'},
+                    {title: 'Churrasqueira com Defeito', category: 'churrasqueira'},
+                    {title: 'Brinquedo do Playground Quebrado', category: 'playground'},
+                    {title: 'Rede da Quadra Rasgada', category: 'quadra_esportiva'},
+                    {title: 'Sauna não Esquenta', category: 'sauna'},
+
+                    // Convivência
+                    {title: 'Barulho Excessivo de Som', category: 'barulho_som'},
+                    {title: 'Obra Fora de Horário', category: 'barulho_obra'},
+                    {title: 'Barulho de Passos', category: 'barulho_passos'},
+                    {title: 'Cachorro Latindo', category: 'animais_barulho'},
+                    {title: 'Dejetos de Animais no Corredor', category: 'animais_sujeira'},
+                    {title: 'Cigarro em Área Proibida', category: 'cigarro'},
+                    {title: 'Bicicleta no Corredor', category: 'objeto_corredor'},
+                    {title: 'Uso Indevido da Piscina', category: 'uso_indevido'},
+
+                    // Garagem
+                    {title: 'Carro na Vaga Errada', category: 'vaga_indevida'},
+                    {title: 'Carro Ocupando 2 Vagas', category: 'vaga_ocupacao'},
+                    {title: 'Bicicletário Desorganizado', category: 'bicicletario'},
+                    {title: 'Veículo Abandonado', category: 'carro_abandonado'},
+                    {title: 'Colisão entre Veículos', category: 'batida_veiculo'},
+
+                    // Portaria
+                    {title: 'Encomenda não Localizada', category: 'encomenda_sumida'},
+                    {title: 'Problema com Delivery', category: 'delivery_problema'},
+                    {title: 'Correspondência Trocada', category: 'correspondencia'},
+                    {title: 'Atendimento do Porteiro', category: 'atendimento_staff'},
+
+                    // Administrativo
+                    {title: '2ª Via de Boleto', category: 'segunda_via_boleto'},
+                    {title: 'Atualização de Cadastro', category: 'atualizacao_cadastral'},
+                    {title: 'Reserva de Salão', category: 'reserva_espaco'},
+                    {title: 'Agendamento de Mudança', category: 'agendamento_mudanca'},
+                    {title: 'Recurso de Multa', category: 'multa_recurso'},
+
+                    // Diversos
+                    {title: 'Sugestão de Melhoria', category: 'sugestao'},
+                    {title: 'Elogio ao Funcionário', category: 'elogio'},
+                    {title: 'Outros Assuntos', category: 'outros'}
+                ];
+
                 const locales = ['Hall', 'Garagem', 'Piscina', 'Salão de Festas', 'Bloco A', 'Bloco B', 'Entrada'];
                 const now = new Date();
 
@@ -728,6 +1777,10 @@
                     const visList = ['public', 'public', 'public', 'block', 'floor', 'private'];
                     const vis = visList[Math.floor(Math.random() * visList.length)];
                     const owner = Math.random() > 0.8 ? 'resident_A_2' : (Math.random() > 0.5 ? 'resident_B_5' : 'other');
+
+                    // Selecionar template aleatório (com categoria já definida)
+                    const template = taskTemplates[Math.floor(Math.random() * taskTemplates.length)];
+                    const locale = locales[Math.floor(Math.random() * locales.length)];
 
                     const daysAgo = Math.floor(Math.random() * 20);
                     const creationDate = new Date();
@@ -764,12 +1817,13 @@
 
                     this.data.tasks.push({
                         id: i + 1,
-                        title: `${titles[Math.floor(Math.random() * titles.length)]} - ${locales[Math.floor(Math.random() * locales.length)]}`,
+                        title: `${template.title} - ${locale}`,
                         description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Problema recorrente reportado pelos moradores.',
                         public_summary: null,
                         status: status,
                         visibility: vis,
                         priority: `Q${Math.floor(Math.random() * 4) + 1}`,
+                        category: template.category,
                         block: Math.random() > 0.5 ? 'A' : 'B',
                         floor: Math.floor(Math.random() * 10).toString(),
                         owner_id: owner,
@@ -789,6 +1843,7 @@
                     status: 'triage',
                     visibility: 'block',
                     priority: 'Q3',
+                    category: 'coleta_lixo',
                     block: 'B', floor: '2',
                     owner_id: 'resident_B_5',
                     followers: [],
@@ -879,12 +1934,21 @@
 
                 if (this.data.mobileMenuOpen) {
                     content.classList.remove('hidden');
-                    content.classList.add('flex', 'flex-col');
-                    icon.classList.add('rotate-90'); // Visual effect: Horizontal bars become vertical side-by-side bars
+                    content.classList.add('flex');
+                    // Forçar reflow para ativar a transição
+                    void content.offsetHeight;
+                    content.classList.remove('opacity-0', 'max-h-0');
+                    content.classList.add('opacity-100', 'max-h-[600px]');
+                    icon.classList.add('rotate-90');
                 } else {
-                    content.classList.add('hidden');
-                    content.classList.remove('flex', 'flex-col');
+                    content.classList.remove('opacity-100', 'max-h-[600px]');
+                    content.classList.add('opacity-0', 'max-h-0');
                     icon.classList.remove('rotate-90');
+                    // Esperar a transição terminar antes de ocultar
+                    setTimeout(() => {
+                        content.classList.add('hidden');
+                        content.classList.remove('flex');
+                    }, 300);
                 }
             },
 
@@ -901,25 +1965,74 @@
             },
 
             updateFilterButtons: function () {
-                const configs = {
-                    'following': {activeClass: 'bg-amber-100 border-amber-300 text-amber-700 ring-1 ring-amber-400', inactiveClass: 'bg-white border-stone-200 text-stone-400 hover:bg-stone-50'},
-                    'floor': {activeClass: 'bg-purple-100 border-purple-300 text-purple-700 ring-1 ring-purple-400', inactiveClass: 'bg-white border-purple-100 text-purple-300 hover:bg-purple-50'},
-                    'block': {activeClass: 'bg-blue-100 border-blue-300 text-blue-700 ring-1 ring-blue-400', inactiveClass: 'bg-white border-blue-100 text-blue-300 hover:bg-blue-50'},
-                    'public': {activeClass: 'bg-green-100 border-green-300 text-green-700 ring-1 ring-green-400', inactiveClass: 'bg-white border-green-100 text-green-300 hover:bg-green-50'}
-                };
+                const counts = this.calculateFilterCounts();
 
-                ['following', 'floor', 'block', 'public'].forEach(type => {
-                    const btn = document.getElementById(`btn-filter-${type}`);
-                    if (btn) {
+                ['private', 'following', 'floor', 'block', 'public'].forEach(type => {
+                    // Botões do modal
+                    const btnModal = document.getElementById(`btn-filter-${type}-modal`);
+                    const badgeModal = document.getElementById(`badge-${type}-modal`);
+
+                    if (btnModal) {
                         const isActive = this.activeFilters.includes(type);
-                        const conf = configs[type];
-                        btn.className = `px-3 py-1 text-xs font-bold rounded-lg border transition-all flex items-center gap-1 ${isActive ? conf.activeClass : conf.inactiveClass}`;
+                        const conf = CONFIG.FILTER_CONFIGS[type];
+                        const baseClass = 'w-full px-4 py-3 text-sm font-bold rounded-lg border transition-all flex items-center justify-between';
+                        btnModal.className = `${baseClass} ${isActive ? conf.activeClass : conf.inactiveClass}`;
 
-                        if (type === 'following') {
-                            btn.innerHTML = `<i class="${isActive ? 'fas' : 'far'} fa-star text-[10px]"></i> Seguindo`;
+                        if (badgeModal) {
+                            badgeModal.textContent = counts[type] || 0;
+                            badgeModal.className = `${conf.badgeColor} text-white text-xs font-bold px-2 py-1 rounded-full`;
                         }
                     }
                 });
+            },
+
+            calculateFilterCounts: function () {
+                const isManager = this.isManager();
+                const counts = {private: 0, following: 0, floor: 0, block: 0, public: 0};
+
+                if (isManager) {
+                    // Para managers, contar chamados privados de outros usuários
+                    this.data.tasks.forEach(t => {
+                        if (t.status === 'archived' || t.status === 'triage') return;
+                        if (t.visibility === 'private' && t.owner_id !== 'manager') {
+                            counts.private++;
+                        }
+                    });
+                } else {
+                    // Para usuários não-admin
+                    const userInfo = this.getUserInfo(this.data.currentUser);
+                    const {block: userBlock, floor: userFloor} = userInfo;
+
+                    this.data.tasks.forEach(t => {
+                        if (t.status === 'archived' || t.status === 'triage') return;
+                        if (!this.canSeeTask(t)) return;
+
+                        // Contar 'Meus Chamados' (chamados abertos pelo próprio usuário)
+                        if (t.owner_id === this.data.currentUser) {
+                            counts.private++;
+                        }
+
+                        // Contar 'Seguindo' (apenas chamados seguidos que não são do próprio usuário)
+                        if (t.followers && t.followers.includes(this.data.currentUser) && t.owner_id !== this.data.currentUser) {
+                            counts.following++;
+                        }
+
+                        // Contar chamados por visibilidade (excluindo os do próprio usuário)
+                        if (t.owner_id !== this.data.currentUser) {
+                            if (t.visibility === 'floor' && t.block === userBlock && t.floor === userFloor) {
+                                counts.floor++;
+                            }
+                            if (t.visibility === 'block' && t.block === userBlock) {
+                                counts.block++;
+                            }
+                            if (t.visibility === 'public') {
+                                counts.public++;
+                            }
+                        }
+                    });
+                }
+
+                return counts;
             },
 
             openTriageModal: function () {
@@ -929,15 +2042,23 @@
                 if (triageList.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-stone-400 italic">Nenhum chamado aguardando triagem.</td></tr>';
                 } else {
-                    tbody.innerHTML = triageList.map(t => `
+                    tbody.innerHTML = triageList.map(t => {
+                        // Mapeia categoria detalhada para categoria principal
+                        const detailedCategory = t.category || 'outros';
+                        const mainCategory = this.getMainCategory(detailedCategory);
+                        const categoryConfig = CONFIG.CATEGORIES[mainCategory] || CONFIG.CATEGORIES['outros'];
+                        const categoryBadge = `<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded border ${categoryConfig.badgeBg} ${categoryConfig.badgeText} ${categoryConfig.badgeBorder}"><i class="${categoryConfig.icon}"></i> ${categoryConfig.label}</span>`;
+
+                        return `
                         <tr class="hover:bg-stone-50 border-b border-stone-50 cursor-pointer" onclick="app.closeModals(); app.openCardModal(${t.id})">
                             <td class="px-6 py-3 text-stone-500">${new Date(t.created_at).toLocaleDateString()}</td>
                             <td class="px-6 py-3 font-medium text-stone-800">${t.title}</td>
-                            <td class="px-6 py-3 text-stone-600">${t.owner_id.startsWith('resident') ? 'Condômino' : 'Outro'}</td>
+                            <td class="px-6 py-3">${categoryBadge}</td>
                             <td class="px-6 py-3"><span class="px-2 py-1 bg-stone-100 rounded text-xs font-bold text-stone-600">${t.priority}</span></td>
                             <td class="px-6 py-3 text-right"><button class="text-brand-accent hover:underline text-xs font-bold uppercase">Analisar</button></td>
                         </tr>
-                    `).join('');
+                    `;
+                    }).join('');
                 }
 
                 app.openModal('triageModal');
@@ -948,43 +2069,43 @@
                 const counts = {backlog: 0, doing: 0, stuck: 0, done: 0};
                 let triageCount = 0;
 
-                const isManager = this.data.currentUser === 'manager';
-                const userBlock = this.data.currentUser === 'resident_A_2' ? 'A' : 'B';
-                const userFloor = this.data.currentUser === 'resident_A_2' ? '2' : '5';
+                const isManager = this.isManager();
+                const userInfo = this.getUserInfo(this.data.currentUser);
+                const {block: userBlock, floor: userFloor} = userInfo;
 
                 const filtered = this.data.tasks.filter(t => {
                     if (t.status === 'archived') return false;
                     if (t.status === 'triage') {triageCount++; return false;}
 
-                    let canSee = false;
-                    if (isManager) {
-                        canSee = true;
-                    } else {
-                        // 1. Gatekeeper (Strict Permissions)
-                        if (t.visibility === 'public') canSee = true;
-                        else if (t.visibility === 'block' && t.block === userBlock) canSee = true;
-                        else if (t.visibility === 'floor' && t.block === userBlock && t.floor === userFloor) canSee = true;
-                        else if (t.visibility === 'private' && t.owner_id === this.data.currentUser) canSee = true;
-                    }
+                    if (!this.canSeeTask(t)) return false;
 
-                    if (!canSee) return false;
-
-                    // 2. User Preference Filters (Only for Resident)
+                    // Filtros de preferência (apenas para moradores)
                     if (!isManager) {
-                        // MANDATORY: Always show own cards
-                        if (t.owner_id === this.data.currentUser) return true;
+                        const isMyTicket = this.isOwner(t);
+                        const showMyTickets = this.activeFilters.includes('private');
 
-                        const showFollowing = this.activeFilters.includes('following');
-                        const showFloor = this.activeFilters.includes('floor');
-                        const showBlock = this.activeFilters.includes('block');
-                        const showPublic = this.activeFilters.includes('public');
+                        // Se for meu chamado, só mostrar se 'Meus Chamados' estiver ativo
+                        if (isMyTicket) {
+                            return showMyTickets;
+                        }
 
-                        if (showFollowing && t.followers && t.followers.includes(this.data.currentUser)) return true;
-                        if (showFloor && t.visibility === 'floor') return true;
-                        if (showBlock && t.visibility === 'block') return true;
-                        if (showPublic && t.visibility === 'public') return true;
+                        // Para chamados de outros, aplicar filtros ativos (mas nunca mostrar chamados próprios aqui)
+                        let matchesFilter = false;
 
-                        return false;
+                        if (this.activeFilters.includes('following') && t.followers && t.followers.includes(this.data.currentUser)) {
+                            matchesFilter = true;
+                        }
+                        if (this.activeFilters.includes('floor') && t.visibility === 'floor') {
+                            matchesFilter = true;
+                        }
+                        if (this.activeFilters.includes('block') && t.visibility === 'block') {
+                            matchesFilter = true;
+                        }
+                        if (this.activeFilters.includes('public') && t.visibility === 'public') {
+                            matchesFilter = true;
+                        }
+
+                        return matchesFilter;
                     }
 
                     return true;
@@ -1004,11 +2125,17 @@
                 });
 
                 const badge = document.getElementById('triageBadge');
+                const badgeMobile = document.getElementById('triageBadgeMobile');
                 if (triageCount > 0) {
                     badge.classList.remove('hidden');
                     badge.innerText = triageCount;
+                    if (badgeMobile) {
+                        badgeMobile.classList.remove('hidden');
+                        badgeMobile.innerText = triageCount;
+                    }
                 } else {
                     badge.classList.add('hidden');
+                    if (badgeMobile) badgeMobile.classList.add('hidden');
                 }
             },
 
@@ -1016,13 +2143,19 @@
                 const title = document.getElementById('newTitle').value;
                 const desc = document.getElementById('newDesc').value;
                 const vis = document.getElementById('newVisibility').value;
+                const category = document.getElementById('newCategory').value;
 
                 if (!title) {
                     this.showToast('warning', 'Atenção', 'Título é obrigatório');
                     return;
                 }
 
-                const isManager = this.data.currentUser === 'manager';
+                if (!category) {
+                    this.showToast('warning', 'Atenção', 'Por favor, selecione uma categoria');
+                    return;
+                }
+
+                const isManager = this.isManager();
                 const initialStatus = isManager ? 'backlog' : 'triage';
                 const initialAction = isManager ? 'Criação Direta' : 'Chamado Aguardando Triagem';
 
@@ -1032,10 +2165,11 @@
                     id: Date.now(),
                     title: title,
                     description: desc || 'Sem descrição.',
-                    public_summary: null, // Starts null
+                    public_summary: null,
                     status: initialStatus,
                     visibility: vis,
                     priority: 'Q' + (Math.floor(Math.random() * 4) + 1),
+                    category: category,
                     block: this.data.currentUser === 'resident_A_2' ? 'A' : 'B',
                     floor: this.data.currentUser === 'resident_A_2' ? '2' : '5',
                     owner_id: this.data.currentUser,
@@ -1056,6 +2190,7 @@
 
                 document.getElementById('newTitle').value = '';
                 document.getElementById('newDesc').value = '';
+                document.getElementById('newCategory').value = 'eletrica_geral';
 
                 const msg = isManager ? 'Chamado criado no quadro.' : 'Chamado enviado para triagem.';
                 this.showToast('success', 'Sucesso', msg);
@@ -1076,11 +2211,23 @@
                 }
 
                 if (!this.data.currentTask.history) this.data.currentTask.history = [];
-                this.data.currentTask.history.unshift({
+                const historyEntry = {
                     date: new Date().toISOString(),
                     user: userName,
                     action: actionText,
                     details: details
+                };
+                this.data.currentTask.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema (histórico do board)
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: this.data.currentTask.title,
+                    taskId: this.data.currentTask.id
                 });
 
                 this.data.currentTask.status = newStatus;
@@ -1118,11 +2265,23 @@
                 const details = reason ? `Motivo: ${reason}` : 'Chamado movido para arquivo morto.';
 
                 if (!task.history) task.history = [];
-                task.history.unshift({
+                const historyEntry = {
                     date: new Date().toISOString(),
                     user: this.data.currentUser === 'manager' ? 'Gestor' : 'Dono',
                     action: action,
                     details: details
+                };
+                task.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema (histórico do board)
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: task.title,
+                    taskId: task.id
                 });
 
                 task.status = 'archived';
@@ -1131,62 +2290,72 @@
                 this.showToast('info', 'Arquivado', 'O chamado foi enviado para o Arquivo Morto.');
             },
 
-            openArchiveListModal: function () {
-                this.renderArchive();
-                app.openModal('archiveListModal');
-            },
+            modalStack: [],
 
-            renderArchive: function () {
-                const tbody = document.getElementById('archiveTableBody');
-                const archived = this.data.tasks.filter(t => {
-                    if (t.status !== 'archived') return false;
-                    if (this.data.currentUser === 'manager') return true;
-                    const isOwner = t.owner_id === this.data.currentUser;
-                    const isFollowing = t.followers && t.followers.includes(this.data.currentUser);
-                    return isOwner || isFollowing;
-                });
-
-                if (archived.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-stone-400">Nenhum item visível no arquivo.</td></tr>';
-                    return;
-                }
-
-                tbody.innerHTML = archived.map(t => {
-                    const restoreBtn = this.data.currentUser === 'manager'
-                        ? `<button onclick="app.restoreTask(${t.id})" class="text-brand-accent hover:text-amber-700 font-bold text-xs uppercase">Restaurar</button>`
-                        : '<span class="text-xs text-stone-400">Arquivado</span>';
-
-                    let ownerName = 'Condômino';
-                    if (this.data.currentUser === 'manager' || t.owner_id === this.data.currentUser) {
-                        ownerName = t.owner_id === 'manager' ? 'Gestão' : (t.owner_id === this.data.currentUser ? 'Você' : 'Condômino');
+            closeModals: function () {
+                const modals = document.querySelectorAll('[id$="Modal"]');
+                modals.forEach(m => {
+                    m.classList.add('hidden');
+                    m.classList.add('opacity-0');
+                    if (m.querySelector('div')) {
+                        m.querySelector('div').classList.remove('scale-100');
+                        m.querySelector('div').classList.add('scale-95');
                     }
-
-                    return `
-                        <tr class="hover:bg-stone-50">
-                            <td class="px-6 py-4 font-medium text-stone-900">${t.title}</td>
-                            <td class="px-6 py-4 text-stone-500">${new Date(t.created_at).toLocaleDateString()}</td>
-                            <td class="px-6 py-4 text-stone-500 text-xs">${ownerName}</td>
-                            <td class="px-6 py-4 text-right">${restoreBtn}</td>
-                        </tr>
-                    `}).join('');
+                });
+                this.modalStack = [];
             },
 
-            restoreTask: function (id) {
-                const task = this.data.tasks.find(t => t.id === id);
-                if (task) {
-                    if (!task.history) task.history = [];
-                    task.history.unshift({
-                        date: new Date().toISOString(),
-                        user: 'Gestor',
-                        action: 'Restaurado',
-                        details: 'Restaurado do Arquivo Morto para Backlog.'
-                    });
+            closeTopModal: function () {
+                if (this.modalStack.length === 0) return;
 
-                    task.status = 'backlog';
-                    this.saveData();
-                    this.renderArchive();
-                    this.showToast('success', 'Restaurado', 'Enviado de volta para o Backlog.');
+                const topModalId = this.modalStack.pop();
+                const modal = document.getElementById(topModalId);
+
+                if (modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.add('opacity-0');
+                    if (modal.querySelector('div')) {
+                        modal.querySelector('div').classList.remove('scale-100');
+                        modal.querySelector('div').classList.add('scale-95');
+                    }
                 }
+            },
+
+            showToast: function (type, title, msg) {
+                const container = document.getElementById('toast-container');
+                const conf = CONFIG.TOAST_CONFIG[type];
+                const toast = document.createElement('div');
+                toast.className = `transform transition-all duration-300 bg-white border-l-4 rounded shadow-lg overflow-hidden flex flex-col shadow-stone-300 ${conf.border} translate-x-full pointer-events-auto shrink-0`;
+                toast.innerHTML = `
+                    <div class="p-4 flex items-start gap-3 relative bg-white">
+                        <div class="mt-0.5 shrink-0">${conf.icon}</div>
+                        <div class="flex-1 pr-4">
+                            <h4 class="font-bold text-sm text-stone-800">${title}</h4>
+                            <p class="text-xs text-stone-500 mt-1 leading-relaxed">${msg}</p>
+                        </div>
+                        <button class="absolute top-2 right-2 text-stone-400 hover:text-stone-600 p-1.5 rounded-full hover:bg-stone-50 transition" onclick="this.closest('.pointer-events-auto').remove()">
+                            <i class="fas fa-times text-sm"></i>
+                        </button>
+                    </div>
+                    <div class="w-full bg-stone-100 h-1">
+                        <div class="h-full w-full ${conf.bar}" style="width: 100%"></div>
+                    </div>
+                `;
+                container.appendChild(toast);
+                void toast.offsetWidth;
+                toast.classList.remove('translate-x-full');
+                toast.classList.add('translate-x-0');
+                const progressBar = toast.querySelector('div[style="width: 100%"]');
+                progressBar.style.transition = `width ${CONFIG.TOAST_DURATION_MS}ms linear`;
+                requestAnimationFrame(() => {progressBar.style.width = '0%';});
+                setTimeout(() => {
+                    if (toast.parentElement) {
+                        toast.classList.remove('translate-x-0');
+                        toast.classList.add('translate-x-full');
+                        toast.classList.add('opacity-0');
+                        setTimeout(() => {if (toast.parentElement) toast.remove();}, 300);
+                    }
+                }, CONFIG.TOAST_DURATION_MS);
             },
 
             openLogModal: function () {
@@ -1236,12 +2405,46 @@
             },
 
             toggleArchiveView: function () {
-                // This function is now mapped to openArchiveListModal but kept for backwards compatibility if called elsewhere
-                app.openArchiveListModal();
+                this.openArchiveListModal();
+            },
+
+            openArchiveListModal: function () {
+                const archivedTasks = this.data.tasks.filter(t => t.status === 'archived');
+                const tbody = document.getElementById('archiveTableBody');
+
+                if (archivedTasks.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-stone-400 italic">Nenhum chamado arquivado.</td></tr>';
+                } else {
+                    tbody.innerHTML = archivedTasks.map(t => {
+                        const ownerDisplay = this.isManager()
+                            ? (t.owner_id === 'manager' ? 'Gestor' :
+                                t.owner_id === 'resident_A_2' ? 'João Silva (Bl A)' :
+                                    t.owner_id === 'resident_B_5' ? 'Maria Souza (Bl B)' : 'Outro')
+                            : 'Condômino';
+
+                        return `
+                            <tr class="hover:bg-stone-50 border-b border-stone-50 cursor-pointer" onclick="app.closeModals(); app.openCardModal(${t.id})">
+                                <td class="px-6 py-3 font-medium text-stone-800">${t.title}</td>
+                                <td class="px-6 py-3 text-stone-500">${new Date(t.created_at).toLocaleDateString('pt-BR')}</td>
+                                <td class="px-6 py-3 text-stone-600">${ownerDisplay}</td>
+                                <td class="px-6 py-3 text-right">
+                                    <button class="text-brand-accent hover:underline text-xs font-bold uppercase">Ver Detalhes</button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
+                this.openModal('archiveListModal');
             },
 
             openNewTicketModal: function () {
                 this.openModal('newTicketModal');
+            },
+
+            openFilterModal: function () {
+                this.updateFilterButtons();
+                this.openModal('filterModal');
             },
 
             openUserModal: function () {
@@ -1362,19 +2565,10 @@
             },
 
             createCardHTML: function (task) {
-                const priorityColors = {'Q1': 'border-l-red-500', 'Q2': 'border-l-blue-500', 'Q3': 'border-l-yellow-500', 'Q4': 'border-l-stone-300'};
-                const badges = {
-                    'public': '<span class="text-[10px] uppercase font-bold text-green-600 bg-green-100 px-1.5 py-0.5 rounded border border-green-200">Público</span>',
-                    'block': '<span class="text-[10px] uppercase font-bold text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded border border-blue-200">Bloco</span>',
-                    'floor': '<span class="text-[10px] uppercase font-bold text-purple-600 bg-purple-100 px-1.5 py-0.5 rounded border border-purple-200">Andar</span>',
-                    'private': '<span class="text-[10px] uppercase font-bold text-stone-500 bg-stone-200 px-1.5 py-0.5 rounded border border-stone-300">Privado</span>'
-                };
-
-                const isManager = this.data.currentUser === 'manager';
-                const isOwner = task.owner_id === this.data.currentUser;
+                const isManager = this.isManager();
+                const isOwner = this.isOwner(task);
                 const isPrivateVis = task.visibility === 'private';
 
-                // LÓGICA DE PRIVACIDADE NO CARD
                 let displayDescription = task.description;
 
                 if (!isManager && !isOwner) {
@@ -1385,7 +2579,6 @@
                     }
                 }
 
-                // ALERT BADGE PARA GESTOR QUANDO NÃO HÁ RESUMO PÚBLICO
                 let pendingSummaryAlert = '';
                 if (isManager && !task.public_summary && task.visibility !== 'private') {
                     pendingSummaryAlert = `<span class="text-[9px] font-bold text-orange-600 bg-orange-100 border border-orange-200 px-1.5 py-0.5 rounded flex items-center gap-1" title="Este chamado público ainda não tem um resumo seguro definido"><i class="fas fa-shield-alt"></i> PENDENTE</span>`;
@@ -1393,7 +2586,8 @@
 
                 let followBtn = '';
 
-                if (!isManager && !isPrivateVis) {
+                // Apenas mostrar botão de seguir se não for manager, não for privado E não for o dono do chamado
+                if (!isManager && !isPrivateVis && task.owner_id !== this.data.currentUser) {
                     const isFollowing = task.followers && task.followers.includes(this.data.currentUser);
                     const iconClass = isFollowing ? 'fas fa-star text-amber-400' : 'far fa-star text-stone-300 hover:text-amber-400';
                     const title = isFollowing ? 'Deixar de Seguir' : 'Seguir Chamado';
@@ -1405,11 +2599,9 @@
                     stuckHTML = `<div class="mt-2 text-[11px] text-red-600 bg-red-50 p-1.5 rounded border border-red-100 italic truncate"><i class="fas fa-exclamation-circle mr-1"></i>${task.stuck_reason}</div>`;
                 }
 
-                const createdDate = new Date(task.created_at);
-                const diffTime = Math.abs(new Date() - createdDate);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const diffDays = this.getTaskAge(task);
                 let agingHTML = '';
-                if (diffDays > 10 && task.status !== 'done') {
+                if (diffDays > CONFIG.AGING_THRESHOLD_DAYS && task.status !== 'done') {
                     agingHTML = `<span class="text-[10px] text-red-500 font-bold ml-1 flex items-center gap-1"><i class="far fa-clock"></i> ${diffDays}d</span>`;
                 }
 
@@ -1418,19 +2610,28 @@
                     attachHTML = `<i class="fas fa-paperclip text-stone-400 text-xs"></i>`;
                 }
 
+                const priorityTextColor = CONFIG.PRIORITY_TEXT_COLORS[task.priority] || 'text-stone-400';
+
+                // Badge de categoria com emoji genérico - mapeia categoria detalhada para principal
+                const detailedCategory = task.category || 'outros';
+                const mainCategory = this.getMainCategory(detailedCategory);
+                const categoryConfig = CONFIG.CATEGORIES[mainCategory] || CONFIG.CATEGORIES['outros'];
+                const categoryBadge = `<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded border ${categoryConfig.badgeBg} ${categoryConfig.badgeText} ${categoryConfig.badgeBorder}" title="${categoryConfig.label}">${categoryConfig.emoji}</span>`;
+
                 return `
-                <div onclick="app.openCardModal(${task.id})" class="kanban-card bg-white p-3 rounded-lg shadow-sm border border-stone-100 border-l-4 ${priorityColors[task.priority]} mb-2 group">
+                <div onclick="app.openCardModal(${task.id})" class="kanban-card bg-white p-3 rounded-lg shadow-sm border border-stone-100 border-l-4 ${CONFIG.PRIORITY_COLORS[task.priority]} mb-2 group">
                     
                     <div class="flex justify-between items-center mb-2 w-full h-6">
                         
                         <div class="flex items-center gap-2 h-full">
-                            <span class="text-xs font-bold text-stone-400 flex items-center h-full">${task.priority} ${agingHTML}</span>
+                            <span class="text-xs font-bold ${priorityTextColor} flex items-center h-full">${task.priority} ${agingHTML}</span>
+                            ${categoryBadge}
                             ${pendingSummaryAlert}
                         </div>
 
                         <div class="flex items-center gap-2 h-full">
                             ${attachHTML}
-                            <div class="">${badges[task.visibility]}</div>
+                            <div class="">${CONFIG.VISIBILITY_BADGES[task.visibility]}</div>
                             ${followBtn}
                         </div>
 
@@ -1446,43 +2647,44 @@
                 const task = this.data.tasks.find(t => t.id === taskId);
                 if (!task) return;
                 if (!task.followers) task.followers = [];
+
                 const userId = this.data.currentUser;
                 const idx = task.followers.indexOf(userId);
-                const isManager = this.data.currentUser === 'manager';
-                const userName = isManager ? 'Gestor' : 'Você';
+                const isFollowing = idx > -1;
 
-                if (idx > -1) {
+                if (isFollowing) {
                     task.followers.splice(idx, 1);
                     this.showToast('info', 'Deixou de Seguir', 'Você não receberá mais atualizações deste chamado.');
-                    if (!isManager) {
-                        if (!task.history) task.history = [];
-                        task.history.unshift({
-                            date: new Date().toISOString(),
-                            user: userName,
-                            action: 'Monitoramento',
-                            details: 'Deixou de seguir este chamado.'
-                        });
+                    if (!this.isManager()) {
+                        this.addToHistory(task, 'Monitoramento', 'Deixou de seguir este chamado.');
                     }
                 } else {
                     task.followers.push(userId);
                     this.showToast('success', 'Seguindo', 'Adicionado à sua visualização personalizada.');
-                    if (!isManager) {
-                        if (!task.history) task.history = [];
-                        task.history.unshift({
-                            date: new Date().toISOString(),
-                            user: userName,
-                            action: 'Monitoramento',
-                            details: 'Começou a seguir este chamado.'
-                        });
+                    if (!this.isManager()) {
+                        this.addToHistory(task, 'Monitoramento', 'Começou a seguir este chamado.');
                     }
                 }
                 this.saveData();
+                this.updateFilterButtons();
+                this.render();
             },
 
             switchUser: function (role) {
                 this.data.currentUser = role;
+                const filterEl = document.getElementById('viewFilter');
+                if (filterEl) filterEl.value = 'all';
+
+                // Reset filtros para moradores: 'Seguindo' e 'Meus Chamados' ativos por padrão
+                if (role !== 'manager') {
+                    this.activeFilters = ['following', 'private'];
+                } else {
+                    // Gestor começa sem filtros ativos (não mostra privados por padrão)
+                    this.activeFilters = [];
+                }
+
                 this.updateUserInterface();
-                this.updateFilterButtons(); // Update buttons visibility
+                this.updateFilterButtons();
                 this.render();
                 this.initWatermark();
                 this.showToast('success', 'Perfil Alterado', `Agora simulando: ${role === 'manager' ? 'Gestor' : 'Morador'}`);
@@ -1493,10 +2695,11 @@
 
                 const elements = {
                     managerMenu: document.getElementById('managerMenu'),
-                    mobileMenu: document.getElementById('mobileManagerMenu'),
+                    mobileMenu: document.getElementById('managerMenuMobile'),
                     fab: document.getElementById('newTicketFab'),
+                    filterFab: document.getElementById('filterFab'),
                     filterButtons: document.getElementById('filterButtonsContainer'),
-                    viewFilterContainer: document.getElementById('viewFilterContainer'), // Old container
+                    viewFilterContainer: document.getElementById('viewFilterContainer'),
                     mainBoard: document.getElementById('mainBoard'),
                     archiveView: document.getElementById('archiveView')
                 };
@@ -1508,6 +2711,7 @@
                 safeToggle(elements.managerMenu, 'hidden', !isManager);
                 safeToggle(elements.mobileMenu, 'hidden', !isManager);
                 safeToggle(elements.fab, 'hidden', isManager);
+                safeToggle(elements.filterFab, 'hidden', isManager);
                 safeToggle(elements.filterButtons, 'hidden', isManager);
 
                 if (elements.viewFilterContainer) elements.viewFilterContainer.classList.add('hidden');
@@ -1519,6 +2723,16 @@
             openModal: function (modalId) {
                 const modal = document.getElementById(modalId);
                 if (modal) {
+                    // Adicionar ao stack
+                    if (!this.modalStack.includes(modalId)) {
+                        this.modalStack.push(modalId);
+                    }
+
+                    // Atualizar z-index baseado na posição no stack
+                    const baseZIndex = 50;
+                    const zIndex = baseZIndex + (this.modalStack.indexOf(modalId) * 10);
+                    modal.style.zIndex = zIndex;
+
                     modal.classList.remove('hidden');
                     setTimeout(() => {
                         modal.classList.remove('opacity-0');
@@ -1528,6 +2742,16 @@
                         }
                     }, 10);
                     modal.children[0].classList.add('modal-enter-active');
+
+                    // Adicionar event listener para clicar fora (apenas uma vez)
+                    if (!modal.dataset.hasClickOutside) {
+                        modal.addEventListener('click', (e) => {
+                            if (e.target === modal) {
+                                app.closeTopModal();
+                            }
+                        });
+                        modal.dataset.hasClickOutside = 'true';
+                    }
                 }
             },
 
@@ -1536,7 +2760,7 @@
                 if (!task) return;
                 this.data.currentTask = task;
 
-                const isManager = this.data.currentUser === 'manager';
+                const isManager = this.isManager();
                 const isOwner = task.owner_id === this.data.currentUser;
                 let ownerDisplay = '';
 
@@ -1564,7 +2788,30 @@
                 }
 
                 document.getElementById('modalTitle').innerText = task.title;
-                document.getElementById('modalPriority').innerText = task.priority;
+
+                const pStyle = CONFIG.PRIORITY_BADGE_STYLES[task.priority] || CONFIG.PRIORITY_BADGE_STYLES['Q4'];
+                const priorityBadge = document.getElementById('modalPriority');
+                priorityBadge.innerText = task.priority;
+                priorityBadge.className = `h-8 inline-flex items-center justify-center text-xs font-bold px-3 rounded border ${pStyle.bg} ${pStyle.text} ${pStyle.border}`;
+
+                // Badge de categoria no modal - mapeia categoria detalhada para principal
+                const detailedCategory = task.category || 'outros';
+                const mainCategory = this.getMainCategory(detailedCategory);
+                const categoryConfig = CONFIG.CATEGORIES[mainCategory] || CONFIG.CATEGORIES['outros'];
+                const categoryBadge = document.getElementById('modalCategory');
+                categoryBadge.innerHTML = `<i class="${categoryConfig.icon}"></i> <span>${categoryConfig.label}</span>`;
+                categoryBadge.className = `h-8 inline-flex items-center gap-1.5 text-xs font-bold px-3 rounded border ${categoryConfig.badgeBg} ${categoryConfig.badgeText} ${categoryConfig.badgeBorder}`;
+
+                // Dropdown de edição de categoria (apenas para gestor)
+                const categoryEditContainer = document.getElementById('modalCategoryEdit');
+                const categorySelect = document.getElementById('modalCategorySelect');
+                if (isManager) {
+                    categoryEditContainer.classList.remove('hidden');
+                    categorySelect.value = detailedCategory;
+                } else {
+                    categoryEditContainer.classList.add('hidden');
+                }
+
                 document.getElementById('modalStatus').innerText = task.status;
                 document.getElementById('modalDate').innerText = new Date(task.created_at).toLocaleDateString('pt-BR');
 
@@ -1638,14 +2885,21 @@
                 }
 
                 const visContainer = document.getElementById('modalVisibilityContainer');
-                // FIXED HEIGHT AND ALIGNMENT IN MODAL HEADER
                 if (isManager) {
+                    const visStyles = {
+                        'public': 'bg-green-100 text-green-600 border-green-200',
+                        'block': 'bg-blue-100 text-blue-600 border-blue-200',
+                        'floor': 'bg-purple-100 text-purple-600 border-purple-200',
+                        'private': 'bg-stone-200 text-stone-600 border-stone-300'
+                    };
+                    const activeClass = visStyles[task.visibility] || visStyles['private'];
+
                     visContainer.innerHTML = `
-                        <select onchange="app.changeVisibility(this.value)" class="h-8 bg-white border border-stone-300 text-xs font-bold text-stone-600 rounded px-2 shadow-sm focus:ring-2 focus:ring-brand-accent outline-none">
-                            <option value="public" ${task.visibility === 'public' ? 'selected' : ''}>Público</option>
-                            <option value="block" ${task.visibility === 'block' ? 'selected' : ''}>Bloco</option>
-                            <option value="floor" ${task.visibility === 'floor' ? 'selected' : ''}>Andar</option>
-                            <option value="private" ${task.visibility === 'private' ? 'selected' : ''}>Privado</option>
+                        <select onchange="app.changeVisibility(this.value)" class="h-8 text-xs font-bold rounded px-2 shadow-sm focus:ring-2 focus:ring-brand-accent outline-none border ${activeClass}">
+                            <option value="public" class="bg-green-100 text-green-600 font-bold" ${task.visibility === 'public' ? 'selected' : ''}>Público</option>
+                            <option value="block" class="bg-blue-100 text-blue-600 font-bold" ${task.visibility === 'block' ? 'selected' : ''}>Bloco</option>
+                            <option value="floor" class="bg-purple-100 text-purple-600 font-bold" ${task.visibility === 'floor' ? 'selected' : ''}>Andar</option>
+                            <option value="private" class="bg-stone-200 text-stone-600 font-bold" ${task.visibility === 'private' ? 'selected' : ''}>Privado</option>
                         </select>
                     `;
                 } else {
@@ -1770,11 +3024,23 @@
 
                 // Log com o texto auditado
                 if (!this.data.currentTask.history) this.data.currentTask.history = [];
-                this.data.currentTask.history.unshift({
+                const historyEntry = {
                     date: new Date().toISOString(),
                     user: 'Gestor',
                     action: 'Moderação de Conteúdo',
                     details: `Resumo Público atualizado para: "${newSummary}"`
+                };
+                this.data.currentTask.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema (histórico do board)
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: this.data.currentTask.title,
+                    taskId: this.data.currentTask.id
                 });
 
                 this.saveData();
@@ -1795,17 +3061,101 @@
                 const visLabels = {public: 'Público', block: 'Bloco', floor: 'Andar', private: 'Privado'};
 
                 if (!this.data.currentTask.history) this.data.currentTask.history = [];
-                this.data.currentTask.history.unshift({
+                const historyEntry = {
                     date: new Date().toISOString(),
                     user: 'Gestor',
                     action: 'Visibilidade',
                     details: `Alterada de ${visLabels[oldVis]} para ${visLabels[newVis]}`
+                };
+                this.data.currentTask.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema (histórico do board)
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: this.data.currentTask.title,
+                    taskId: this.data.currentTask.id
                 });
 
                 this.data.currentTask.visibility = newVis;
                 this.saveData();
                 this.showToast('success', 'Atualizado', 'Visibilidade do chamado alterada.');
                 this.openCardModal(this.data.currentTask.id);
+            },
+
+            updateTaskCategory: function () {
+                if (!this.data.currentTask || !this.isManager()) return;
+
+                const newCategory = document.getElementById('modalCategorySelect').value;
+                const oldCategory = this.data.currentTask.category;
+
+                if (oldCategory === newCategory) return;
+
+                // Pega as configurações das categorias principais para exibição
+                const oldMainCategory = this.getMainCategory(oldCategory);
+                const newMainCategory = this.getMainCategory(newCategory);
+                const oldConfig = CONFIG.CATEGORIES[oldMainCategory];
+                const newConfig = CONFIG.CATEGORIES[newMainCategory];
+
+                // Obter labels detalhados das categorias
+                const oldDetailedLabel = CONFIG.CATEGORY_LABELS[oldCategory] || `${oldConfig.label} (Geral/Outros)`;
+                const newDetailedLabel = CONFIG.CATEGORY_LABELS[newCategory] || `${newConfig.label} (Geral/Outros)`;
+
+                // Atualiza a categoria
+                this.data.currentTask.category = newCategory;
+
+                // Adiciona ao histórico com detalhes específicos da subcategoria
+                if (!this.data.currentTask.history) this.data.currentTask.history = [];
+                const historyEntry = {
+                    date: new Date().toISOString(),
+                    user: 'Gestor',
+                    action: 'Reclassificação',
+                    details: `Categoria alterada de "${oldDetailedLabel}" para "${newDetailedLabel}"`
+                };
+                this.data.currentTask.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema (histórico do board)
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: this.data.currentTask.title,
+                    taskId: this.data.currentTask.id
+                });
+
+                // Salva e atualiza a interface
+                this.saveData();
+                this.showToast('success', 'Reclassificado', `Categoria alterada para ${newConfig.label}`);
+
+                // Atualiza o badge no modal
+                const categoryBadge = document.getElementById('modalCategory');
+                categoryBadge.innerHTML = `<i class="${newConfig.icon}"></i> <span>${newConfig.label}</span>`;
+                categoryBadge.className = `h-8 inline-flex items-center gap-1.5 text-xs font-bold px-3 rounded border ${newConfig.badgeBg} ${newConfig.badgeText} ${newConfig.badgeBorder}`;
+
+                // Atualiza o histórico no modal sem fechar
+                const auditContainer = document.getElementById('auditTrail');
+                if (this.data.currentTask.history && this.data.currentTask.history.length > 0) {
+                    auditContainer.innerHTML = this.data.currentTask.history.map(h => `
+                        <div class="flex gap-4 border-l-2 border-stone-300 pl-4 py-1 relative">
+                            <div class="absolute -left-[5px] top-2 w-2 h-2 rounded-full bg-stone-300"></div>
+                            <div class="flex-1">
+                                <p class="text-xs font-bold text-stone-700">${h.action}</p>
+                                <p class="text-xs text-stone-500 italic">${h.details}</p>
+                            </div>
+                            <div class="text-[10px] text-stone-400 text-right">
+                                <p class="font-semibold">${h.user}</p>
+                                <p>${new Date(h.date).toLocaleString('pt-BR', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'})}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    auditContainer.innerHTML = '<p class="italic text-stone-400 text-xs">Sem histórico registrado.</p>';
+                }
             },
 
             addComment: function () {
@@ -1816,11 +3166,23 @@
                 const userName = this.data.currentUser === 'manager' ? 'Gestor' : 'Você';
 
                 if (!this.data.currentTask.history) this.data.currentTask.history = [];
-                this.data.currentTask.history.unshift({
+                const historyEntry = {
                     date: new Date().toISOString(),
                     user: userName,
                     action: 'Comentário',
                     details: text
+                };
+                this.data.currentTask.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema (histórico do board)
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: this.data.currentTask.title,
+                    taskId: this.data.currentTask.id
                 });
 
                 this.saveData();
@@ -1840,11 +3202,23 @@
                 }
                 if (this.data.currentTask) {
                     if (!this.data.currentTask.history) this.data.currentTask.history = [];
-                    this.data.currentTask.history.unshift({
+                    const historyEntry = {
                         date: new Date().toISOString(),
                         user: 'Gestor',
                         action: 'Marcado como Enroscado',
                         details: reason
+                    };
+                    this.data.currentTask.history.unshift(historyEntry);
+
+                    // Adiciona ao log do sistema (histórico do board)
+                    if (!this.data.systemLogs) this.data.systemLogs = [];
+                    this.data.systemLogs.push({
+                        date: historyEntry.date,
+                        user: historyEntry.user,
+                        action: historyEntry.action,
+                        details: historyEntry.details,
+                        taskTitle: this.data.currentTask.title,
+                        taskId: this.data.currentTask.id
                     });
 
                     this.data.currentTask.status = 'stuck';
@@ -1884,29 +3258,29 @@
                 const details = reason ? `Motivo: ${reason}` : 'Chamado movido para arquivo morto.';
 
                 if (!task.history) task.history = [];
-                task.history.unshift({
+                const historyEntry = {
                     date: new Date().toISOString(),
                     user: this.data.currentUser === 'manager' ? 'Gestor' : 'Dono',
                     action: action,
                     details: details
+                };
+                task.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema (histórico do board)
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: task.title,
+                    taskId: task.id
                 });
 
                 task.status = 'archived';
                 this.saveData();
                 this.closeModals();
                 this.showToast('info', 'Arquivado', 'O chamado foi enviado para o Arquivo Morto.');
-            },
-
-            closeModals: function () {
-                const modals = document.querySelectorAll('[id$="Modal"]');
-                modals.forEach(m => {
-                    m.classList.add('hidden');
-                    m.classList.add('opacity-0');
-                    if (m.querySelector('div')) {
-                        m.querySelector('div').classList.remove('scale-100');
-                        m.querySelector('div').classList.add('scale-95');
-                    }
-                });
             },
 
             showToast: function (type, title, msg) {
@@ -1939,7 +3313,7 @@
                 toast.classList.remove('translate-x-full');
                 toast.classList.add('translate-x-0');
                 const progressBar = toast.querySelector('div[style="width: 100%"]');
-                progressBar.style.transition = 'width 3000ms linear';
+                progressBar.style.transition = `width ${CONFIG.TOAST_DURATION_MS}ms linear`;
                 requestAnimationFrame(() => {progressBar.style.width = '0%';});
                 setTimeout(() => {
                     if (toast.parentElement) {
@@ -1948,7 +3322,7 @@
                         toast.classList.add('opacity-0');
                         setTimeout(() => {if (toast.parentElement) toast.remove();}, 300);
                     }
-                }, 3000);
+                }, CONFIG.TOAST_DURATION_MS);
             }
         };
 
