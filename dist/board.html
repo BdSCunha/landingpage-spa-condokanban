@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CondoKanban - Board</title>
+    <title>CondoKanban - Board Seguro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -31,7 +31,9 @@
 
         .kanban-col {
             min-width: 280px;
-            height: calc(100vh - 180px);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .kanban-card {
@@ -94,108 +96,151 @@
         .badge-pulse {
             animation: pulse-badge 2s infinite;
         }
+
+        /* MARCA D'ÁGUA */
+        .security-layer {
+            pointer-events: none !important;
+            user-select: none !important;
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9999 !important;
+            mix-blend-mode: multiply;
+            opacity: 0.02 !important;
+            transition: opacity 0.3s;
+        }
+
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .security-layer {
+                opacity: 0.1 !important;
+                display: block !important;
+                visibility: visible !important;
+            }
+
+            header,
+            .fab {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 
-<body class="bg-brand-bg text-brand-text h-screen overflow-hidden flex flex-col">
+<body class="bg-brand-bg text-brand-text h-screen overflow-hidden flex flex-col relative">
 
-    <!-- Top Bar -->
-    <header class="bg-white border-b border-stone-200 z-30 shadow-sm flex-none">
-        <div class="max-w-full mx-auto px-4 h-16 flex items-center justify-between">
+    <header class="bg-white border-b border-stone-200 z-30 shadow-sm flex-none relative">
+        <div class="max-w-full mx-auto px-4 min-h-[64px] flex flex-wrap items-center justify-between py-2 md:py-0">
 
-            <!-- LEFT: Logo -->
-            <div class="flex items-center gap-2 w-1/3" onclick="window.location.href='index.html'"
-                style="cursor: pointer;">
+            <div class="flex items-center gap-2 w-auto cursor-pointer z-20" onclick="window.location.href='index.html'">
                 <div
                     class="w-8 h-8 bg-brand-accent rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-sm">
                     C</div>
-                <span class="font-bold text-lg tracking-tight hidden md:block">CondoKanban</span>
+                <span class="font-bold text-lg tracking-tight block">CondoKanban</span>
             </div>
 
-            <!-- CENTER: Controls -->
-            <div class="flex items-center justify-center gap-2 sm:gap-4 flex-1 w-1/3">
-                <div class="flex items-center gap-2 bg-stone-100 p-1 rounded-lg border border-stone-200 shadow-inner">
-                    <i class="fas fa-user-circle text-stone-400 ml-2"></i>
-                    <select id="simulatedUser"
-                        class="bg-transparent text-sm font-semibold text-brand-text border-none focus:ring-0 cursor-pointer outline-none w-auto max-w-[150px] sm:max-w-none"
-                        onchange="app.switchUser(this.value)">
-                        <option value="manager">Grupo Gestor - GG</option>
-                        <option value="resident_A_2">Morador (Bl A - 2º Andar)</option>
-                        <option value="resident_B_5">Morador (Bl B - 5º Andar)</option>
-                    </select>
+            <button onclick="app.toggleMobileMenu()"
+                class="md:hidden p-2 text-stone-500 hover:text-brand-accent focus:outline-none z-20">
+                <i id="mobileMenuIcon" class="fas fa-bars text-xl transition-transform duration-300"></i>
+            </button>
+
+            <div id="navbarContent"
+                class="hidden w-full md:flex md:flex-1 md:items-center md:justify-between md:w-auto mt-4 md:mt-0 border-t md:border-t-0 border-stone-100 pt-4 md:pt-0">
+
+                <div
+                    class="flex flex-col md:flex-row items-start md:items-center justify-center gap-3 md:gap-4 w-full md:w-auto mb-4 md:mb-0 md:mx-auto">
+
+                    <div
+                        class="w-full md:w-auto flex items-center gap-2 bg-stone-100 p-1 rounded-lg border border-stone-200 shadow-inner">
+                        <i class="fas fa-user-circle text-stone-400 ml-2"></i>
+                        <select id="simulatedUser"
+                            class="bg-transparent text-sm font-semibold text-brand-text border-none focus:ring-0 cursor-pointer outline-none w-full md:w-auto max-w-none md:max-w-[150px]"
+                            onchange="app.switchUser(this.value)">
+                            <option value="manager">Grupo Gestor - GG</option>
+                            <option value="resident_A_2">Morador (Bl A - 2º Andar)</option>
+                            <option value="resident_B_5">Morador (Bl B - 5º Andar)</option>
+                        </select>
+                    </div>
+
+                    <div id="filterButtonsContainer" class="hidden flex flex-wrap items-center gap-1.5 p-1">
+                        <button onclick="app.toggleFilter('following')" id="btn-filter-following"
+                            class="px-3 py-1 text-xs font-bold rounded-lg border transition-all flex items-center gap-1">
+                            <i class="fas fa-star text-[10px]"></i> Seguindo
+                        </button>
+                        <button onclick="app.toggleFilter('floor')" id="btn-filter-floor"
+                            class="px-3 py-1 text-xs font-bold rounded-lg border transition-all">
+                            Andar
+                        </button>
+                        <button onclick="app.toggleFilter('block')" id="btn-filter-block"
+                            class="px-3 py-1 text-xs font-bold rounded-lg border transition-all">
+                            Bloco
+                        </button>
+                        <button onclick="app.toggleFilter('public')" id="btn-filter-public"
+                            class="px-3 py-1 text-xs font-bold rounded-lg border transition-all">
+                            Público
+                        </button>
+                    </div>
                 </div>
 
-                <div id="viewFilterContainer"
-                    class="hidden flex items-center gap-2 bg-white p-1 rounded-lg border border-stone-200 shadow-sm transition-all">
-                    <i class="fas fa-filter text-brand-accent ml-2 text-xs"></i>
-                    <select id="viewFilter"
-                        class="bg-transparent text-xs font-semibold text-brand-text border-none focus:ring-0 cursor-pointer outline-none w-24 sm:w-auto"
-                        onchange="app.render()">
-                        <option value="all">Ver Tudo</option>
-                        <option value="custom">★ Meus/Seguindo</option>
-                        <option value="private">Privado</option>
-                        <option value="floor">Meu Andar</option>
-                        <option value="block">Meu Bloco</option>
-                        <option value="public">Público</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- RIGHT: Actions -->
-            <div class="flex items-center justify-end gap-1 sm:gap-2 w-1/3">
-
-                <button onclick="app.openArchiveListModal()"
-                    class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
-                    title="Arquivo">
-                    <i class="fas fa-archive"></i>
-                </button>
-
-                <button onclick="app.openLogModal()"
-                    class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
-                    title="Histórico">
-                    <i class="fas fa-history"></i>
-                </button>
-
-                <div id="managerMenu" class="hidden flex gap-1 sm:gap-2 items-center">
-                    <button onclick="app.openTriageModal()"
-                        class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group mr-1"
-                        title="Triagem">
-                        <i class="fas fa-tasks"></i>
-                        <span id="triageBadge"
-                            class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white badge-pulse">0</span>
+                <div
+                    class="flex items-center justify-end gap-2 w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-3 md:pt-0">
+                    <button onclick="app.openArchiveListModal()"
+                        class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
+                        title="Arquivo">
+                        <i class="fas fa-archive"></i>
                     </button>
 
-                    <div class="h-4 w-px bg-stone-300 mx-1"></div>
-
-                    <button onclick="app.openUserModal()"
-                        class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition"
-                        title="Usuários">
-                        <i class="fas fa-users"></i>
+                    <button onclick="app.openLogModal()"
+                        class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
+                        title="Histórico">
+                        <i class="fas fa-history"></i>
                     </button>
-                    <button onclick="app.downloadLog()"
-                        class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition"
-                        title="Baixar Log">
-                        <i class="fas fa-file-csv"></i>
+
+                    <div id="managerMenu" class="hidden flex gap-2 items-center">
+                        <button onclick="app.openTriageModal()"
+                            class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
+                            title="Triagem">
+                            <i class="fas fa-tasks"></i>
+                            <span id="triageBadge"
+                                class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white badge-pulse">0</span>
+                        </button>
+
+                        <div class="h-4 w-px bg-stone-300 mx-1 hidden md:block"></div>
+
+                        <button onclick="app.openUserModal()"
+                            class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition"
+                            title="Usuários">
+                            <i class="fas fa-users"></i>
+                        </button>
+                        <button onclick="app.downloadLog()"
+                            class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition"
+                            title="Baixar Log">
+                            <i class="fas fa-file-csv"></i>
+                        </button>
+                    </div>
+
+                    <div class="h-6 w-px bg-stone-200 mx-1 hidden md:block"></div>
+
+                    <button onclick="window.location.href='index.html'"
+                        class="text-sm font-semibold text-stone-500 hover:text-brand-danger transition px-2 flex items-center gap-2">
+                        <i class="fas fa-sign-out-alt"></i> <span class="hidden sm:inline">Sair</span>
                     </button>
                 </div>
-
-                <div class="h-6 w-px bg-stone-200 mx-1 hidden sm:block"></div>
-
-                <button onclick="window.location.href='index.html'"
-                    class="text-sm font-semibold text-stone-500 hover:text-brand-danger transition px-2">
-                    <i class="fas fa-sign-out-alt"></i> <span class="hidden sm:inline ml-1">Sair</span>
-                </button>
             </div>
         </div>
     </header>
 
-    <!-- Main Kanban Board -->
-    <main class="flex-1 overflow-x-auto overflow-y-hidden bg-brand-bg p-4 flex items-center justify-center" id="mainBoard">
-        <div class="flex gap-4 h-full" style="width: max-content;">
-            <!-- BACKLOG -->
-            <div class="kanban-col w-72 md:w-80 flex flex-col bg-stone-100/50 rounded-xl border border-stone-200">
+    <main class="flex-1 overflow-x-auto overflow-y-hidden bg-brand-bg p-4 flex items-center justify-center"
+        id="mainBoard">
+        <div class="flex gap-4 h-full items-start" style="width: max-content;">
+            <div class="kanban-col w-72 md:w-80 bg-stone-100/50 rounded-xl border border-stone-200">
                 <div
-                    class="p-3 border-b border-stone-200/50 flex justify-between items-center bg-stone-100 rounded-t-xl sticky top-0">
+                    class="p-3 border-b border-stone-200/50 flex justify-between items-center bg-stone-100 rounded-t-xl sticky top-0 flex-none">
                     <h3 class="font-bold text-stone-600 flex items-center gap-2">
                         <div class="w-2 h-2 rounded-full bg-stone-400"></div> A Fazer
                     </h3>
@@ -205,10 +250,9 @@
                 </div>
                 <div class="flex-1 overflow-y-auto p-2 space-y-2" id="col-backlog"></div>
             </div>
-            <!-- DOING -->
-            <div class="kanban-col w-72 md:w-80 flex flex-col bg-blue-50/50 rounded-xl border border-blue-100">
+            <div class="kanban-col w-72 md:w-80 bg-blue-50/50 rounded-xl border border-blue-100">
                 <div
-                    class="p-3 border-b border-blue-100 flex justify-between items-center bg-blue-50 rounded-t-xl sticky top-0">
+                    class="p-3 border-b border-blue-100 flex justify-between items-center bg-blue-50 rounded-t-xl sticky top-0 flex-none">
                     <h3 class="font-bold text-blue-700 flex items-center gap-2">
                         <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div> Fazendo
                     </h3>
@@ -218,10 +262,9 @@
                 </div>
                 <div class="flex-1 overflow-y-auto p-2 space-y-2" id="col-doing"></div>
             </div>
-            <!-- STUCK -->
-            <div class="kanban-col w-72 md:w-80 flex flex-col bg-red-50/50 rounded-xl border border-red-100">
+            <div class="kanban-col w-72 md:w-80 bg-red-50/50 rounded-xl border border-red-100">
                 <div
-                    class="p-3 border-b border-red-100 flex justify-between items-center bg-red-50 rounded-t-xl sticky top-0">
+                    class="p-3 border-b border-red-100 flex justify-between items-center bg-red-50 rounded-t-xl sticky top-0 flex-none">
                     <h3 class="font-bold text-red-700 flex items-center gap-2">
                         <div class="w-2 h-2 rounded-full bg-red-500"></div> Enroscado
                     </h3>
@@ -231,10 +274,9 @@
                 </div>
                 <div class="flex-1 overflow-y-auto p-2 space-y-2" id="col-stuck"></div>
             </div>
-            <!-- DONE -->
-            <div class="kanban-col w-72 md:w-80 flex flex-col bg-green-50/50 rounded-xl border border-green-100">
+            <div class="kanban-col w-72 md:w-80 bg-green-50/50 rounded-xl border border-green-100">
                 <div
-                    class="p-3 border-b border-green-100 flex justify-between items-center bg-green-50 rounded-t-xl sticky top-0">
+                    class="p-3 border-b border-green-100 flex justify-between items-center bg-green-50 rounded-t-xl sticky top-0 flex-none">
                     <h3 class="font-bold text-green-700 flex items-center gap-2">
                         <div class="w-2 h-2 rounded-full bg-green-500"></div> Feito
                     </h3>
@@ -247,33 +289,26 @@
         </div>
     </main>
 
-    <!-- FAB -->
     <button id="newTicketFab" onclick="app.openNewTicketModal()"
         class="fab w-14 h-14 bg-brand-accent hover:bg-amber-600 text-white rounded-full flex items-center justify-center text-2xl transition-transform hover:scale-110 active:scale-95 hidden">
         <i class="fas fa-plus"></i>
     </button>
 
-    <!-- MODAL: Archive List (NEW IMPLEMENTATION AS MODAL) -->
     <div id="archiveListModal"
         class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div
             class="bg-white w-full max-w-5xl mx-4 rounded-xl shadow-2xl flex flex-col max-h-[90vh] transform scale-95 transition-transform duration-300">
-            <!-- Header -->
             <div
                 class="p-6 border-b border-stone-200 flex justify-between items-center bg-stone-50 rounded-t-xl relative">
-                <!-- Title Centered -->
                 <div class="absolute left-0 right-0 text-center pointer-events-none">
                     <h2 class="text-xl font-bold text-brand-text flex items-center justify-center gap-2">
                         <i class="fas fa-archive text-stone-400"></i> Arquivo Morto
                     </h2>
                 </div>
-                <!-- Spacers to balance -->
                 <div></div>
-                <!-- Close Button -->
                 <button onclick="app.closeModals()"
                     class="text-stone-400 hover:text-red-500 text-2xl z-10">&times;</button>
             </div>
-
             <div class="flex-1 overflow-y-auto p-0">
                 <table class="w-full text-left text-sm">
                     <thead class="bg-stone-50 border-b border-stone-200 text-stone-500 sticky top-0 shadow-sm">
@@ -290,7 +325,6 @@
         </div>
     </div>
 
-    <!-- MODAL: Global Log Viewer -->
     <div id="logModal"
         class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div
@@ -351,7 +385,6 @@
         </div>
     </div>
 
-    <!-- MODAL: Card Details -->
     <div id="cardModal"
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div
@@ -361,13 +394,13 @@
                     <div class="flex-1">
                         <div class="flex items-center gap-2 mb-2">
                             <span id="modalPriority"
-                                class="text-xs font-bold px-2 py-0.5 rounded bg-stone-100 text-stone-600">Q?</span>
-                            <div id="modalVisibilityContainer"></div>
+                                class="h-8 inline-flex items-center justify-center text-xs font-bold px-3 rounded bg-stone-100 text-stone-600 border border-stone-200">Q?</span>
+                            <div id="modalVisibilityContainer" class="h-8 flex items-center"></div>
                         </div>
                         <h2 id="modalTitle" class="text-xl font-bold text-brand-text leading-tight"></h2>
                     </div>
                     <button onclick="app.closeModals()"
-                        class="text-stone-400 hover:text-stone-600 text-2xl leading-none">&times;</button>
+                        class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-stone-100 text-stone-400 hover:text-stone-600 text-2xl leading-none transition">&times;</button>
                 </div>
             </div>
             <div class="flex-1 overflow-y-auto px-6 py-4 bg-stone-50/30">
@@ -401,11 +434,51 @@
                             class="fas fa-exclamation-circle"></i> Motivo do Enrosco</h4>
                     <p id="modalStuckReason" class="text-sm text-red-600 italic"></p>
                 </div>
+
                 <div class="mb-6">
-                    <h5 class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">Descrição</h5>
-                    <p id="modalDesc"
-                        class="text-sm text-stone-700 leading-relaxed bg-white p-4 rounded-lg border border-stone-200">
-                    </p>
+                    <h5
+                        class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2 flex justify-between items-center">
+                        <span>Descrição</span>
+                        <span id="privacyIndicator" class="text-[10px] px-2 py-0.5 rounded border hidden"></span>
+                    </h5>
+
+                    <div id="originalDescContainer" class="hidden mb-3">
+                        <div class="bg-red-50 border border-red-100 p-3 rounded-lg relative">
+                            <span
+                                class="absolute top-0 right-0 bg-red-100 text-red-600 text-[9px] font-bold px-1.5 py-0.5 rounded-bl-lg border-b border-l border-red-200">
+                                <i class="fas fa-lock"></i> ORIGINAL (PRIVADO)
+                            </span>
+                            <p id="modalOriginalDesc" class="text-sm text-stone-700 leading-relaxed pt-2"></p>
+                        </div>
+                    </div>
+
+                    <div id="publicSummaryContainer">
+                        <div class="relative">
+                            <p id="modalPublicSummary"
+                                class="text-sm text-stone-700 leading-relaxed bg-white p-4 rounded-lg border border-stone-200 hidden">
+                            </p>
+                            <span id="publicViewLabel"
+                                class="hidden absolute top-0 right-0 bg-stone-100 text-stone-500 text-[9px] font-bold px-1.5 py-0.5 rounded-bl-lg border-b border-l border-stone-200">
+                                <i class="fas fa-eye"></i> VISÃO PÚBLICA
+                            </span>
+                        </div>
+
+                        <div id="managerSummaryEditor" class="hidden mt-2">
+                            <label class="block text-xs font-bold text-brand-secondary uppercase mb-1">
+                                <i class="fas fa-edit"></i> Editar Resumo Público (Sanitizado)
+                            </label>
+                            <textarea id="summaryInput"
+                                class="w-full border-2 border-brand-secondary/30 rounded-lg p-3 text-sm focus:ring-2 focus:ring-brand-secondary focus:border-brand-secondary outline-none transition"
+                                rows="3"
+                                placeholder="Escreva aqui uma versão segura para exibição pública (ex: 'Reclamação de ruído noturno')..."></textarea>
+                            <div class="flex justify-end mt-1">
+                                <button onclick="app.savePublicSummary()"
+                                    class="text-xs bg-brand-secondary text-white px-3 py-1 rounded font-bold hover:bg-sky-600 transition">
+                                    Salvar Resumo Público
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div id="modalAttachments" class="mb-6">
                     <h5 class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">Anexos</h5>
@@ -450,7 +523,6 @@
         </div>
     </div>
 
-    <!-- MODAL: Triage List -->
     <div id="triageModal"
         class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div
@@ -482,7 +554,6 @@
         </div>
     </div>
 
-    <!-- MODAL: Archive Confirm (Renamed from archiveModal) -->
     <div id="archiveConfirmModal"
         class="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div
@@ -501,7 +572,6 @@
         </div>
     </div>
 
-    <!-- MODAL: Stuck Reason -->
     <div id="stuckModal"
         class="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div
@@ -519,7 +589,6 @@
         </div>
     </div>
 
-    <!-- MODAL: User Management -->
     <div id="userModal"
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div
@@ -558,7 +627,6 @@
         </div>
     </div>
 
-    <!-- MODAL: New Ticket -->
     <div id="newTicketModal"
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div
@@ -572,7 +640,8 @@
                         placeholder="Ex: Luz do corredor queimada">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Detalhes</label>
+                    <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Detalhes (Original -
+                        Privado)</label>
                     <textarea id="newDesc"
                         class="w-full border border-stone-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-accent outline-none"
                         rows="3" placeholder="Descreva melhor o problema..."></textarea>
@@ -597,7 +666,6 @@
         </div>
     </div>
 
-    <!-- Toast Container -->
     <div id="toast-container"
         class="fixed top-4 right-4 z-[100] flex flex-col gap-3 pointer-events-none p-4 w-full max-w-sm"></div>
 
@@ -611,8 +679,11 @@
                 ],
                 systemLogs: [],
                 currentUser: 'manager',
-                currentTask: null
+                currentTask: null,
+                mobileMenuOpen: false
             },
+
+            activeFilters: ['following'],
 
             logState: {
                 logs: [],
@@ -624,6 +695,7 @@
                 this.loadData();
                 this.render();
                 this.updateUserInterface();
+                this.initWatermark();
             },
 
             loadData() {
@@ -694,6 +766,7 @@
                         id: i + 1,
                         title: `${titles[Math.floor(Math.random() * titles.length)]} - ${locales[Math.floor(Math.random() * locales.length)]}`,
                         description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Problema recorrente reportado pelos moradores.',
+                        public_summary: null,
                         status: status,
                         visibility: vis,
                         priority: `Q${Math.floor(Math.random() * 4) + 1}`,
@@ -712,6 +785,7 @@
                     id: 999,
                     title: 'Lixo no corredor Bloco B',
                     description: 'Saco de lixo deixado na porta do 203.',
+                    public_summary: 'Relato de item deixado em área comum.',
                     status: 'triage',
                     visibility: 'block',
                     priority: 'Q3',
@@ -726,7 +800,127 @@
                 this.saveData();
             },
 
-            // --- FUNCTION DEFINITIONS (STRICTLY COMMA SEPARATED) ---
+            // --- WATERMARK & SECURITY ---
+            initWatermark: function () {
+                const createWatermark = () => {
+                    const existing = document.getElementById('security-watermark');
+                    if (existing) existing.remove();
+
+                    const user = this.data.currentUser;
+                    const timestamp = new Date().toLocaleTimeString();
+                    const text = `${user} • ${timestamp} • IP: 192.168.0.1`;
+
+                    const canvas = document.createElement('canvas');
+                    canvas.id = 'security-watermark';
+                    canvas.className = 'security-layer';
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.font = '14px sans-serif';
+                    ctx.fillStyle = '#000000';
+                    ctx.rotate(-20 * Math.PI / 180);
+
+                    for (let y = -500; y < canvas.height + 500; y += 120) {
+                        for (let x = -500; x < canvas.width + 500; x += 300) {
+                            ctx.fillText(text, x, y);
+                        }
+                    }
+
+                    document.body.appendChild(canvas);
+                };
+
+                createWatermark();
+
+                setInterval(() => {
+                    const watermark = document.getElementById('security-watermark');
+                    let violation = false;
+
+                    if (!watermark) {
+                        violation = true;
+                    } else {
+                        const style = window.getComputedStyle(watermark);
+                        if (style.display === 'none' || style.visibility === 'hidden' || style.opacity < 0.01 || style.zIndex < 0) {
+                            violation = true;
+                            watermark.remove();
+                        }
+                    }
+
+                    if (violation) {
+                        console.warn("Security Alert: Watermark tampering detected.");
+
+                        this.data.systemLogs.unshift({
+                            date: new Date().toISOString(),
+                            user: this.data.currentUser === 'manager' ? 'Gestor' : 'Morador',
+                            action: 'VIOLAÇÃO DE SEGURANÇA',
+                            details: 'Tentativa de ocultar/remover marca d\'água identificada.',
+                            taskTitle: 'Sistema',
+                            taskId: null
+                        });
+                        this.saveData();
+                        this.showToast('warning', 'Segurança', 'Violação registrada.');
+
+                        createWatermark();
+                    }
+                }, 2000);
+
+                window.addEventListener('resize', () => {
+                    const w = document.getElementById('security-watermark');
+                    if (w) w.remove();
+                    createWatermark();
+                });
+            },
+
+            // --- MOBILE MENU LOGIC ---
+            toggleMobileMenu() {
+                this.data.mobileMenuOpen = !this.data.mobileMenuOpen;
+                const content = document.getElementById('navbarContent');
+                const icon = document.getElementById('mobileMenuIcon');
+
+                if (this.data.mobileMenuOpen) {
+                    content.classList.remove('hidden');
+                    content.classList.add('flex', 'flex-col');
+                    icon.classList.add('rotate-90'); // Visual effect: Horizontal bars become vertical side-by-side bars
+                } else {
+                    content.classList.add('hidden');
+                    content.classList.remove('flex', 'flex-col');
+                    icon.classList.remove('rotate-90');
+                }
+            },
+
+            // --- FILTER LOGIC ---
+            toggleFilter: function (filterType) {
+                const idx = this.activeFilters.indexOf(filterType);
+                if (idx > -1) {
+                    this.activeFilters.splice(idx, 1);
+                } else {
+                    this.activeFilters.push(filterType);
+                }
+                this.updateFilterButtons();
+                this.render();
+            },
+
+            updateFilterButtons: function () {
+                const configs = {
+                    'following': {activeClass: 'bg-amber-100 border-amber-300 text-amber-700 ring-1 ring-amber-400', inactiveClass: 'bg-white border-stone-200 text-stone-400 hover:bg-stone-50'},
+                    'floor': {activeClass: 'bg-purple-100 border-purple-300 text-purple-700 ring-1 ring-purple-400', inactiveClass: 'bg-white border-purple-100 text-purple-300 hover:bg-purple-50'},
+                    'block': {activeClass: 'bg-blue-100 border-blue-300 text-blue-700 ring-1 ring-blue-400', inactiveClass: 'bg-white border-blue-100 text-blue-300 hover:bg-blue-50'},
+                    'public': {activeClass: 'bg-green-100 border-green-300 text-green-700 ring-1 ring-green-400', inactiveClass: 'bg-white border-green-100 text-green-300 hover:bg-green-50'}
+                };
+
+                ['following', 'floor', 'block', 'public'].forEach(type => {
+                    const btn = document.getElementById(`btn-filter-${type}`);
+                    if (btn) {
+                        const isActive = this.activeFilters.includes(type);
+                        const conf = configs[type];
+                        btn.className = `px-3 py-1 text-xs font-bold rounded-lg border transition-all flex items-center gap-1 ${isActive ? conf.activeClass : conf.inactiveClass}`;
+
+                        if (type === 'following') {
+                            btn.innerHTML = `<i class="${isActive ? 'fas' : 'far'} fa-star text-[10px]"></i> Seguindo`;
+                        }
+                    }
+                });
+            },
 
             openTriageModal: function () {
                 const triageList = this.data.tasks.filter(t => t.status === 'triage');
@@ -758,21 +952,15 @@
                 const userBlock = this.data.currentUser === 'resident_A_2' ? 'A' : 'B';
                 const userFloor = this.data.currentUser === 'resident_A_2' ? '2' : '5';
 
-                const filterEl = document.getElementById('viewFilter');
-                const viewFilter = (!isManager && filterEl) ? filterEl.value : 'all';
-
                 const filtered = this.data.tasks.filter(t => {
                     if (t.status === 'archived') return false;
-
-                    if (t.status === 'triage') {
-                        triageCount++;
-                        return false;
-                    }
+                    if (t.status === 'triage') {triageCount++; return false;}
 
                     let canSee = false;
                     if (isManager) {
                         canSee = true;
                     } else {
+                        // 1. Gatekeeper (Strict Permissions)
                         if (t.visibility === 'public') canSee = true;
                         else if (t.visibility === 'block' && t.block === userBlock) canSee = true;
                         else if (t.visibility === 'floor' && t.block === userBlock && t.floor === userFloor) canSee = true;
@@ -781,16 +969,22 @@
 
                     if (!canSee) return false;
 
+                    // 2. User Preference Filters (Only for Resident)
                     if (!isManager) {
-                        if (viewFilter === 'custom') {
-                            const isMyPrivate = t.visibility === 'private' && t.owner_id === this.data.currentUser;
-                            const isFollowed = t.followers && t.followers.includes(this.data.currentUser);
-                            return isMyPrivate || isFollowed;
-                        }
-                        if (viewFilter === 'private') return t.visibility === 'private' && t.owner_id === this.data.currentUser;
-                        if (viewFilter === 'floor') return t.visibility === 'floor';
-                        if (viewFilter === 'block') return t.visibility === 'block';
-                        if (viewFilter === 'public') return t.visibility === 'public';
+                        // MANDATORY: Always show own cards
+                        if (t.owner_id === this.data.currentUser) return true;
+
+                        const showFollowing = this.activeFilters.includes('following');
+                        const showFloor = this.activeFilters.includes('floor');
+                        const showBlock = this.activeFilters.includes('block');
+                        const showPublic = this.activeFilters.includes('public');
+
+                        if (showFollowing && t.followers && t.followers.includes(this.data.currentUser)) return true;
+                        if (showFloor && t.visibility === 'floor') return true;
+                        if (showBlock && t.visibility === 'block') return true;
+                        if (showPublic && t.visibility === 'public') return true;
+
+                        return false;
                     }
 
                     return true;
@@ -823,7 +1017,10 @@
                 const desc = document.getElementById('newDesc').value;
                 const vis = document.getElementById('newVisibility').value;
 
-                if (!title) return alert('Título é obrigatório');
+                if (!title) {
+                    this.showToast('warning', 'Atenção', 'Título é obrigatório');
+                    return;
+                }
 
                 const isManager = this.data.currentUser === 'manager';
                 const initialStatus = isManager ? 'backlog' : 'triage';
@@ -835,6 +1032,7 @@
                     id: Date.now(),
                     title: title,
                     description: desc || 'Sem descrição.',
+                    public_summary: null, // Starts null
                     status: initialStatus,
                     visibility: vis,
                     priority: 'Q' + (Math.floor(Math.random() * 4) + 1),
@@ -912,7 +1110,7 @@
                 const reason = document.getElementById('archiveReasonInput').value.trim();
 
                 if (isTriage && !reason) {
-                    alert("Por favor, informe o motivo do arquivamento/rejeição.");
+                    this.showToast('warning', 'Atenção', "Por favor, informe o motivo do arquivamento/rejeição.");
                     return;
                 }
 
@@ -964,13 +1162,13 @@
                     }
 
                     return `
-                    <tr class="hover:bg-stone-50">
-                        <td class="px-6 py-4 font-medium text-stone-900">${t.title}</td>
-                        <td class="px-6 py-4 text-stone-500">${new Date(t.created_at).toLocaleDateString()}</td>
-                        <td class="px-6 py-4 text-stone-500 text-xs">${ownerName}</td>
-                        <td class="px-6 py-4 text-right">${restoreBtn}</td>
-                    </tr>
-                `}).join('');
+                        <tr class="hover:bg-stone-50">
+                            <td class="px-6 py-4 font-medium text-stone-900">${t.title}</td>
+                            <td class="px-6 py-4 text-stone-500">${new Date(t.created_at).toLocaleDateString()}</td>
+                            <td class="px-6 py-4 text-stone-500 text-xs">${ownerName}</td>
+                            <td class="px-6 py-4 text-right">${restoreBtn}</td>
+                        </tr>
+                    `}).join('');
             },
 
             restoreTask: function (id) {
@@ -1036,8 +1234,6 @@
 
                 this.showToast('success', 'Download', `Arquivo ${filename} gerado.`);
             },
-
-            // --- Existing methods that were stable ---
 
             toggleArchiveView: function () {
                 // This function is now mapped to openArchiveListModal but kept for backwards compatibility if called elsewhere
@@ -1175,14 +1371,33 @@
                 };
 
                 const isManager = this.data.currentUser === 'manager';
-                const isPrivate = task.visibility === 'private';
+                const isOwner = task.owner_id === this.data.currentUser;
+                const isPrivateVis = task.visibility === 'private';
+
+                // LÓGICA DE PRIVACIDADE NO CARD
+                let displayDescription = task.description;
+
+                if (!isManager && !isOwner) {
+                    if (task.public_summary) {
+                        displayDescription = task.public_summary;
+                    } else {
+                        displayDescription = "<span class='italic text-stone-400'>Conteúdo sob análise da administração.</span>";
+                    }
+                }
+
+                // ALERT BADGE PARA GESTOR QUANDO NÃO HÁ RESUMO PÚBLICO
+                let pendingSummaryAlert = '';
+                if (isManager && !task.public_summary && task.visibility !== 'private') {
+                    pendingSummaryAlert = `<span class="text-[9px] font-bold text-orange-600 bg-orange-100 border border-orange-200 px-1.5 py-0.5 rounded flex items-center gap-1" title="Este chamado público ainda não tem um resumo seguro definido"><i class="fas fa-shield-alt"></i> PENDENTE</span>`;
+                }
+
                 let followBtn = '';
 
-                if (!isManager && !isPrivate) {
+                if (!isManager && !isPrivateVis) {
                     const isFollowing = task.followers && task.followers.includes(this.data.currentUser);
                     const iconClass = isFollowing ? 'fas fa-star text-amber-400' : 'far fa-star text-stone-300 hover:text-amber-400';
                     const title = isFollowing ? 'Deixar de Seguir' : 'Seguir Chamado';
-                    followBtn = `<button onclick="event.stopPropagation(); app.toggleFollow(${task.id})" class="absolute top-2 right-2 p-1.5 transition-transform active:scale-95" title="${title}"><i class="${iconClass}"></i></button>`;
+                    followBtn = `<button onclick="event.stopPropagation(); app.toggleFollow(${task.id})" class="p-1 transition-transform active:scale-95" title="${title}"><i class="${iconClass}"></i></button>`;
                 }
 
                 let stuckHTML = '';
@@ -1195,26 +1410,34 @@
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 let agingHTML = '';
                 if (diffDays > 10 && task.status !== 'done') {
-                    agingHTML = `<span class="text-[10px] text-red-500 font-bold ml-2 flex items-center gap-1"><i class="far fa-clock"></i> ${diffDays}d</span>`;
+                    agingHTML = `<span class="text-[10px] text-red-500 font-bold ml-1 flex items-center gap-1"><i class="far fa-clock"></i> ${diffDays}d</span>`;
                 }
 
                 let attachHTML = '';
                 if (task.attachments && task.attachments.length > 0) {
-                    attachHTML = `<i class="fas fa-paperclip text-stone-400 text-xs ml-2"></i>`;
+                    attachHTML = `<i class="fas fa-paperclip text-stone-400 text-xs"></i>`;
                 }
 
                 return `
-                <div onclick="app.openCardModal(${task.id})" class="kanban-card bg-white p-3 rounded-lg shadow-sm border border-stone-100 border-l-4 ${priorityColors[task.priority]} mb-2 relative group pr-8">
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="text-xs font-bold text-stone-400 flex items-center">${task.priority} ${agingHTML}</span>
-                        <div class="flex items-center">
-                            ${attachHTML}
-                            <div class="ml-2">${badges[task.visibility]}</div>
+                <div onclick="app.openCardModal(${task.id})" class="kanban-card bg-white p-3 rounded-lg shadow-sm border border-stone-100 border-l-4 ${priorityColors[task.priority]} mb-2 group">
+                    
+                    <div class="flex justify-between items-center mb-2 w-full h-6">
+                        
+                        <div class="flex items-center gap-2 h-full">
+                            <span class="text-xs font-bold text-stone-400 flex items-center h-full">${task.priority} ${agingHTML}</span>
+                            ${pendingSummaryAlert}
                         </div>
+
+                        <div class="flex items-center gap-2 h-full">
+                            ${attachHTML}
+                            <div class="">${badges[task.visibility]}</div>
+                            ${followBtn}
+                        </div>
+
                     </div>
-                    ${followBtn}
+
                     <h4 class="text-sm font-semibold text-brand-text leading-tight mb-1 line-clamp-2">${task.title}</h4>
-                    <p class="text-xs text-stone-500 line-clamp-2">${task.description}</p>
+                    <p class="text-xs text-stone-500 line-clamp-2">${displayDescription}</p>
                     ${stuckHTML}
                 </div>`;
             },
@@ -1258,10 +1481,10 @@
 
             switchUser: function (role) {
                 this.data.currentUser = role;
-                const filterEl = document.getElementById('viewFilter');
-                if (filterEl) filterEl.value = 'all';
                 this.updateUserInterface();
+                this.updateFilterButtons(); // Update buttons visibility
                 this.render();
+                this.initWatermark();
                 this.showToast('success', 'Perfil Alterado', `Agora simulando: ${role === 'manager' ? 'Gestor' : 'Morador'}`);
             },
 
@@ -1272,7 +1495,8 @@
                     managerMenu: document.getElementById('managerMenu'),
                     mobileMenu: document.getElementById('mobileManagerMenu'),
                     fab: document.getElementById('newTicketFab'),
-                    filterContainer: document.getElementById('viewFilterContainer'),
+                    filterButtons: document.getElementById('filterButtonsContainer'),
+                    viewFilterContainer: document.getElementById('viewFilterContainer'), // Old container
                     mainBoard: document.getElementById('mainBoard'),
                     archiveView: document.getElementById('archiveView')
                 };
@@ -1284,7 +1508,9 @@
                 safeToggle(elements.managerMenu, 'hidden', !isManager);
                 safeToggle(elements.mobileMenu, 'hidden', !isManager);
                 safeToggle(elements.fab, 'hidden', isManager);
-                safeToggle(elements.filterContainer, 'hidden', isManager);
+                safeToggle(elements.filterButtons, 'hidden', isManager);
+
+                if (elements.viewFilterContainer) elements.viewFilterContainer.classList.add('hidden');
 
                 if (elements.mainBoard) elements.mainBoard.classList.remove('hidden');
                 if (elements.archiveView) elements.archiveView.classList.add('hidden');
@@ -1297,7 +1523,7 @@
                     setTimeout(() => {
                         modal.classList.remove('opacity-0');
                         if (modal.querySelector('div')) {
-                            modal.querySelector('div').classList.remove('scale-95');
+                            modal.querySelector('div').classList.remove('scale-100');
                             modal.querySelector('div').classList.add('scale-100');
                         }
                     }, 10);
@@ -1338,7 +1564,6 @@
                 }
 
                 document.getElementById('modalTitle').innerText = task.title;
-                document.getElementById('modalDesc').innerText = task.description;
                 document.getElementById('modalPriority').innerText = task.priority;
                 document.getElementById('modalStatus').innerText = task.status;
                 document.getElementById('modalDate').innerText = new Date(task.created_at).toLocaleDateString('pt-BR');
@@ -1356,10 +1581,67 @@
                     if (followersContainer) followersContainer.classList.add('hidden');
                 }
 
+                const els = {
+                    origContainer: document.getElementById('originalDescContainer'),
+                    origText: document.getElementById('modalOriginalDesc'),
+                    summaryView: document.getElementById('modalPublicSummary'),
+                    summaryEditor: document.getElementById('managerSummaryEditor'),
+                    summaryInput: document.getElementById('summaryInput'),
+                    privacyBadge: document.getElementById('privacyIndicator'),
+                    publicLabel: document.getElementById('publicViewLabel')
+                };
+
+                els.origContainer.classList.add('hidden');
+                els.summaryView.classList.add('hidden');
+                els.summaryEditor.classList.add('hidden');
+                els.privacyBadge.classList.add('hidden');
+                els.publicLabel.classList.add('hidden');
+
+                if (isManager) {
+                    els.origContainer.classList.remove('hidden');
+                    els.origText.innerText = task.description;
+
+                    els.summaryView.classList.remove('hidden');
+                    if (task.public_summary) {
+                        els.summaryView.innerText = task.public_summary;
+                    } else {
+                        els.summaryView.innerHTML = "<span class='text-stone-400 italic'>Nenhum resumo público definido ainda.</span>";
+                    }
+
+                    els.summaryEditor.classList.remove('hidden');
+                    els.summaryInput.value = task.public_summary || '';
+
+                    els.privacyBadge.classList.remove('hidden');
+                    els.privacyBadge.className = "text-[10px] px-2 py-0.5 rounded border bg-brand-secondary/10 text-brand-secondary border-brand-secondary/30 font-bold uppercase";
+                    els.privacyBadge.innerText = "Modo Gestão";
+
+                } else if (isOwner) {
+                    els.origContainer.classList.remove('hidden');
+                    els.origText.innerText = task.description;
+
+                    els.summaryView.classList.remove('hidden');
+                    els.publicLabel.classList.remove('hidden');
+
+                    if (task.public_summary) {
+                        els.summaryView.innerText = task.public_summary;
+                    } else {
+                        els.summaryView.innerHTML = "<span class='text-stone-400 italic'>Aguardando análise/resumo da administração.</span>";
+                    }
+
+                } else {
+                    els.summaryView.classList.remove('hidden');
+                    if (task.public_summary) {
+                        els.summaryView.innerText = task.public_summary;
+                    } else {
+                        els.summaryView.innerHTML = "<em class='text-stone-400'>A descrição detalhada deste chamado é restrita aos envolvidos e à administração.</em>";
+                    }
+                }
+
                 const visContainer = document.getElementById('modalVisibilityContainer');
+                // FIXED HEIGHT AND ALIGNMENT IN MODAL HEADER
                 if (isManager) {
                     visContainer.innerHTML = `
-                        <select onchange="app.changeVisibility(this.value)" class="bg-white border border-stone-300 text-xs font-bold text-stone-600 rounded p-1.5 shadow-sm focus:ring-2 focus:ring-brand-accent outline-none">
+                        <select onchange="app.changeVisibility(this.value)" class="h-8 bg-white border border-stone-300 text-xs font-bold text-stone-600 rounded px-2 shadow-sm focus:ring-2 focus:ring-brand-accent outline-none">
                             <option value="public" ${task.visibility === 'public' ? 'selected' : ''}>Público</option>
                             <option value="block" ${task.visibility === 'block' ? 'selected' : ''}>Bloco</option>
                             <option value="floor" ${task.visibility === 'floor' ? 'selected' : ''}>Andar</option>
@@ -1368,10 +1650,10 @@
                     `;
                 } else {
                     const badges = {
-                        'public': '<span class="text-[10px] uppercase font-bold text-green-600 bg-green-100 px-2 py-1 rounded border border-green-200">Público</span>',
-                        'block': '<span class="text-[10px] uppercase font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded border border-blue-200">Bloco</span>',
-                        'floor': '<span class="text-[10px] uppercase font-bold text-purple-600 bg-purple-100 px-2 py-1 rounded border border-purple-200">Andar</span>',
-                        'private': '<span class="text-[10px] uppercase font-bold text-stone-500 bg-stone-200 px-2 py-1 rounded border border-stone-300">Privado</span>'
+                        'public': '<span class="h-8 inline-flex items-center text-[10px] uppercase font-bold text-green-600 bg-green-100 px-3 rounded border border-green-200">Público</span>',
+                        'block': '<span class="h-8 inline-flex items-center text-[10px] uppercase font-bold text-blue-600 bg-blue-100 px-3 rounded border border-blue-200">Bloco</span>',
+                        'floor': '<span class="h-8 inline-flex items-center text-[10px] uppercase font-bold text-purple-600 bg-purple-100 px-3 rounded border border-purple-200">Andar</span>',
+                        'private': '<span class="h-8 inline-flex items-center text-[10px] uppercase font-bold text-stone-500 bg-stone-200 px-3 rounded border border-stone-300">Privado</span>'
                     };
                     visContainer.innerHTML = badges[task.visibility];
                 }
@@ -1468,7 +1750,6 @@
                         });
                         buttonsGrid.innerHTML = html;
                     }
-
                 } else {
                     actionsContainer.classList.add('hidden');
                     triageInput.classList.add('hidden');
@@ -1477,6 +1758,33 @@
                 }
 
                 app.openModal('cardModal');
+            },
+
+            // --- FUNÇÃO ATUALIZADA: SAVE PUBLIC SUMMARY ---
+            savePublicSummary: function () {
+                if (!this.data.currentTask) return;
+                const newSummary = document.getElementById('summaryInput').value.trim();
+
+                // Atualiza dados
+                this.data.currentTask.public_summary = newSummary;
+
+                // Log com o texto auditado
+                if (!this.data.currentTask.history) this.data.currentTask.history = [];
+                this.data.currentTask.history.unshift({
+                    date: new Date().toISOString(),
+                    user: 'Gestor',
+                    action: 'Moderação de Conteúdo',
+                    details: `Resumo Público atualizado para: "${newSummary}"`
+                });
+
+                this.saveData();
+                this.showToast('success', 'Atualizado', 'Resumo público definido com sucesso.');
+
+                // Atualiza a visualização no modal imediatamente
+                document.getElementById('modalPublicSummary').innerText = newSummary;
+                document.getElementById('modalPublicSummary').classList.remove('hidden');
+                // Força re-render do board para atualizar o badge "PENDENTE" se necessário
+                this.render();
             },
 
             changeVisibility: function (newVis) {
@@ -1521,13 +1829,13 @@
             },
 
             requestStuckReason: function () {
-                app.openModal('stuckModal');
+                this.openModal('stuckModal');
             },
 
             confirmStuck: function () {
                 const reason = document.getElementById('stuckReasonInput').value;
                 if (!reason.trim()) {
-                    alert('Por favor, informe o motivo.');
+                    this.showToast('warning', 'Atenção', 'Por favor, informe o motivo.');
                     return;
                 }
                 if (this.data.currentTask) {
@@ -1543,7 +1851,7 @@
                     this.data.currentTask.stuck_reason = reason;
                     this.saveData();
                     document.getElementById('stuckReasonInput').value = '';
-                    app.closeModals();
+                    this.closeModals();
                     this.showToast('warning', 'Enroscado', 'Motivo registrado com sucesso.');
                 }
             },
@@ -1568,7 +1876,7 @@
                 const reason = document.getElementById('archiveReasonInput').value.trim();
 
                 if (isTriage && !reason) {
-                    alert("Por favor, informe o motivo do arquivamento/rejeição.");
+                    this.showToast('warning', 'Atenção', "Por favor, informe o motivo do arquivamento/rejeição.");
                     return;
                 }
 
@@ -1585,7 +1893,7 @@
 
                 task.status = 'archived';
                 this.saveData();
-                app.closeModals();
+                this.closeModals();
                 this.showToast('info', 'Arquivado', 'O chamado foi enviado para o Arquivo Morto.');
             },
 
