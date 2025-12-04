@@ -205,12 +205,6 @@
 
                         <!-- Linha 2: Botões do menu (mobile) -->
                         <div class="w-full md:w-auto flex items-center justify-center gap-2 md:hidden">
-                            <button id="queueButtonMobile" onclick="app.openQueueModal()"
-                                class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group hidden"
-                                title="Fila Inteligente">
-                                <i class="fas fa-list-ol"></i>
-                            </button>
-
                             <button onclick="app.openArchiveListModal()"
                                 class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
                                 title="Arquivo">
@@ -263,12 +257,6 @@
 
                     <div
                         class="flex items-center justify-end gap-2 w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-3 md:pt-0 hidden md:flex">
-                        <button id="queueButtonDesktop" onclick="app.openQueueModal()"
-                            class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group hidden"
-                            title="Fila Inteligente">
-                            <i class="fas fa-list-ol"></i>
-                        </button>
-
                         <button onclick="app.openArchiveListModal()"
                             class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
                             title="Arquivo">
@@ -335,7 +323,7 @@
                         class="bg-white text-stone-600 px-2 py-0.5 rounded text-xs font-bold border border-stone-200 shadow-sm"
                         id="count-backlog">0</span>
                 </div>
-                <div class="flex-1 overflow-y-auto p-2 space-y-2" id="col-backlog"></div>
+                <div class="flex-1 overflow-y-auto p-2 space-y-2 pb-20" id="col-backlog"></div>
             </div>
             <div class="kanban-col w-72 md:w-80 bg-blue-50/50 rounded-xl border border-blue-100">
                 <div
@@ -347,7 +335,7 @@
                         class="bg-white text-blue-600 px-2 py-0.5 rounded text-xs font-bold border border-blue-100 shadow-sm"
                         id="count-doing">0</span>
                 </div>
-                <div class="flex-1 overflow-y-auto p-2 space-y-2" id="col-doing"></div>
+                <div class="flex-1 overflow-y-auto p-2 space-y-2 pb-20" id="col-doing"></div>
             </div>
             <div class="kanban-col w-72 md:w-80 bg-red-50/50 rounded-xl border border-red-100">
                 <div
@@ -359,7 +347,7 @@
                         class="bg-white text-red-600 px-2 py-0.5 rounded text-xs font-bold border border-red-100 shadow-sm"
                         id="count-stuck">0</span>
                 </div>
-                <div class="flex-1 overflow-y-auto p-2 space-y-2" id="col-stuck"></div>
+                <div class="flex-1 overflow-y-auto p-2 space-y-2 pb-20" id="col-stuck"></div>
             </div>
             <div class="kanban-col w-72 md:w-80 bg-green-50/50 rounded-xl border border-green-100">
                 <div
@@ -371,7 +359,7 @@
                         class="bg-white text-green-600 px-2 py-0.5 rounded text-xs font-bold border border-green-100 shadow-sm"
                         id="count-done">0</span>
                 </div>
-                <div class="flex-1 overflow-y-auto p-2 space-y-2" id="col-done"></div>
+                <div class="flex-1 overflow-y-auto p-2 space-y-2 pb-20" id="col-done"></div>
             </div>
         </div>
     </main>
@@ -386,122 +374,6 @@
         class="fab w-14 h-14 bg-brand-accent hover:bg-amber-600 text-white rounded-full flex items-center justify-center text-2xl transition-transform hover:scale-110 active:scale-95 hidden">
         <i class="fas fa-plus"></i>
     </button>
-
-    <div id="queueModal"
-        class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
-        <div
-            class="bg-white w-[95%] md:w-full max-w-6xl mx-auto rounded-xl shadow-2xl flex flex-col max-h-[90vh] transform scale-95 transition-transform duration-300">
-            <div
-                class="p-6 border-b border-stone-200 flex justify-between items-center bg-stone-50 rounded-t-xl relative">
-                <div class="flex items-center gap-3">
-                    <svg class="w-6 h-6 text-brand-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2">
-                        <line x1="8" y1="6" x2="21" y2="6"></line>
-                        <line x1="8" y1="12" x2="21" y2="12"></line>
-                        <line x1="8" y1="18" x2="21" y2="18"></line>
-                        <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                        <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                        <line x1="3" y1="18" x2="3.01" y2="18"></line>
-                    </svg>
-                    <h2 class="text-xl font-bold text-brand-text">Fila Inteligente de Chamados</h2>
-                </div>
-                <button onclick="app.closeTopModal()"
-                    class="text-stone-400 hover:text-red-500 text-2xl z-10">&times;</button>
-            </div>
-            <div class="flex-1 overflow-y-auto p-6 bg-stone-50">
-                <!-- Insights Cards -->
-                <div id="queueInsights" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <div class="bg-white border border-stone-200 rounded-lg p-4 shadow-sm">
-                        <div class="text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Total na Fila</div>
-                        <div id="queueTotal" class="text-3xl font-bold text-brand-accent">0</div>
-                    </div>
-                    <div class="bg-white border border-stone-200 rounded-lg p-4 shadow-sm">
-                        <div class="text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Tempo Médio</div>
-                        <div id="queueAvgDays" class="text-3xl font-bold text-amber-500">0 dias</div>
-                    </div>
-                    <div class="bg-white border border-stone-200 rounded-lg p-4 shadow-sm">
-                        <div class="text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Em Risco</div>
-                        <div id="queueAtRisk" class="text-3xl font-bold text-red-600">0</div>
-                        <div class="text-xs text-stone-500 mt-1">Simples c/ +7 dias</div>
-                    </div>
-                    <div class="bg-white border border-stone-200 rounded-lg p-4 shadow-sm">
-                        <div class="text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Última Atualização
-                        </div>
-                        <div id="queueLastUpdate" class="text-sm font-semibold text-stone-600">Calculando...</div>
-                    </div>
-                </div>
-
-                <!-- Alert de Risco -->
-                <div id="queueRiskAlert" class="hidden bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-                    <div class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2">
-                            <path
-                                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
-                            </path>
-                            <line x1="12" y1="9" x2="12" y2="13"></line>
-                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                        </svg>
-                        <div class="flex-1">
-                            <strong class="text-red-600 font-bold">Chamados em Risco de Postergação:</strong>
-                            <div id="queueRiskList" class="mt-2 text-sm text-red-900"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- AI Insights -->
-                <div id="queueAIInsights" class="hidden bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                    <div class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2">
-                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                            <polyline points="2 17 12 22 22 17"></polyline>
-                            <polyline points="2 12 12 17 22 12"></polyline>
-                        </svg>
-                        <div class="flex-1">
-                            <strong class="text-blue-600 font-bold text-sm">Análise IA</strong>
-                            <p id="queueAIText" class="mt-1 text-sm text-blue-900 leading-relaxed"></p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tabela da Fila -->
-                <div class="bg-white rounded-lg border border-stone-200 overflow-hidden shadow-sm">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-stone-100 text-stone-700">
-                                <tr>
-                                    <th class="px-4 py-3 text-center font-bold">#</th>
-                                    <th class="px-4 py-3 text-center font-bold">Q</th>
-                                    <th class="px-4 py-3 font-bold">Título</th>
-                                    <th class="px-4 py-3 text-center font-bold">Bloco</th>
-                                    <th class="px-4 py-3 font-bold">Unidade</th>
-                                    <th class="px-4 py-3 font-bold">Status</th>
-                                    <th class="px-4 py-3 text-center font-bold">Dias</th>
-                                    <th class="px-4 py-3 text-center font-bold">Score</th>
-                                    <th class="px-4 py-3 text-center font-bold">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="queueTableBody" class="divide-y divide-stone-100"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="p-4 border-t border-stone-200 bg-stone-50 rounded-b-xl flex justify-between items-center">
-                <div class="text-xs text-stone-500">
-                    <i class="fas fa-info-circle"></i> A fila é recalculada automaticamente a cada 24h
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="app.recalculateQueueNow()"
-                        class="px-4 py-2 bg-brand-accent text-white rounded-lg text-sm hover:bg-brand-accent/90 font-semibold flex items-center gap-2">
-                        <i class="fas fa-sync-alt"></i> Recalcular Agora
-                    </button>
-                    <button onclick="app.closeTopModal()"
-                        class="px-4 py-2 bg-white border border-stone-300 rounded-lg text-sm text-stone-600 hover:bg-stone-100 font-semibold">Fechar</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <div id="archiveListModal"
         class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
@@ -774,7 +646,7 @@
                     <label class="block text-xs font-bold text-brand-secondary uppercase mb-1">
                         <i class="fas fa-shield-alt"></i> Título Público (Mediado)
                     </label>
-                    <input type="text" id="publicTitleInput" maxlength="200"
+                    <input type="text" id="publicTitleInput"
                         class="w-full border-2 border-brand-secondary/30 rounded-lg p-2 text-sm focus:ring-2 focus:ring-brand-secondary focus:border-brand-secondary outline-none transition"
                         placeholder="Versão mediada do título (ex: 'Reclamação de vizinhança')...">
                     <div class="flex justify-end gap-2 mt-1">
@@ -799,14 +671,6 @@
                         <div class="text-xs space-y-1">
                             <div class="flex justify-between" id="modalOwnerRow">
                                 <span class="text-stone-500">Solicitante:</span> <span id="modalOwner"
-                                    class="font-medium"></span>
-                            </div>
-                            <div class="flex justify-between" id="modalBlockRow">
-                                <span class="text-stone-500">Bloco:</span> <span id="modalBlock"
-                                    class="font-medium"></span>
-                            </div>
-                            <div class="flex justify-between" id="modalFloorRow">
-                                <span class="text-stone-500">Andar:</span> <span id="modalFloor"
                                     class="font-medium"></span>
                             </div>
                             <div class="flex justify-between">
@@ -860,7 +724,7 @@
                             <label class="block text-xs font-bold text-brand-secondary uppercase mb-1">
                                 <i class="fas fa-edit"></i> Editar Resumo Público (Sanitizado)
                             </label>
-                            <textarea id="summaryInput" maxlength="2000"
+                            <textarea id="summaryInput"
                                 class="w-full border-2 border-brand-secondary/30 rounded-lg p-3 text-sm focus:ring-2 focus:ring-brand-secondary focus:border-brand-secondary outline-none transition"
                                 rows="3"
                                 placeholder="Escreva aqui uma versão segura para exibição pública (ex: 'Reclamação de ruído noturno')..."></textarea>
@@ -886,7 +750,7 @@
                 <div class="mb-6">
                     <h5 class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">Comentários</h5>
                     <div class="flex gap-2" id="commentsSection">
-                        <input type="text" id="newCommentInput" maxlength="500"
+                        <input type="text" id="newCommentInput"
                             class="flex-1 border border-stone-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-accent focus:border-transparent outline-none transition"
                             placeholder="Adicionar comentário...">
                         <button onclick="app.addComment()"
@@ -1042,14 +906,14 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-stone-500 uppercase mb-1">O que está acontecendo?</label>
-                    <input type="text" id="newTitle" maxlength="200"
+                    <input type="text" id="newTitle"
                         class="w-full border border-stone-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-accent outline-none"
                         placeholder="Ex: Luz do corredor queimada">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Detalhes (Original -
                         Privado)</label>
-                    <textarea id="newDesc" maxlength="2000"
+                    <textarea id="newDesc"
                         class="w-full border border-stone-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-accent outline-none"
                         rows="3" placeholder="Descreva melhor o problema..."></textarea>
                 </div>
@@ -2026,35 +1890,6 @@
 
             activeFilters: ['following'],
 
-            // ========================================
-            // SEGURANÇA: SANITIZAÇÃO XSS
-            // ========================================
-            sanitizeHTML: function (str) {
-                if (!str) return '';
-                const temp = document.createElement('div');
-                temp.textContent = str;
-                return temp.innerHTML;
-            },
-
-            sanitizeAttribute: function (str) {
-                if (!str) return '';
-                return String(str)
-                    .replace(/&/g, '&amp;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/"/g, '&quot;')
-                    .replace(/'/g, '&#x27;')
-                    .replace(/\//g, '&#x2F;');
-            },
-
-            validateInput: function (str, maxLength = 1000) {
-                if (!str || typeof str !== 'string') return false;
-                if (str.length > maxLength) return false;
-                // Rejeita strings com tags HTML suspeitas
-                const dangerousPatterns = /<script|<iframe|javascript:|onerror|onload/gi;
-                return !dangerousPatterns.test(str);
-            },
-
             managerFilters: {
                 categories: [],
                 blocks: [],
@@ -2168,9 +2003,9 @@
             loadData() {
                 // Força regeneração uma única vez para atualizar categorias
                 const categoryVersion = sessionStorage.getItem('categoryVersion');
-                if (categoryVersion !== '3.0') {
+                if (categoryVersion !== '2.0') {
                     sessionStorage.clear();
-                    sessionStorage.setItem('categoryVersion', '3.0');
+                    sessionStorage.setItem('categoryVersion', '2.0');
                 }
 
                 const storedTasks = sessionStorage.getItem('condoTasks');
@@ -2361,23 +2196,12 @@
                         if (Math.random() > 0.7) followers.push('resident_B_5');
                     }
 
-                    // 99% dos cards terão título e descrição públicas definidas
-                    // Apenas 1% (aproximadamente 1 card) terá conteúdo genérico
-                    const needsModeration = Math.random() < 0.01; // 1% de chance
-
-                    const originalTitle = `${template.title} - ${locale}`;
-                    const originalDescription = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Problema recorrente reportado pelos moradores.';
-
-                    // Definir títulos e descrições públicas para a maioria
-                    let publicTitle = needsModeration ? null : originalTitle;
-                    let publicSummary = needsModeration ? null : 'Problema reportado em área comum, sob análise da administração.';
-
                     this.data.tasks.push({
                         id: i + 1,
-                        title: originalTitle,
-                        description: originalDescription,
-                        public_summary: publicSummary,
-                        public_title: publicTitle,
+                        title: `${template.title} - ${locale}`,
+                        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Problema recorrente reportado pelos moradores.',
+                        public_summary: null,
+                        public_title: null,
                         status: status,
                         visibility: vis,
                         priority: `Q${Math.floor(Math.random() * 4) + 1}`,
@@ -2398,7 +2222,7 @@
                     title: 'Lixo no corredor Bloco B',
                     description: 'Saco de lixo deixado na porta do 203.',
                     public_summary: 'Relato de item deixado em área comum.',
-                    public_title: 'Objeto em área comum do Bloco B',
+                    public_title: null,
                     status: 'triage',
                     visibility: 'block',
                     priority: 'Q3',
@@ -2611,7 +2435,7 @@
                         return `
                         <tr class="hover:bg-stone-50 border-b border-stone-50 cursor-pointer" onclick="app.closeModals(); app.openCardModal(${t.id})">
                             <td class="px-6 py-3 text-stone-500">${new Date(t.created_at).toLocaleDateString()}</td>
-                            <td class="px-6 py-3 font-medium text-stone-800">${this.sanitizeHTML(t.title)}</td>
+                            <td class="px-6 py-3 font-medium text-stone-800">${t.title}</td>
                             <td class="px-6 py-3">${categoryBadge}</td>
                             <td class="px-6 py-3"><span class="px-2 py-1 bg-stone-100 rounded text-xs font-bold text-stone-600">${t.priority}</span></td>
                             <td class="px-6 py-3 text-right"><button class="text-brand-accent hover:underline text-xs font-bold uppercase">Analisar</button></td>
@@ -2772,17 +2596,6 @@
                     return;
                 }
 
-                // SEGURANÇA: Valida inputs antes de criar chamado
-                if (!this.validateInput(title, 200)) {
-                    this.showToast('warning', 'Erro', 'Título inválido ou muito longo (máx. 200 caracteres)');
-                    return;
-                }
-
-                if (desc && !this.validateInput(desc, 2000)) {
-                    this.showToast('warning', 'Erro', 'Descrição inválida ou muito longa (máx. 2000 caracteres)');
-                    return;
-                }
-
                 if (!category) {
                     this.showToast('warning', 'Atenção', 'Por favor, selecione uma categoria');
                     return;
@@ -2842,16 +2655,28 @@
                 if (oldStatus === 'triage') {
                     actionText = 'Aprovação / Triagem';
                     const triageNote = document.getElementById('triageReasonInput').value.trim();
-                    // SEGURANÇA: Valida nota de triagem
-                    if (triageNote && !this.validateInput(triageNote, 500)) {
-                        this.showToast('warning', 'Erro', 'Observação de triagem inválida ou muito longa');
-                        return;
-                    }
                     if (triageNote) details += `. Obs: ${triageNote}`;
                 }
 
-                // Usar addToHistory para evitar duplicação
-                this.addToHistory(this.data.currentTask, actionText, details);
+                if (!this.data.currentTask.history) this.data.currentTask.history = [];
+                const historyEntry = {
+                    date: new Date().toISOString(),
+                    user: userName,
+                    action: actionText,
+                    details: details
+                };
+                this.data.currentTask.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema (histórico do board)
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: this.getSafeTitle(this.data.currentTask),
+                    taskId: this.data.currentTask.id
+                });
 
                 this.data.currentTask.status = newStatus;
                 this.data.currentTask.stuck_reason = null;
@@ -2885,17 +2710,28 @@
                     return;
                 }
 
-                // SEGURANÇA: Valida motivo de arquivamento
-                if (reason && !this.validateInput(reason, 500)) {
-                    this.showToast('warning', 'Erro', 'Motivo inválido ou muito longo (máx. 500 caracteres)');
-                    return;
-                }
-
                 const action = isTriage ? 'Rejeitado / Arquivado' : 'Arquivado';
                 const details = reason ? `Motivo: ${reason}` : 'Chamado movido para arquivo morto.';
 
-                // Usar addToHistory para evitar duplicação
-                this.addToHistory(task, action, details);
+                if (!task.history) task.history = [];
+                const historyEntry = {
+                    date: new Date().toISOString(),
+                    user: this.data.currentUser === 'manager' ? 'Gestor' : 'Dono',
+                    action: action,
+                    details: details
+                };
+                task.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema (histórico do board)
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: task.title,
+                    taskId: task.id
+                });
 
                 task.status = 'archived';
                 this.saveData();
@@ -3037,7 +2873,7 @@
 
                         return `
                             <tr class="hover:bg-stone-50 border-b border-stone-50 cursor-pointer" onclick="app.closeModals(); app.openCardModal(${t.id})">
-                                <td class="px-6 py-3 font-medium text-stone-800">${this.sanitizeHTML(t.title)}</td>
+                                <td class="px-6 py-3 font-medium text-stone-800">${t.title}</td>
                                 <td class="px-6 py-3 text-stone-500">${new Date(t.created_at).toLocaleDateString('pt-BR')}</td>
                                 <td class="px-6 py-3 text-stone-600">${ownerDisplay}</td>
                                 <td class="px-6 py-3 text-right">
@@ -3049,457 +2885,6 @@
                 }
 
                 this.openModal('archiveListModal');
-            },
-
-            // ========================================
-            // FILA INTELIGENTE
-            // ========================================
-            openQueueModal: async function () {
-                // Verificar se usuário é admin (manager)
-                if (!this.isManager()) {
-                    this.showToast('warning', 'Acesso Negado', 'Apenas administradores podem visualizar a fila inteligente.');
-                    return;
-                }
-
-                this.openModal('queueModal');
-
-                // Mostrar loading
-                document.getElementById('queueTotal').textContent = '...';
-                document.getElementById('queueAvgDays').textContent = 'Calculando...';
-                document.getElementById('queueAtRisk').textContent = '...';
-                document.getElementById('queueLastUpdate').textContent = 'Processando...';
-                document.getElementById('queueTableBody').innerHTML = '<tr><td colspan="9" class="p-8 text-center text-stone-400"><i class="fas fa-spinner fa-spin mr-2"></i> Calculando fila inteligente...</td></tr>';
-
-                try {
-                    // Verificar se precisa recalcular
-                    const cached = this.getQueueCache();
-                    if (cached) {
-                        this.renderQueueTable(cached.queue, cached.insights, cached.aiAnalysis, cached.generationMethod);
-                    } else {
-                        // Calcular nova fila
-                        await this.calculateQueue();
-                    }
-                } catch (err) {
-                    this.showToast('warning', 'Erro', 'Erro ao calcular fila. Tente novamente.');
-                    document.getElementById('queueTableBody').innerHTML = '<tr><td colspan="8" class="p-8 text-center text-red-500">Erro ao calcular fila.</td></tr>';
-                }
-            },
-
-            calculateQueue: async function () {
-                // Filtrar apenas tickets ativos (não arquivados e não concluídos)
-                const activeTickets = this.data.tasks.filter(t => !t.archived && t.status !== 'done' && t.status !== 'archived');
-
-                if (activeTickets.length === 0) {
-                    document.getElementById('queueTableBody').innerHTML = '<tr><td colspan="9" class="p-8 text-center text-stone-400 italic">Nenhum chamado ativo na fila.</td></tr>';
-                    document.getElementById('queueTotal').textContent = '0';
-                    document.getElementById('queueAvgDays').textContent = '0 dias';
-                    document.getElementById('queueAtRisk').textContent = '0';
-                    document.getElementById('queueLastUpdate').textContent = new Date().toLocaleString('pt-BR');
-                    return [];
-                }
-
-                // Calcular score para cada ticket
-                const scoredTickets = activeTickets.map(ticket => ({
-                    ...ticket,
-                    score: this.calculateTicketScore(ticket),
-                    daysOpen: this.getTaskAge(ticket)
-                }));
-
-                // Ordenar por pontuação (maior primeiro)
-                scoredTickets.sort((a, b) => b.score - a.score);
-
-                // Aplicar balanceamento inteligente
-                const balancedQueue = this.applyQueueBalancing(scoredTickets);
-
-                // Gerar insights
-                const insights = this.generateQueueInsights(balancedQueue);
-
-                // Tentar obter análise da IA (Gemini) - com fallback para heurísticas
-                let aiAnalysis = null;
-                let generationMethod = 'heuristic'; // Default: heurísticas
-                const apiKey = this.getGeminiApiKey();
-
-                if (apiKey) {
-                    try {
-                        aiAnalysis = await this.getAIQueueAnalysis(balancedQueue.slice(0, 10), apiKey);
-                        if (aiAnalysis) {
-                            generationMethod = 'gemini'; // Sucesso: gerado pelo Gemini
-                        }
-                    } catch (err) {
-                        // Mantém generationMethod = 'heuristic'
-                    }
-                }
-
-                // Salvar no cache com método de geração
-                this.saveQueueCache(balancedQueue, insights, aiAnalysis, generationMethod);
-
-                // Renderizar com indicação do método
-                this.renderQueueTable(balancedQueue, insights, aiAnalysis, generationMethod);
-
-                return balancedQueue; // Retornar para comparação
-            },
-
-            calculateTicketScore: function (ticket) {
-                // Extrair quadrante da propriedade priority (ex: 'Q1' -> 1)
-                const quadrant = ticket.priority ? parseInt(ticket.priority.replace('Q', '')) : 4;
-
-                // 1. Pontuação base por quadrante
-                const baseScore = {
-                    1: 100, // Q1: Urgente + Importante
-                    2: 70,  // Q2: Não Urgente + Importante
-                    3: 50,  // Q3: Urgente + Não Importante
-                    4: 30   // Q4: Não Urgente + Não Importante
-                }[quadrant];
-
-                // 2. Bônus por aging (envelhecimento)
-                const daysOpen = this.getTaskAge(ticket);
-                const agingBonus = Math.min(daysOpen, 60); // Cap em 60 dias
-
-                // 3. Bônus por status
-                const statusBonus = {
-                    'fazendo': 20,    // Em andamento
-                    'enroscados': 15, // Bloqueado
-                    'backlog': 0      // A fazer
-                }[ticket.status] || 0;
-
-                // 4. Bônus por regressões/bloqueios
-                let regressionBonus = 0;
-                if (ticket.previousStatus === 'enroscados') {
-                    regressionBonus = ticket.status === 'backlog' ? 25 : 15;
-                } else if (ticket.previousStatus === 'fazendo' && ticket.status === 'backlog') {
-                    regressionBonus = 20;
-                } else if (ticket.status === 'enroscados' && ticket.previousStatus !== 'fazendo') {
-                    regressionBonus = 18;
-                }
-
-                return baseScore + agingBonus + statusBonus + regressionBonus;
-            },
-
-            applyQueueBalancing: function (sortedTickets) {
-                // Separar por complexidade (Q1/Q2 = complexo, Q3/Q4 = simples)
-                const complex = sortedTickets.filter(t => {
-                    const q = t.priority ? parseInt(t.priority.replace('Q', '')) : 4;
-                    return [1, 2].includes(q);
-                });
-                const simple = sortedTickets.filter(t => {
-                    const q = t.priority ? parseInt(t.priority.replace('Q', '')) : 4;
-                    return [3, 4].includes(q);
-                });
-
-                const balanced = [];
-                let complexIdx = 0;
-                let simpleIdx = 0;
-
-                // Intercalar: 2 complexos, 1 simples
-                while (complexIdx < complex.length || simpleIdx < simple.length) {
-                    // Adiciona 2 complexos
-                    for (let i = 0; i < 2 && complexIdx < complex.length; i++) {
-                        balanced.push(complex[complexIdx++]);
-                    }
-                    // Adiciona 1 simples
-                    if (simpleIdx < simple.length) {
-                        balanced.push(simple[simpleIdx++]);
-                    }
-                }
-
-                return balanced;
-            },
-
-            generateQueueInsights: function (queue) {
-                if (!queue || queue.length === 0) {
-                    return {total: 0, avgDays: 0, atRisk: [], byQuadrant: {}};
-                }
-
-                const totalDays = queue.reduce((sum, t) => sum + (t.daysOpen || 0), 0);
-                const avgDays = Math.round(totalDays / queue.length);
-
-                // Tickets em risco: Q3/Q4 com mais de 7 dias
-                const atRisk = queue.filter(t => {
-                    const q = t.priority ? parseInt(t.priority.replace('Q', '')) : 4;
-                    return [3, 4].includes(q) && t.daysOpen > 7;
-                });
-
-                const byQuadrant = {
-                    1: queue.filter(t => t.priority === 'Q1').length,
-                    2: queue.filter(t => t.priority === 'Q2').length,
-                    3: queue.filter(t => t.priority === 'Q3').length,
-                    4: queue.filter(t => t.priority === 'Q4').length
-                };
-
-                return {total: queue.length, avgDays, atRisk, byQuadrant};
-            },
-
-            getAIQueueAnalysis: async function (topTickets, apiKey) {
-                const summary = topTickets.map((t, idx) => ({
-                    pos: idx + 1,
-                    titulo: this.getSafeTitle(t),
-                    quadrante: t.priority ? parseInt(t.priority.replace('Q', '')) : 4,
-                    dias: t.daysOpen,
-                    status: t.status
-                }));
-
-                const prompt = `Você é um gerente de condomínio experiente. Analise esta fila de chamados e forneça uma breve análise (máximo 2 frases) identificando padrões ou riscos principais.
-
-Fila atual (top 10):
-${JSON.stringify(summary, null, 2)}
-
-Responda APENAS com um JSON no formato:s
-{"insights": "sua análise em português"}`;
-
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{text: prompt}]
-                        }],
-                        generationConfig: {
-                            temperature: 0.3,
-                            maxOutputTokens: 200
-                        }
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`API Error: ${response.status}`);
-                }
-
-                const data = await response.json();
-                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-
-                try {
-                    const parsed = JSON.parse(text);
-                    return parsed.insights || null;
-                } catch {
-                    return null;
-                }
-            },
-
-            getGeminiApiKey: function () {
-                // SEGURANÇA: API key armazenada com ofuscação simples
-                // Nota: Para produção, use backend com variáveis de ambiente
-                let encodedKey = localStorage.getItem('_gak');
-                if (!encodedKey) return null;
-
-                try {
-                    // Decodifica (ofuscação básica, não é criptografia real)
-                    return atob(encodedKey);
-                } catch {
-                    return null;
-                }
-            },
-
-            setGeminiApiKey: function (apiKey) {
-                // SEGURANÇA: Valida formato da API key
-                if (!apiKey || apiKey.length < 20) {
-                    this.showToast('warning', 'Erro', 'API key inválida');
-                    return false;
-                }
-
-                // Ofusca antes de salvar
-                try {
-                    localStorage.setItem('_gak', btoa(apiKey));
-                    this.showToast('success', 'Configurado', 'API key salva com segurança');
-                    return true;
-                } catch {
-                    this.showToast('warning', 'Erro', 'Erro ao salvar API key');
-                    return false;
-                }
-            },
-
-            renderQueueTable: function (queue, insights, aiAnalysis, generationMethod) {
-                // Atualizar insights
-                document.getElementById('queueTotal').textContent = insights.total;
-                document.getElementById('queueAvgDays').textContent = `${insights.avgDays} dias`;
-                document.getElementById('queueAtRisk').textContent = insights.atRisk.length;
-
-                // Exibir timestamp com método de geração
-                const method = generationMethod === 'gemini' ? 'Gemini' : 'Heurísticas';
-                document.getElementById('queueLastUpdate').textContent = `${new Date().toLocaleString('pt-BR')} (${method})`;
-
-                // Mostrar alerta de risco se houver (COM BOTÕES DE VISUALIZAÇÃO)
-                const riskAlert = document.getElementById('queueRiskAlert');
-                const riskList = document.getElementById('queueRiskList');
-                if (insights.atRisk.length > 0) {
-                    riskAlert.classList.remove('hidden');
-                    riskList.innerHTML = insights.atRisk.slice(0, 5).map(t =>
-                        `<div class="flex items-center justify-between py-1">
-                            <span>• ${this.getSafeTitle(t)} (${t.daysOpen}d)</span>
-                            <button onclick="app.openCardFromQueue(${t.id})" class="ml-2 text-red-600 hover:text-red-800 transition" title="Visualizar chamado">
-                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                    <circle cx="12" cy="12" r="3"></circle>
-                                </svg>
-                            </button>
-                        </div>`
-                    ).join('');
-                } else {
-                    riskAlert.classList.add('hidden');
-                }
-
-                // Mostrar análise da IA OU indicador de heurísticas
-                const aiInsights = document.getElementById('queueAIInsights');
-                const aiText = document.getElementById('queueAIText');
-
-                if (generationMethod === 'gemini' && aiAnalysis) {
-                    // Gerado pelo Gemini
-                    aiInsights.classList.remove('hidden');
-                    aiText.innerHTML = `<strong>🤖 Análise IA (Gemini):</strong> ${aiAnalysis}`;
-                } else if (generationMethod === 'heuristic') {
-                    // Gerado por heurísticas (fallback)
-                    aiInsights.classList.remove('hidden');
-                    aiText.innerHTML = `<strong>⚙️ Gerado por Heurísticas:</strong> Fila calculada com base em pontuação por quadrante, envelhecimento, status e balanceamento inteligente (2 complexos : 1 simples).`;
-                } else {
-                    aiInsights.classList.add('hidden');
-                }
-
-                // Renderizar tabela
-                const tbody = document.getElementById('queueTableBody');
-                if (!queue || queue.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="9" class="p-8 text-center text-stone-400 italic">Nenhum chamado ativo na fila.</td></tr>';
-                    return;
-                }
-
-                tbody.innerHTML = queue.map((ticket, idx) => {
-                    // Extrair quadrante da propriedade priority (ex: 'Q1' -> 1)
-                    const quadrant = ticket.priority ? parseInt(ticket.priority.replace('Q', '')) : 4;
-
-                    // Cores por quadrante (para badge e linha)
-                    const qColors = {
-                        1: {bg: '#ef4444', label: 'Q1', rowBg: '#fee2e2'},  // Vermelho
-                        2: {bg: '#f59e0b', label: 'Q2', rowBg: '#fef3c7'},  // Amarelo
-                        3: {bg: '#3b82f6', label: 'Q3', rowBg: '#dbeafe'},  // Azul
-                        4: {bg: '#10b981', label: 'Q4', rowBg: '#d1fae5'}   // Verde
-                    };
-                    const qColor = qColors[quadrant];
-
-                    // Status correto (mapear status do ticket)
-                    const statusLabels = {
-                        'backlog': {text: 'A Fazer', color: '#94a3b8'},
-                        'doing': {text: 'Fazendo', color: '#3b82f6'},
-                        'stuck': {text: 'Bloqueado', color: '#f59e0b'},
-                        'triage': {text: 'Triagem', color: '#8b5cf6'}
-                    };
-                    const statusInfo = statusLabels[ticket.status] || {text: 'A Fazer', color: '#94a3b8'};
-
-                    // Colorir linha baseado no quadrante
-                    const rowBgColor = qColor.rowBg;
-                    const isAtRisk = [3, 4].includes(quadrant) && ticket.daysOpen > 7;
-                    const borderStyle = isAtRisk ? 'border-left:4px solid #dc2626;' : '';
-
-                    const title = this.getSafeTitle(ticket);
-                    const rawDesc = ticket.public_summary || ticket.description || 'Sem descrição';
-                    const shortDesc = this.sanitizeHTML(rawDesc.substring(0, 80)) + (rawDesc.length > 80 ? '...' : '');
-
-                    const userInfo = this.getUserInfo(ticket.owner_id);
-                    const unitDisplay = ticket.owner_id === 'manager' ? 'Gestão' : (userInfo.unit || 'N/A');
-
-                    return `
-                        <tr style="background:${rowBgColor}; border-bottom: 1px solid #e5e7eb; ${borderStyle}">
-                            <td class="px-4 py-3 text-center font-bold text-brand-accent">${idx + 1}</td>
-                            <td class="px-4 py-3 text-center">
-                                <span style="display:inline-block; background:${qColor.bg}; color:white; border-radius:6px; padding:6px 10px; font-weight:700; font-size:11px; letter-spacing:0.5px;">
-                                    ${qColor.label}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="font-semibold text-stone-800 mb-1">${title}</div>
-                                <div class="text-xs text-stone-500">${shortDesc}</div>
-                            </td>
-                            <td class="px-4 py-3 text-center font-semibold text-stone-700">${ticket.block || 'ADM'}</td>
-                            <td class="px-4 py-3 text-center text-stone-600">${unitDisplay}</td>
-                            <td class="px-4 py-3 text-center">
-                                <span style="color:${statusInfo.color}; font-weight:600; font-size:13px;">${statusInfo.text}</span>
-                            </td>
-                            <td class="px-4 py-3 text-center font-semibold text-stone-700">${ticket.daysOpen}d</td>
-                            <td class="px-4 py-3 text-center font-bold" style="color:${qColor.bg};">${ticket.score}</td>
-                            <td class="px-4 py-3 text-center">
-                                <button onclick="app.openCardFromQueue(${ticket.id})" class="text-stone-500 hover:text-brand-accent transition" title="Ver Detalhes">
-                                    <svg class="w-4 h-4 inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                    </svg>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-            },
-
-            // Sistema de cache (validade até meia-noite)
-            getQueueCache: function () {
-                const cached = sessionStorage.getItem('queueCache');
-                if (!cached) return null;
-
-                try {
-                    const data = JSON.parse(cached);
-                    const now = new Date();
-                    const expiry = new Date(data.expiresAt);
-
-                    if (now >= expiry) {
-                        sessionStorage.removeItem('queueCache');
-                        return null;
-                    }
-
-                    return data;
-                } catch {
-                    return null;
-                }
-            },
-
-            saveQueueCache: function (queue, insights, aiAnalysis, generationMethod) {
-                const tomorrow = new Date();
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                tomorrow.setHours(0, 0, 0, 0);
-
-                const cache = {
-                    queue,
-                    insights,
-                    aiAnalysis,
-                    generationMethod: generationMethod || 'heuristic',
-                    expiresAt: tomorrow.toISOString()
-                };
-
-                sessionStorage.setItem('queueCache', JSON.stringify(cache));
-            },
-
-            recalculateQueueNow: async function () {
-                // Obter fila anterior do cache
-                const cachedData = this.getQueueCache();
-                const oldQueueIds = cachedData ? cachedData.queue.map(t => t.id).join(',') : '';
-
-                // Limpar cache e forçar recálculo
-                sessionStorage.removeItem('queueCache');
-
-                // Mostrar loading
-                document.getElementById('queueTotal').textContent = '...';
-                document.getElementById('queueAvgDays').textContent = 'Calculando...';
-                document.getElementById('queueAtRisk').textContent = '...';
-                document.getElementById('queueLastUpdate').textContent = 'Recalculando...';
-                document.getElementById('queueTableBody').innerHTML = '<tr><td colspan="9" class="p-8 text-center text-stone-400"><i class="fas fa-spinner fa-spin mr-2"></i> Recalculando fila inteligente...</td></tr>';
-
-                try {
-                    const newQueue = await this.calculateQueue();
-                    const newQueueIds = newQueue ? newQueue.map(t => t.id).join(',') : '';
-
-                    // Comparar filas
-                    if (oldQueueIds && newQueueIds === oldQueueIds) {
-                        this.showToast('info', 'Sem Alterações', 'A fila permanece inalterada desde o último cálculo.');
-                    } else {
-                        this.showToast('success', 'Atualizado', 'Fila recalculada com sucesso!');
-                    }
-                } catch (err) {
-                    this.showToast('warning', 'Erro', 'Erro ao recalcular fila. Tente novamente.');
-                }
-            },
-
-            openCardFromQueue: function (taskId) {
-                // Abrir modal do card SOBRE o modal da fila (sem fechar a fila)
-                const task = this.data.tasks.find(t => t.id === taskId);
-                if (!task) return;
-
-                this.data.currentTask = task;
-                this.openModal('cardModal');
             },
 
             openNewTicketModal: function () {
@@ -3649,7 +3034,7 @@ Responda APENAS com um JSON no formato:s
                     return `
                                     <tr class="hover:bg-stone-50 border-b border-stone-100">
                                         <td class="px-4 py-3 text-sm text-stone-600">${new Date(t.created_at).toLocaleDateString('pt-BR')}</td>
-                                        <td class="px-4 py-3 font-medium text-stone-800">${this.sanitizeHTML(t.title)}</td>
+                                        <td class="px-4 py-3 font-medium text-stone-800">${t.title}</td>
                                         <td class="px-4 py-3">${categoryBadge}</td>
                                         <td class="px-4 py-3 text-center">
                                             <span class="inline-flex items-center gap-1 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-bold border border-orange-200">
@@ -3693,9 +3078,9 @@ Responda APENAS com um JSON no formato:s
                 const tbody = document.getElementById('userTableBody');
                 tbody.innerHTML = this.data.users.map((u, index) => `
                     <tr class="border-b border-stone-100">
-                        <td class="py-3">${this.sanitizeHTML(u.name)}</td>
-                        <td class="py-3 text-stone-500">${this.sanitizeHTML(u.unit)}</td>
-                        <td class="py-3 text-stone-500">${this.sanitizeHTML(u.email)}</td>
+                        <td class="py-3">${u.name}</td>
+                        <td class="py-3 text-stone-500">${u.unit}</td>
+                        <td class="py-3 text-stone-500">${u.email}</td>
                         <td class="py-3 text-right">
                             <button onclick="app.deleteUser(${index})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
                         </td>
@@ -3745,11 +3130,8 @@ Responda APENAS com um JSON no formato:s
                             });
                         }
                     });
-                    // Adiciona apenas logs do sistema que NÃO são de tarefas (ex: gestão de usuários)
                     if (this.data.systemLogs) {
-                        const taskIds = new Set(this.data.tasks.map(t => t.id));
-                        const systemOnlyLogs = this.data.systemLogs.filter(log => !log.taskId || !taskIds.has(log.taskId));
-                        logs = logs.concat(systemOnlyLogs);
+                        logs = logs.concat(this.data.systemLogs);
                     }
                 } else {
                     if (subTitle) subTitle.textContent = "Seus Chamados e Chamados Seguidos";
@@ -3789,12 +3171,12 @@ Responda APENAS com um JSON no formato:s
                 tbody.innerHTML = paginatedLogs.map(log => `
                     <tr class="hover:bg-stone-50 border-b border-stone-50">
                         <td class="px-6 py-3 text-stone-500 whitespace-nowrap">${new Date(log.date).toLocaleString('pt-BR')}</td>
-                        <td class="px-6 py-3 font-medium text-stone-800 truncate max-w-[200px]" title="${this.sanitizeAttribute(log.taskTitle)}">
-                            ${log.taskId ? `<a href="#" onclick="app.closeModals(); app.openCardModal(${log.taskId})" class="hover:text-brand-accent hover:underline">${this.sanitizeHTML(log.taskTitle)}</a>` : `<span class="text-stone-500">${this.sanitizeHTML(log.taskTitle)}</span>`}
+                        <td class="px-6 py-3 font-medium text-stone-800 truncate max-w-[200px]" title="${log.taskTitle}">
+                            ${log.taskId ? `<a href="#" onclick="app.closeModals(); app.openCardModal(${log.taskId})" class="hover:text-brand-accent hover:underline">${log.taskTitle}</a>` : `<span class="text-stone-500">${log.taskTitle}</span>`}
                         </td>
                         <td class="px-6 py-3 text-stone-600">${log.user}</td>
                         <td class="px-6 py-3"><span class="px-2 py-1 bg-stone-100 rounded text-xs font-bold text-stone-600 uppercase">${log.action}</span></td>
-                        <td class="px-6 py-3 text-stone-500 italic truncate max-w-[250px]" title="${this.sanitizeAttribute(log.details)}">${this.sanitizeHTML(log.details)}</td>
+                        <td class="px-6 py-3 text-stone-500 italic truncate max-w-[250px]" title="${log.details}">${log.details}</td>
                     </tr>
                 `).join('');
             },
@@ -3815,7 +3197,7 @@ Responda APENAS com um JSON no formato:s
 
                 if (task.public_title) {
                     // Se há título público, TODOS veem ele (gestores e não-gestores)
-                    displayTitle = this.sanitizeHTML(task.public_title);
+                    displayTitle = task.public_title;
                 } else {
                     // Se não há título público, mostrar texto genérico para todos em itálico
                     displayTitle = "Título público ainda não definido";
@@ -3826,14 +3208,14 @@ Responda APENAS com um JSON no formato:s
                 let displayDescription;
                 if (task.public_summary) {
                     // Se há resumo público, TODOS veem ele
-                    displayDescription = this.sanitizeHTML(task.public_summary);
+                    displayDescription = task.public_summary;
                 } else {
                     // Se não há resumo público, mostrar texto genérico
                     displayDescription = "<span class='italic text-stone-400'>Conteúdo sob análise da administração.</span>";
                 }
 
                 let pendingSummaryAlert = '';
-                if (isManager && (!task.public_title || task.public_title.trim() === '') && task.visibility !== 'private') {
+                if (isManager && !task.public_title && task.visibility !== 'private') {
                     pendingSummaryAlert = `<span class="text-[10px] leading-none font-bold text-orange-600 bg-orange-100 border border-orange-200 px-1.5 rounded h-6 inline-flex items-center justify-center gap-1" title="Este chamado público ainda não tem um título moderado definido"><i class="fas fa-shield-alt"></i> PENDENTE</span>`;
                 }
 
@@ -3960,9 +3342,7 @@ Responda APENAS com um JSON no formato:s
                     mainBoard: document.getElementById('mainBoard'),
                     archiveView: document.getElementById('archiveView'),
                     pendingCallsMobile: document.getElementById('pendingCallsMobile'),
-                    pendingCallsDesktop: document.getElementById('pendingCallsDesktop'),
-                    queueButtonMobile: document.getElementById('queueButtonMobile'),
-                    queueButtonDesktop: document.getElementById('queueButtonDesktop')
+                    pendingCallsDesktop: document.getElementById('pendingCallsDesktop')
                 };
 
                 const safeToggle = (el, cls, condition) => {
@@ -3980,10 +3360,6 @@ Responda APENAS com um JSON no formato:s
                 // Botão de chamados pendentes só para moradores
                 safeToggle(elements.pendingCallsMobile, 'hidden', isManager);
                 safeToggle(elements.pendingCallsDesktop, 'hidden', isManager);
-
-                // Botão da Fila Inteligente só para admins (manager)
-                safeToggle(elements.queueButtonMobile, 'hidden', !isManager);
-                safeToggle(elements.queueButtonDesktop, 'hidden', !isManager);
 
                 if (elements.viewFilterContainer) elements.viewFilterContainer.classList.add('hidden');
 
@@ -4037,32 +3413,11 @@ Responda APENAS com um JSON no formato:s
 
                 const showOwner = isManager || isOwner;
                 const ownerRow = document.getElementById('modalOwnerRow');
-                const blockRow = document.getElementById('modalBlockRow');
-                const floorRow = document.getElementById('modalFloorRow');
 
-                // Sempre mostrar bloco e andar independentemente da publicidade
-                blockRow.classList.remove('hidden');
-                floorRow.classList.remove('hidden');
-
-                // Preencher bloco
-                if (task.block) {
-                    document.getElementById('modalBlock').innerText = `Bloco ${task.block}`;
-                } else {
-                    document.getElementById('modalBlock').innerText = 'Não informado';
-                }
-
-                // Preencher andar
-                if (task.floor) {
-                    document.getElementById('modalFloor').innerText = `${task.floor}º Andar`;
-                } else {
-                    document.getElementById('modalFloor').innerText = 'Não informado';
-                }
-
-                // Lógica do solicitante
                 if (showOwner) {
                     ownerRow.classList.remove('hidden');
                     if (task.owner_id === 'other') {
-                        ownerDisplay = isManager ? 'Outro Morador (Bloco C - 101)' : 'Condômino';
+                        ownerDisplay = isManager ? 'Outro Morador (Bloco C - 101)' : 'Condômino (Bloco C)';
                     } else if (task.owner_id === 'manager') {
                         ownerDisplay = 'Gestão / Síndico';
                     } else if (isOwner) {
@@ -4071,7 +3426,7 @@ Responda APENAS com um JSON no formato:s
                         if (isManager) {
                             ownerDisplay = task.owner_id === 'resident_A_2' ? 'João Silva (Bl A - 202)' : 'Maria Souza (Bl B - 501)';
                         } else {
-                            ownerDisplay = 'Condômino';
+                            ownerDisplay = task.owner_id === 'resident_A_2' ? 'Condômino (Bloco A)' : 'Condômino (Bloco B)';
                         }
                     }
                     document.getElementById('modalOwner').innerText = ownerDisplay;
@@ -4271,7 +3626,7 @@ Responda APENAS com um JSON no formato:s
                             <div class="absolute -left-[5px] top-2 w-2 h-2 rounded-full bg-stone-300"></div>
                             <div class="flex-1">
                                 <p class="text-xs font-bold text-stone-700">${h.action}</p>
-                                <p class="text-xs text-stone-500 italic">${this.sanitizeHTML(h.details)}</p>
+                                <p class="text-xs text-stone-500 italic">${h.details}</p>
                             </div>
                             <div class="text-[10px] text-stone-400 text-right">
                                 <p class="font-semibold">${h.user}</p>
@@ -4371,24 +3726,35 @@ Responda APENAS com um JSON no formato:s
                 if (!this.data.currentTask) return;
                 const newSummary = document.getElementById('summaryInput').value.trim();
 
-                // SEGURANÇA: Valida input antes de salvar
-                if (newSummary && !this.validateInput(newSummary, 2000)) {
-                    this.showToast('warning', 'Erro', 'Resumo contém caracteres inválidos ou é muito longo');
-                    return;
-                }
-
                 // Atualiza dados
                 this.data.currentTask.public_summary = newSummary;
 
-                // Log com o texto auditado - usar addToHistory
-                this.addToHistory(this.data.currentTask, 'Moderação de Conteúdo', `Resumo Público atualizado para: "${newSummary}"`);
+                // Log com o texto auditado
+                if (!this.data.currentTask.history) this.data.currentTask.history = [];
+                const historyEntry = {
+                    date: new Date().toISOString(),
+                    user: 'Gestor',
+                    action: 'Moderação de Conteúdo',
+                    details: `Resumo Público atualizado para: "${newSummary}"`
+                };
+                this.data.currentTask.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema (histórico do board)
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: this.getSafeTitle(this.data.currentTask),
+                    taskId: this.data.currentTask.id
+                });
 
                 this.saveData();
                 this.showToast('success', 'Atualizado', 'Resumo público definido com sucesso.');
 
                 // Atualiza a visualização no modal imediatamente
-                // SEGURANÇA: Usa textContent para prevenir XSS
-                document.getElementById('modalPublicSummary').textContent = newSummary;
+                document.getElementById('modalPublicSummary').innerText = newSummary;
                 document.getElementById('modalPublicSummary').classList.remove('hidden');
 
                 // Desabilitar botão de aprovar descrição original após salvar
@@ -4412,8 +3778,26 @@ Responda APENAS com um JSON no formato:s
                 // Define a descrição original como resumo público
                 this.data.currentTask.public_summary = originalDesc;
 
-                // Log de aprovação usando addToHistory
-                this.addToHistory(this.data.currentTask, 'Moderação de Conteúdo', 'Descrição original aprovada como Resumo Público');
+                // Log de aprovação
+                if (!this.data.currentTask.history) this.data.currentTask.history = [];
+                const historyEntry = {
+                    date: new Date().toISOString(),
+                    user: 'Gestor',
+                    action: 'Moderação de Conteúdo',
+                    details: 'Descrição original aprovada como Resumo Público'
+                };
+                this.data.currentTask.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: this.data.currentTask.public_title || this.data.currentTask.title,
+                    taskId: this.data.currentTask.id
+                });
 
                 this.saveData();
                 this.showToast('success', 'Aprovado', 'Descrição original aprovada como resumo público.');
@@ -4440,8 +3824,26 @@ Responda APENAS com um JSON no formato:s
                 // Define o título original como título público
                 this.data.currentTask.public_title = originalTitle;
 
-                // Log de aprovação usando addToHistory
-                this.addToHistory(this.data.currentTask, 'Moderação de Conteúdo', 'Título original aprovado como Título Público');
+                // Log de aprovação
+                if (!this.data.currentTask.history) this.data.currentTask.history = [];
+                const historyEntry = {
+                    date: new Date().toISOString(),
+                    user: 'Gestor',
+                    action: 'Moderação de Conteúdo',
+                    details: 'Título original aprovado como Título Público'
+                };
+                this.data.currentTask.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: this.data.currentTask.public_title || this.data.currentTask.title,
+                    taskId: this.data.currentTask.id
+                });
 
                 this.saveData();
                 this.showToast('success', 'Aprovado', 'Título original aprovado como título público.');
@@ -4465,30 +3867,40 @@ Responda APENAS com um JSON no formato:s
                 if (!this.data.currentTask) return;
                 const newTitle = document.getElementById('publicTitleInput').value.trim();
 
-                // SEGURANÇA: Valida input antes de salvar
-                if (newTitle && !this.validateInput(newTitle, 200)) {
-                    this.showToast('warning', 'Erro', 'Título contém caracteres inválidos ou é muito longo');
-                    return;
-                }
-
                 // Atualiza dados
                 const oldTitle = this.data.currentTask.public_title;
                 this.data.currentTask.public_title = newTitle;
 
-                // Log usando addToHistory
-                const details = newTitle ? `Título Público definido: "${newTitle}"` : 'Título Público removido';
-                this.addToHistory(this.data.currentTask, 'Moderação de Conteúdo', details);
+                // Log
+                if (!this.data.currentTask.history) this.data.currentTask.history = [];
+                const historyEntry = {
+                    date: new Date().toISOString(),
+                    user: 'Gestor',
+                    action: 'Moderação de Conteúdo',
+                    details: newTitle ? `Título Público definido: "${newTitle}"` : 'Título Público removido'
+                };
+                this.data.currentTask.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: newTitle || this.data.currentTask.title,
+                    taskId: this.data.currentTask.id
+                });
 
                 this.saveData();
                 this.showToast('success', 'Atualizado', 'Título público atualizado com sucesso.');
 
                 // Atualizar visualização do título no modal
                 if (newTitle) {
-                    // SEGURANÇA: Usa textContent para prevenir XSS
-                    document.getElementById('modalTitle').textContent = newTitle;
+                    document.getElementById('modalTitle').innerText = newTitle;
                     document.getElementById('modalTitle').className = "text-xl font-bold text-brand-text leading-tight";
                 } else {
-                    document.getElementById('modalTitle').textContent = "Título público ainda não definido";
+                    document.getElementById('modalTitle').innerText = "Título público ainda não definido";
                     document.getElementById('modalTitle').className = "text-xl font-bold text-stone-400 italic leading-tight";
                 }
 
@@ -4515,7 +3927,7 @@ Responda APENAS com um JSON no formato:s
                             <div class="absolute -left-[5px] top-2 w-2 h-2 rounded-full bg-stone-300"></div>
                             <div class="flex-1">
                                 <p class="text-xs font-bold text-stone-700">${h.action}</p>
-                                <p class="text-xs text-stone-500 italic">${this.sanitizeHTML(h.details)}</p>
+                                <p class="text-xs text-stone-500 italic">${h.details}</p>
                             </div>
                             <div class="text-[10px] text-stone-400 text-right">
                                 <p class="font-semibold">${h.user}</p>
@@ -4535,8 +3947,25 @@ Responda APENAS com um JSON no formato:s
 
                 const visLabels = {public: 'Público', block: 'Bloco', floor: 'Andar', private: 'Privado'};
 
-                // Log usando addToHistory
-                this.addToHistory(this.data.currentTask, 'Visibilidade', `Alterada de ${visLabels[oldVis]} para ${visLabels[newVis]}`);
+                if (!this.data.currentTask.history) this.data.currentTask.history = [];
+                const historyEntry = {
+                    date: new Date().toISOString(),
+                    user: 'Gestor',
+                    action: 'Visibilidade',
+                    details: `Alterada de ${visLabels[oldVis]} para ${visLabels[newVis]}`
+                };
+                this.data.currentTask.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema (histórico do board)
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: this.getSafeTitle(this.data.currentTask),
+                    taskId: this.data.currentTask.id
+                });
 
                 this.data.currentTask.visibility = newVis;
                 this.saveData();
@@ -4565,8 +3994,26 @@ Responda APENAS com um JSON no formato:s
                 // Atualiza a categoria
                 this.data.currentTask.category = newCategory;
 
-                // Adiciona ao histórico usando addToHistory
-                this.addToHistory(this.data.currentTask, 'Reclassificação', `Categoria alterada de "${oldDetailedLabel}" para "${newDetailedLabel}"`);
+                // Adiciona ao histórico com detalhes específicos da subcategoria
+                if (!this.data.currentTask.history) this.data.currentTask.history = [];
+                const historyEntry = {
+                    date: new Date().toISOString(),
+                    user: 'Gestor',
+                    action: 'Reclassificação',
+                    details: `Categoria alterada de "${oldDetailedLabel}" para "${newDetailedLabel}"`
+                };
+                this.data.currentTask.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema (histórico do board)
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: this.getSafeTitle(this.data.currentTask),
+                    taskId: this.data.currentTask.id
+                });
 
                 // Salva e atualiza a interface
                 this.saveData();
@@ -4586,14 +4033,27 @@ Responda APENAS com um JSON no formato:s
                 const text = input.value.trim();
                 if (!text || !this.data.currentTask) return;
 
-                // SEGURANÇA: Valida comentário
-                if (!this.validateInput(text, 500)) {
-                    this.showToast('warning', 'Erro', 'Comentário inválido ou muito longo');
-                    return;
-                }
+                const userName = this.data.currentUser === 'manager' ? 'Gestor' : 'Você';
 
-                // Usar addToHistory para evitar duplicação
-                this.addToHistory(this.data.currentTask, 'Comentário', text);
+                if (!this.data.currentTask.history) this.data.currentTask.history = [];
+                const historyEntry = {
+                    date: new Date().toISOString(),
+                    user: userName,
+                    action: 'Comentário',
+                    details: text
+                };
+                this.data.currentTask.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema (histórico do board)
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: this.getSafeTitle(this.data.currentTask),
+                    taskId: this.data.currentTask.id
+                });
 
                 this.saveData();
                 input.value = '';
@@ -4612,14 +4072,26 @@ Responda APENAS com um JSON no formato:s
                     this.showToast('warning', 'Atenção', 'Por favor, informe o motivo.');
                     return;
                 }
-                // SEGURANÇA: Valida motivo de enroscamento
-                if (!this.validateInput(reason, 500)) {
-                    this.showToast('warning', 'Erro', 'Motivo inválido ou muito longo (máx. 500 caracteres)');
-                    return;
-                }
                 if (this.data.currentTask) {
-                    // Usar addToHistory para evitar duplicação
-                    this.addToHistory(this.data.currentTask, 'Marcado como Enroscado', reason);
+                    if (!this.data.currentTask.history) this.data.currentTask.history = [];
+                    const historyEntry = {
+                        date: new Date().toISOString(),
+                        user: 'Gestor',
+                        action: 'Marcado como Enroscado',
+                        details: reason
+                    };
+                    this.data.currentTask.history.unshift(historyEntry);
+
+                    // Adiciona ao log do sistema (histórico do board)
+                    if (!this.data.systemLogs) this.data.systemLogs = [];
+                    this.data.systemLogs.push({
+                        date: historyEntry.date,
+                        user: historyEntry.user,
+                        action: historyEntry.action,
+                        details: historyEntry.details,
+                        taskTitle: this.getSafeTitle(this.data.currentTask),
+                        taskId: this.data.currentTask.id
+                    });
 
                     this.data.currentTask.status = 'stuck';
                     this.data.currentTask.stuck_reason = reason;
@@ -4651,19 +4123,31 @@ Responda APENAS com um JSON no formato:s
 
                 if (isTriage && !reason) {
                     this.showToast('warning', 'Atenção', "Por favor, informe o motivo do arquivamento/rejeição.");
-
-                    // SEGURAN�A: Valida motivo de arquivamento
-                    if (reason && !this.validateInput(reason, 500)) {
-                        this.showToast('warning', 'Erro', 'Motivo inv�lido ou muito longo (m�x. 500 caracteres)');
-                        return;
-                    }
                     return;
                 }
 
                 const action = isTriage ? 'Rejeitado / Arquivado' : 'Arquivado';
                 const details = reason ? `Motivo: ${reason}` : 'Chamado movido para arquivo morto.';
 
-                this.addToHistory(task, action, details);
+                if (!task.history) task.history = [];
+                const historyEntry = {
+                    date: new Date().toISOString(),
+                    user: this.data.currentUser === 'manager' ? 'Gestor' : 'Dono',
+                    action: action,
+                    details: details
+                };
+                task.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema (histórico do board)
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: task.title,
+                    taskId: task.id
+                });
 
                 task.status = 'archived';
                 this.saveData();

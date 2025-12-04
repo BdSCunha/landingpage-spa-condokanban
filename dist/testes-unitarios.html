@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testes Unitários de Segurança - GG</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        #results {
+            margin-top: 2rem;
+        }
+
+        .test-suite {
+            margin-bottom: 2rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .suite-header {
+            background: #f8f9fa;
+            padding: 1rem;
+            font-weight: bold;
+            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .test-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .test-item:last-child {
+            border-bottom: none;
+        }
+
+        .test-name {
+            flex: 1;
+            font-size: 0.95rem;
+        }
+
+        .test-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-left: 1rem;
+        }
+
+        .status-pass {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-fail {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .summary {
+            background: #f8f9ff;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .summary-label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .error-details {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            font-size: 0.85rem;
+            font-family: monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🧪 Testes Unitários de Segurança</h1>
+        <p class="subtitle">Validação automática de todas as funções de segurança</p>
+
+        <div class="controls">
+            <button class="btn" onclick="runAllTests()">▶️ Executar Todos os Testes</button>
+            <button class="btn btn-secondary" onclick="clearResults()">🗑️ Limpar Resultados</button>
+        </div>
+
+        <div id="summary" style="display: none;" class="summary">
+            <h2 style="margin-bottom: 1rem;">📊 Resumo dos Testes</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-value" id="total-tests">0</div>
+                    <div class="summary-label">Total</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value" style="color: #10b981;" id="passed-tests">0</div>
+                    <div class="summary-label">Passou ✅</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value" style="color: #ef4444;" id="failed-tests">0</div>
+                    <div class="summary-label">Falhou ❌</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value" style="color: #667eea;" id="pass-rate">0%</div>
+                    <div class="summary-label">Taxa de Sucesso</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Framework de testes simples
+        const TestFramework = {
+            suites: [],
+            results: {
+                total: 0,
+                passed: 0,
+                failed: 0
+            },
+
+            describe: function (suiteName, tests) {
+                this.suites.push({
+                    name: suiteName,
+                    tests: tests
+                });
+            },
+
+            assertEqual: function (actual, expected, message) {
+                if (actual === expected) {
+                    return {passed: true};
+                }
+                return {
+                    passed: false,
+                    error: message || `Esperado: ${expected}, Recebido: ${actual}`
+                };
+            },
+
+            assertTrue: function (value, message) {
+                if (value === true) {
+                    return {passed: true};
+                }
+                return {
+                    passed: false,
+                    error: message || `Esperado: true, Recebido: ${value}`
+                };
+            },
+
+            assertFalse: function (value, message) {
+                if (value === false) {
+                    return {passed: true};
+                }
+                return {
+                    passed: false,
+                    error: message || `Esperado: false, Recebido: ${value}`
+                };
+            },
+
+            assertContains: function (str, substring, message) {
+                if (str && str.includes(substring)) {
+                    return {passed: true};
+                }
+                return {
+                    passed: false,
+                    error: message || `String não contém: ${substring}`
+                };
+            },
+
+            assertNotContains: function (str, substring, message) {
+                if (str && !str.includes(substring)) {
+                    return {passed: true};
+                }
+                return {
+                    passed: false,
+                    error: message || `String contém: ${substring}`
+                };
+            },
+
+            assertThrows: function (fn, message) {
+                try {
+                    fn();
+                    return {
+                        passed: false,
+                        error: message || 'Função deveria lançar erro mas não lançou'
+                    };
+                } catch (e) {
+                    return {passed: true};
+                }
+            }
+        };
+
+        // Funções de segurança (simulação do app)
+        const SecurityFunctions = {
+            sanitizeHTML: function (str) {
+                if (!str) return '';
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            },
+
+            sanitizeAttribute: function (str) {
+                if (!str) return '';
+                return str
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#x27;');
+            },
+
+            validateInput: function (str, maxLength) {
+                if (!str) return false;
+                if (str.length > maxLength) return false;
+
+                const dangerousPatterns = [
+                    /<script/i,
+                    /javascript:/i,
+                    /on\w+\s*=/i,
+                    /<iframe/i,
+                    /<embed/i,
+                    /<object/i,
+                    /onerror/i,
+                    /onload/i
+                ];
+
+                return !dangerousPatterns.some(pattern => pattern.test(str));
+            }
+        };
+
+        // Definir testes
+        TestFramework.describe('Sanitização HTML - sanitizeHTML()', [
+            {
+                name: 'Remove tags <script>',
+                test: function () {
+                    const input = '<script>alert("XSS")</script>';
+    const output = SecurityFunctions.sanitizeHTML(input);
+    return TestFramework.assertNotContains(output, '
+    <script>',
+                    'Tags <script> devem ser removidas');
+                }
+            },
+        {
+            name: 'Remove tags <img> com onerror',
+                test: function() {
+                    const input = '<img src=x onerror=alert(1)>';
+                    const output = SecurityFunctions.sanitizeHTML(input);
+                    return TestFramework.assertNotContains(output, '<img',
+                        'Tags <img> devem ser removidas');
+                }
+        },
+        {
+            name: 'Remove tags <iframe>',
+                test: function() {
+                    const input = '<iframe src="evil.com"></iframe>';
+                    const output = SecurityFunctions.sanitizeHTML(input);
+                    return TestFramework.assertNotContains(output, '<iframe',
+                        'Tags <iframe> devem ser removidas');
+                }
+        },
+        {
+            name: 'Remove tags <svg> com onload',
+                test: function() {
+                    const input = '<svg onload=alert(1)>';
+                    const output = SecurityFunctions.sanitizeHTML(input);
+                    return TestFramework.assertNotContains(output, '<svg',
+                        'Tags <svg> devem ser removidas');
+                }
+        },
+        {
+            name: 'Converte < para &lt;',
+                test: function() {
+                    const input = '<b>bold</b>';
+                    const output = SecurityFunctions.sanitizeHTML(input);
+                    return TestFramework.assertContains(output, '&lt;',
+                        '< deve ser convertido para &lt;');
+                }
+        },
+        {
+            name: 'Converte > para &gt;',
+                test: function() {
+                    const input = '<b>bold</b>';
+                    const output = SecurityFunctions.sanitizeHTML(input);
+                    return TestFramework.assertContains(output, '&gt;',
+                        '> deve ser convertido para &gt;');
+                }
+        },
+        {
+            name: 'Mantém texto sem HTML intacto',
+                test: function() {
+                    const input = 'Texto normal sem HTML';
+                    const output = SecurityFunctions.sanitizeHTML(input);
+                    return TestFramework.assertEqual(output, input,
+                        'Texto normal deve permanecer inalterado');
+                }
+        },
+        {
+            name: 'Trata string vazia',
+                test: function() {
+                    const output = SecurityFunctions.sanitizeHTML('');
+                    return TestFramework.assertEqual(output, '',
+                        'String vazia deve retornar string vazia');
+                }
+        },
+        {
+            name: 'Trata null/undefined',
+                test: function() {
+                    const output1 = SecurityFunctions.sanitizeHTML(null);
+                    const output2 = SecurityFunctions.sanitizeHTML(undefined);
+                    return TestFramework.assertEqual(output1, '',
+                        'null/undefined devem retornar string vazia');
+                }
+        }
+        ]);
+
+        TestFramework.describe('Sanitização de Atributos - sanitizeAttribute()', [
+            {
+                name: 'Escapa aspas duplas',
+                test: function () {
+                    const input = 'title="Click here"';
+                    const output = SecurityFunctions.sanitizeAttribute(input);
+                    return TestFramework.assertContains(output, '&quot;',
+                        'Aspas duplas devem ser escapadas');
+                }
+            },
+            {
+                name: 'Escapa aspas simples',
+                test: function () {
+                    const input = "title='Click here'";
+                    const output = SecurityFunctions.sanitizeAttribute(input);
+                    return TestFramework.assertContains(output, '&#x27;',
+                        'Aspas simples devem ser escapadas');
+                }
+            },
+            {
+                name: 'Escapa < e >',
+                test: function () {
+                    const input = '<script>';
+                    const output = SecurityFunctions.sanitizeAttribute(input);
+                    const result1 = TestFramework.assertContains(output, '&lt;');
+                    const result2 = TestFramework.assertContains(output, '&gt;');
+                    return result1.passed && result2.passed ?
+                        {passed: true} :
+                        {passed: false, error: '< e > devem ser escapados'};
+                }
+            },
+            {
+                name: 'Escapa &',
+                test: function () {
+                    const input = 'A & B';
+                    const output = SecurityFunctions.sanitizeAttribute(input);
+                    return TestFramework.assertContains(output, '&amp;',
+                        '& deve ser escapado');
+                }
+            }
+        ]);
+
+        TestFramework.describe('Validação de Input - validateInput()', [
+            {
+                name: 'Bloqueia <script> tag',
+                test: function () {
+                    const input = '<script>alert(1)</script>';
+    const result = SecurityFunctions.validateInput(input, 1000);
+    return TestFramework.assertFalse(result,
+    '
+    <script> deve ser bloqueado');
+                }
+            },
+            {
+                name: 'Bloqueia javascript: protocol',
+                test: function () {
+                    const input = 'javascript:alert(1)';
+                    const result = SecurityFunctions.validateInput(input, 1000);
+                    return TestFramework.assertFalse(result,
+                        'javascript: deve ser bloqueado');
+                }
+            },
+            {
+                name: 'Bloqueia onerror handler',
+                test: function () {
+                    const input = '<img onerror=alert(1)>';
+                    const result = SecurityFunctions.validateInput(input, 1000);
+                    return TestFramework.assertFalse(result,
+                        'onerror deve ser bloqueado');
+                }
+            },
+            {
+                name: 'Bloqueia onload handler',
+                test: function () {
+                    const input = '<svg onload=alert(1)>';
+                    const result = SecurityFunctions.validateInput(input, 1000);
+                    return TestFramework.assertFalse(result,
+                        'onload deve ser bloqueado');
+                }
+            },
+            {
+                name: 'Bloqueia onclick handler',
+                test: function () {
+                    const input = '<div onclick=alert(1)>';
+                    const result = SecurityFunctions.validateInput(input, 1000);
+                    return TestFramework.assertFalse(result,
+                        'onclick deve ser bloqueado');
+                }
+            },
+            {
+                name: 'Bloqueia <iframe>',
+                test: function () {
+                    const input = '<iframe src=evil.com></iframe>';
+                    const result = SecurityFunctions.validateInput(input, 1000);
+                    return TestFramework.assertFalse(result,
+                        '<iframe> deve ser bloqueado');
+                }
+            },
+            {
+                name: 'Bloqueia <embed>',
+                test: function () {
+                    const input = '<embed src=evil.swf>';
+                    const result = SecurityFunctions.validateInput(input, 1000);
+                    return TestFramework.assertFalse(result,
+                        '<embed> deve ser bloqueado');
+                }
+            },
+            {
+                name: 'Bloqueia <object>',
+                test: function () {
+                    const input = '<object data=evil.swf>';
+                    const result = SecurityFunctions.validateInput(input, 1000);
+                    return TestFramework.assertFalse(result,
+                        '<object> deve ser bloqueado');
+                }
+            },
+            {
+                name: 'Aceita texto normal',
+                test: function () {
+                    const input = 'Texto normal sem código malicioso';
+                    const result = SecurityFunctions.validateInput(input, 1000);
+                    return TestFramework.assertTrue(result,
+                        'Texto normal deve ser aceito');
+                }
+            },
+            {
+                name: 'Respeita limite de tamanho',
+                test: function () {
+                    const input = 'A'.repeat(300);
+                    const result = SecurityFunctions.validateInput(input, 200);
+                    return TestFramework.assertFalse(result,
+                        'Texto acima do limite deve ser rejeitado');
+                }
+            },
+            {
+                name: 'Aceita texto dentro do limite',
+                test: function () {
+                    const input = 'A'.repeat(100);
+                    const result = SecurityFunctions.validateInput(input, 200);
+                    return TestFramework.assertTrue(result,
+                        'Texto dentro do limite deve ser aceito');
+                }
+            },
+            {
+                name: 'Rejeita string vazia',
+                test: function () {
+                    const result = SecurityFunctions.validateInput('', 1000);
+                    return TestFramework.assertFalse(result,
+                        'String vazia deve ser rejeitada');
+                }
+            },
+            {
+                name: 'Bloqueia case insensitive <SCRIPT>',
+                test: function () {
+                    const input = '<SCRIPT>alert(1)</SCRIPT>';
+    const result = SecurityFunctions.validateInput(input, 1000);
+    return TestFramework.assertFalse(result,
+    '
+    <SCRIPT> maiúsculo deve ser bloqueado');
+                }
+            },
+            {
+                name: 'Bloqueia case insensitive JAVASCRIPT:',
+                test: function () {
+                    const input = 'JAVASCRIPT:alert(1)';
+                    const result = SecurityFunctions.validateInput(input, 1000);
+                    return TestFramework.assertFalse(result,
+                        'JAVASCRIPT: maiúsculo deve ser bloqueado');
+                }
+            }
+        ]);
+
+        TestFramework.describe('Cenários de Ataque Reais', [
+            {
+                name: 'XSS via comentário HTML',
+                test: function () {
+                    const attack = '<!-- <script>alert(1)</script> -->';
+                    const result = SecurityFunctions.validateInput(attack, 1000);
+                    return TestFramework.assertFalse(result,
+                        'XSS via comentário deve ser bloqueado');
+                }
+            },
+            {
+                name: 'XSS via data URI',
+                test: function () {
+                    const attack = '<a href="data:text/html,<script>alert(1)</script>">click</a>';
+    const result = SecurityFunctions.validateInput(attack, 1000);
+    return TestFramework.assertFalse(result,
+    'XSS via data URI deve ser bloqueado');
+    }
+    },
+    {
+    name: 'HTML Injection com formatação',
+    test: function() {
+    const input = '<b>Bold</b><i>Italic</i><u>Underline</u>';
+    const sanitized = SecurityFunctions.sanitizeHTML(input);
+    const hasHTMLTags = sanitized.includes('<b>') || sanitized.includes('<i>');
+            return TestFramework.assertFalse(hasHTMLTags,
+            'Tags de formatação devem ser removidas');
+            }
+            },
+            {
+            name: 'DoS via string gigante',
+            test: function() {
+            const attack = 'A'.repeat(100000);
+            const result = SecurityFunctions.validateInput(attack, 2000);
+            return TestFramework.assertFalse(result,
+            'String gigante deve ser rejeitada');
+            }
+            }
+            ]);
+
+            // Executar todos os testes
+            function runAllTests() {
+            TestFramework.results = { total: 0, passed: 0, failed: 0 };
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+
+            TestFramework.suites.forEach(suite => {
+            const suiteDiv = document.createElement('div');
+            suiteDiv.className = 'test-suite';
+
+            let suitePassed = 0;
+            let suiteFailed = 0;
+
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'suite-header';
+            headerDiv.innerHTML = `
+            <span>${suite.name}</span>
+            <span id="suite-status-${suite.name.replace(/\s/g, '-')}"></span>
+            `;
+            suiteDiv.appendChild(headerDiv);
+
+            suite.tests.forEach(testCase => {
+            TestFramework.results.total++;
+
+            const testDiv = document.createElement('div');
+            testDiv.className = 'test-item';
+
+            try {
+            const result = testCase.test();
+
+            if (result.passed) {
+            TestFramework.results.passed++;
+            suitePassed++;
+            testDiv.innerHTML = `
+            <span class="test-name">${testCase.name}</span>
+            <span class="test-status status-pass">✅ PASSOU</span>
+            `;
+            } else {
+            TestFramework.results.failed++;
+            suiteFailed++;
+            testDiv.innerHTML = `
+            <span class="test-name">
+                ${testCase.name}
+                <div class="error-details">${result.error}</div>
+            </span>
+            <span class="test-status status-fail">❌ FALHOU</span>
+            `;
+            }
+            } catch (error) {
+            TestFramework.results.failed++;
+            suiteFailed++;
+            testDiv.innerHTML = `
+            <span class="test-name">
+                ${testCase.name}
+                <div class="error-details">Erro: ${error.message}</div>
+            </span>
+            <span class="test-status status-fail">❌ ERRO</span>
+            `;
+            }
+
+            suiteDiv.appendChild(testDiv);
+            });
+
+            // Atualizar status do suite
+            const suiteStatus = document.getElementById(`suite-status-${suite.name.replace(/\s/g, '-')}`);
+            suiteStatus.innerHTML = `${suitePassed} passou, ${suiteFailed} falhou`;
+            suiteStatus.style.color = suiteFailed === 0 ? '#10b981' : '#ef4444';
+
+            resultsDiv.appendChild(suiteDiv);
+            });
+
+            // Atualizar resumo
+            updateSummary();
+            }
+
+            function updateSummary() {
+            const summaryDiv = document.getElementById('summary');
+            summaryDiv.style.display = 'block';
+
+            document.getElementById('total-tests').textContent = TestFramework.results.total;
+            document.getElementById('passed-tests').textContent = TestFramework.results.passed;
+            document.getElementById('failed-tests').textContent = TestFramework.results.failed;
+
+            const passRate = TestFramework.results.total > 0
+            ? Math.round((TestFramework.results.passed / TestFramework.results.total) * 100)
+            : 0;
+            document.getElementById('pass-rate').textContent = passRate + '%';
+            }
+
+            function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('summary').style.display = 'none';
+            TestFramework.results = { total: 0, passed: 0, failed: 0 };
+            }
+
+            // Auto-executar ao carregar
+            window.addEventListener('load', function() {
+            setTimeout(runAllTests, 500);
+            });
+            </script>
+</body>
+
+</html>

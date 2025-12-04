@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Rápido de Segurança - GG</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+        .section {
+            background: #f8f9ff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 5px solid #667eea;
+        }
+        .section h2 {
+            color: #333;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        .test-item {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 2px solid #e0e0e0;
+        }
+        .test-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        .test-payload {
+            background: #f5f5f5;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            margin: 0.5rem 0;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        .status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+        .status-copied {
+            background: #4ade80;
+            color: white;
+        }
+        .info-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+        .info-box h3 {
+            color: #856404;
+            margin-bottom: 0.5rem;
+        }
+        .info-box p {
+            color: #856404;
+            line-height: 1.6;
+        }
+        .result-pass { color: #10b981; font-weight: bold; }
+        .result-fail { color: #ef4444; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛡️ Teste Rápido de Segurança</h1>
+        <p class="subtitle">Clique em "Copiar Payload" e teste no board.html</p>
+
+        <div class="section">
+            <h2>🧪 Testes de XSS (Cross-Site Scripting)</h2>
+            
+            <div class="test-item">
+                <div class="test-name">1. XSS no Título - Script Tag</div>
+                <div class="test-payload">&lt;script&gt;alert("XSS")&lt;/script&gt;</div>
+                <p><strong>Como testar:</strong> Criar novo chamado, colar no título</p>
+                <p><strong>Resultado esperado:</strong> ❌ Erro "Título inválido"</p>
+                <button class="btn" onclick="copyText('<script>alert(1)</script>', 1)">📋 Copiar Payload</button>
+                <span id="status-1"></span>
+            </div>
+
+            <div class="test-item">
+                <div class="test-name">2. XSS na Descrição - IMG Tag</div>
+                <div class="test-payload">&lt;img src=invalid onerror=alert(1)&gt;</div>
+                <p><strong>Como testar:</strong> Criar chamado, colar na descrição</p>
+                <p><strong>Resultado esperado:</strong> ❌ Erro "Descrição inválida"</p>
+                <button class="btn" onclick="copyText('<img src=invalid onerror=alert(1)>', 2)">📋 Copiar Payload</button>
+                <span id="status-2"></span>
+            </div>
+
+            <div class="test-item">
+                <div class="test-name">3. XSS em Comentário</div>
+                <div class="test-payload">&lt;svg onload=alert(1)&gt;</div>
+                <p><strong>Como testar:</strong> Abrir chamado, adicionar comentário</p>
+                <p><strong>Resultado esperado:</strong> ❌ Erro "caracteres inválidos"</p>
+                <button class="btn" onclick="copyText('<svg onload=alert(1)>', 3)">📋 Copiar Payload</button>
+                <span id="status-3"></span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💣 Testes de DoS (Denial of Service)</h2>
+            
+            <div class="test-item">
+                <div class="test-name">4. Título Muito Longo (10.000 caracteres)</div>
+                <div class="test-payload">AAAAAAA... (10.000x)</div>
+                <p><strong>Como testar:</strong> Criar chamado com payload no título</p>
+                <p><strong>Resultado esperado:</strong> ❌ Erro "muito longo (máx. 200)"</p>
+                <button class="btn" onclick="copyText('A'.repeat(10000), 4)">📋 Copiar Payload</button>
+                <span id="status-4"></span>
+            </div>
+
+            <div class="test-item">
+                <div class="test-name">5. Descrição Muito Longa (50.000 caracteres)</div>
+                <div class="test-payload">BBBBBBB... (50.000x)</div>
+                <p><strong>Como testar:</strong> Criar chamado com payload na descrição</p>
+                <p><strong>Resultado esperado:</strong> ❌ Erro "muito longo (máx. 2000)"</p>
+                <button class="btn" onclick="copyText('B'.repeat(50000), 5)">📋 Copiar Payload</button>
+                <span id="status-5"></span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🏷️ Testes de HTML Injection</h2>
+            
+            <div class="test-item">
+                <div class="test-name">6. Tags de Formatação</div>
+                <div class="test-payload">&lt;b&gt;Negrito&lt;/b&gt;&lt;i&gt;Itálico&lt;/i&gt;</div>
+                <p><strong>Como testar:</strong> Criar chamado, verificar card no board</p>
+                <p><strong>Resultado esperado:</strong> ✅ Tags aparecem como texto (sem formatação)</p>
+                <button class="btn" onclick="copyText('<b>Negrito</b><i>Itálico</i>', 6)">📋 Copiar Payload</button>
+                <span id="status-6"></span>
+            </div>
+
+            <div class="test-item">
+                <div class="test-name">7. IFrame Injection</div>
+                <div class="test-payload">&lt;iframe src="javascript:alert(1)"&gt;&lt;/iframe&gt;</div>
+                <p><strong>Como testar:</strong> Criar chamado na descrição</p>
+                <p><strong>Resultado esperado:</strong> ❌ Erro "caracteres inválidos"</p>
+                <button class="btn" onclick="copyText('<iframe src="javascript:alert(1)"></iframe>', 7)">📋 Copiar Payload</button>
+                <span id="status-7"></span>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>ℹ️ Como Interpretar os Resultados</h3>
+            <p><strong class="result-pass">✅ PASSOU (Seguro):</strong> Payload foi bloqueado, erro de validação ou texto apareceu sem executar</p>
+            <p><strong class="result-fail">❌ FALHOU (Vulnerável):</strong> Alert executou ou HTML foi renderizado</p>
+            <p><br><strong>Abra o board.html em:</strong> <a href="board.html" target="_blank" style="color: #667eea; font-weight: bold;">http://localhost:8080/board.html</a></p>
+        </div>
+    </div>
+
+    <script>
+        function copyText(text, id) {
+            navigator.clipboard.writeText(text).then(() => {
+                const status = document.getElementById('status-' + id);
+                status.textContent = '✅ Copiado!';
+                status.className = 'status status-copied';
+                setTimeout(() => {
+                    status.textContent = '';
+                }, 3000);
+            }).catch(err => {
+                alert('Erro ao copiar: ' + err);
+            });
+        }
+    </script>
+</body>
+</html>

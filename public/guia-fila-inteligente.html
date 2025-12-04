@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia - Fila Inteligente | CondoKanban</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+        }
+        .step-number {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-4xl mx-auto p-6">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="bg-amber-500 text-white w-16 h-16 rounded-xl flex items-center justify-center text-3xl font-bold">
+                    C
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">Fila Inteligente</h1>
+                    <p class="text-gray-600">Sistema de Priorização Automática de Chamados</p>
+                </div>
+            </div>
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                <p class="text-blue-900">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    <strong>Novidade implementada!</strong> Agora você pode visualizar a fila ordenada de chamados com análise inteligente por IA.
+                </p>
+            </div>
+        </div>
+
+        <!-- Como Acessar -->
+        <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <i class="fas fa-mouse-pointer text-amber-500"></i>
+                Como Acessar
+            </h2>
+            <div class="space-y-4">
+                <div class="flex gap-4">
+                    <div class="step-number">1</div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-gray-800 mb-2">Abra o Board</h3>
+                        <p class="text-gray-600">Acesse <code class="bg-gray-100 px-2 py-1 rounded">board.html</code> no navegador</p>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="step-number">2</div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-gray-800 mb-2">Clique no Botão</h3>
+                        <p class="text-gray-600 mb-2">Procure o ícone no menu superior:</p>
+                        <div class="bg-gray-100 p-4 rounded-lg inline-flex items-center gap-2">
+                            <i class="fas fa-list-ol text-amber-500 text-xl"></i>
+                            <span class="font-semibold">Fila Inteligente</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="step-number">3</div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-gray-800 mb-2">Explore os Insights</h3>
+                        <p class="text-gray-600">Visualize métricas, alertas de risco e a fila ordenada</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configurar API Gemini (Opcional) -->
+        <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <i class="fas fa-robot text-blue-500"></i>
+                Configurar API Gemini (Opcional)
+            </h2>
+            <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded mb-4">
+                <p class="text-amber-900 text-sm">
+                    <i class="fas fa-lightbulb mr-2"></i>
+                    <strong>Dica:</strong> A fila funciona perfeitamente SEM a API. Use apenas se quiser análises contextuais da IA.
+                </p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <h3 class="font-bold text-gray-800 mb-2">
+                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">Passo 1</span>
+                        Obter API Key Gratuita
+                    </h3>
+                    <ol class="list-decimal list-inside space-y-2 text-gray-600 ml-4">
+                        <li>Acesse: <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-blue-600 hover:underline">https://aistudio.google.com/app/apikey</a></li>
+                        <li>Faça login com sua conta Google</li>
+                        <li>Clique em "Create API Key"</li>
+                        <li>Copie a chave gerada</li>
+                    </ol>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-gray-800 mb-2">
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">Passo 2</span>
+                        Configurar no Sistema
+                    </h3>
+                    <p class="text-gray-600 mb-2">Abra o Console do Navegador (F12) e execute:</p>
+                    <div class="code-block">
+                        <code>localStorage.setItem('gemini_api_key', 'SUA_CHAVE_AQUI');</code>
+                    </div>
+                </div>
+
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h4 class="font-bold text-green-800 mb-2">
+                        <i class="fas fa-check-circle mr-2"></i>Limites Gratuitos
+                    </h4>
+                    <ul class="text-green-700 text-sm space-y-1">
+                        <li>✓ 15 requisições por minuto</li>
+                        <li>✓ 1.500 requisições por dia</li>
+                        <li>✓ 1 milhão de tokens por mês</li>
+                    </ul>
+                    <p class="text-green-600 text-xs mt-2">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Com cache de 24h, você usará apenas ~1 requisição por dia
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Entendendo os Scores -->
+        <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <i class="fas fa-calculator text-purple-500"></i>
+                Como Funciona a Pontuação
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="border-2 border-red-200 bg-red-50 rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="bg-red-500 text-white w-8 h-8 rounded flex items-center justify-center font-bold">Q1</div>
+                        <h3 class="font-bold text-red-800">Urgente + Importante</h3>
+                    </div>
+                    <p class="text-red-700 text-sm">Base: <strong>100 pontos</strong></p>
+                    <p class="text-red-600 text-xs mt-1">Ex: Vazamento, falta d'água</p>
+                </div>
+
+                <div class="border-2 border-orange-200 bg-orange-50 rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="bg-orange-500 text-white w-8 h-8 rounded flex items-center justify-center font-bold">Q2</div>
+                        <h3 class="font-bold text-orange-800">Não Urgente + Importante</h3>
+                    </div>
+                    <p class="text-orange-700 text-sm">Base: <strong>70 pontos</strong></p>
+                    <p class="text-orange-600 text-xs mt-1">Ex: Manutenção preventiva</p>
+                </div>
+
+                <div class="border-2 border-green-200 bg-green-50 rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="bg-green-500 text-white w-8 h-8 rounded flex items-center justify-center font-bold">Q3</div>
+                        <h3 class="font-bold text-green-800">Urgente + Não Importante</h3>
+                    </div>
+                    <p class="text-green-700 text-sm">Base: <strong>50 pontos</strong></p>
+                    <p class="text-green-600 text-xs mt-1">Ex: Lâmpada queimada</p>
+                </div>
+
+                <div class="border-2 border-gray-200 bg-gray-50 rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="bg-gray-500 text-white w-8 h-8 rounded flex items-center justify-center font-bold">Q4</div>
+                        <h3 class="font-bold text-gray-800">Não Urgente + Não Importante</h3>
+                    </div>
+                    <p class="text-gray-700 text-sm">Base: <strong>30 pontos</strong></p>
+                    <p class="text-gray-600 text-xs mt-1">Ex: Sugestões, melhorias</p>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 class="font-bold text-blue-800 mb-3">Bônus Adicionais:</h3>
+                <ul class="space-y-2 text-blue-700 text-sm">
+                    <li><i class="fas fa-clock text-blue-500 mr-2"></i><strong>+1 ponto/dia</strong> em aberto (máx. 60)</li>
+                    <li><i class="fas fa-play text-blue-500 mr-2"></i><strong>+20 pontos</strong> se status "Fazendo"</li>
+                    <li><i class="fas fa-ban text-blue-500 mr-2"></i><strong>+15 pontos</strong> se status "Enroscados"</li>
+                    <li><i class="fas fa-undo text-blue-500 mr-2"></i><strong>+18 a +25 pontos</strong> por regressões/bloqueios</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Recursos -->
+        <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <i class="fas fa-star text-yellow-500"></i>
+                Recursos da Fila Inteligente
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex items-start gap-3">
+                    <i class="fas fa-chart-line text-amber-500 text-xl mt-1"></i>
+                    <div>
+                        <h3 class="font-bold text-gray-800">Métricas em Tempo Real</h3>
+                        <p class="text-gray-600 text-sm">Total na fila, tempo médio, chamados em risco</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <i class="fas fa-exclamation-triangle text-red-500 text-xl mt-1"></i>
+                    <div>
+                        <h3 class="font-bold text-gray-800">Alertas de Risco</h3>
+                        <p class="text-gray-600 text-sm">Identifica chamados simples com +7 dias</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <i class="fas fa-balance-scale text-green-500 text-xl mt-1"></i>
+                    <div>
+                        <h3 class="font-bold text-gray-800">Balanceamento Inteligente</h3>
+                        <p class="text-gray-600 text-sm">Intercala 2 complexos com 1 simples</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <i class="fas fa-brain text-purple-500 text-xl mt-1"></i>
+                    <div>
+                        <h3 class="font-bold text-gray-800">Análise por IA (opcional)</h3>
+                        <p class="text-gray-600 text-sm">Insights contextuais via Google Gemini</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <i class="fas fa-database text-blue-500 text-xl mt-1"></i>
+                    <div>
+                        <h3 class="font-bold text-gray-800">Cache Inteligente</h3>
+                        <p class="text-gray-600 text-sm">Validade de 24h, economiza processamento</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <i class="fas fa-eye text-indigo-500 text-xl mt-1"></i>
+                    <div>
+                        <h3 class="font-bold text-gray-800">Visualização Completa</h3>
+                        <p class="text-gray-600 text-sm">Ver detalhes de cada chamado diretamente</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="bg-gray-800 text-white rounded-lg shadow-lg p-6 text-center">
+            <p class="text-sm mb-2">
+                <i class="fas fa-file-alt mr-2"></i>
+                Documentação completa em <code class="bg-gray-700 px-2 py-1 rounded">FILA-INTELIGENTE.md</code>
+            </p>
+            <p class="text-xs text-gray-400">
+                Desenvolvido para otimizar a gestão de chamados em condomínios 🏢
+            </p>
+        </div>
+    </div>
+</body>
+</html>

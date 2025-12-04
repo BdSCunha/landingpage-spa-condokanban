@@ -183,7 +183,7 @@
                 </button>
 
                 <div id="navbarContent"
-                    class="hidden md:flex md:flex-1 md:items-center md:justify-between md:w-auto md:ml-4 transition-all duration-300 ease-in-out overflow-hidden opacity-0 max-h-0 md:opacity-100 md:max-h-full absolute md:relative top-[64px] md:top-0 left-0 right-0 bg-white md:bg-transparent border-t md:border-t-0 border-stone-100 px-4 md:px-0 pb-4 md:pb-0">
+                    class="hidden md:flex md:flex-1 md:items-center md:justify-between md:w-auto md:ml-4 transition-all duration-300 ease-in-out overflow-hidden md:overflow-visible opacity-0 max-h-0 md:opacity-100 md:max-h-full absolute md:relative top-[64px] md:top-0 left-0 right-0 bg-white md:bg-transparent border-t md:border-t-0 border-stone-100 px-4 md:px-0 pb-4 md:pb-0">
 
                     <div
                         class="flex flex-col md:flex-row flex-wrap items-start md:items-center justify-center gap-3 md:gap-4 w-full md:w-auto mt-4 md:mt-0 mb-4 md:mb-0 md:mx-auto">
@@ -205,6 +205,12 @@
 
                         <!-- Linha 2: Botões do menu (mobile) -->
                         <div class="w-full md:w-auto flex items-center justify-center gap-2 md:hidden">
+                            <button id="queueButtonMobile" onclick="app.openQueueModal()"
+                                class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group hidden"
+                                title="Fila Inteligente">
+                                <i class="fas fa-list-ol"></i>
+                            </button>
+
                             <button onclick="app.openArchiveListModal()"
                                 class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
                                 title="Arquivo">
@@ -215,6 +221,14 @@
                                 class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
                                 title="Histórico">
                                 <i class="fas fa-history"></i>
+                            </button>
+
+                            <button id="pendingCallsMobile" onclick="app.openPendingCallsModal()"
+                                class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group hidden"
+                                title="Meus Chamados Pendentes">
+                                <i class="fas fa-hourglass-half"></i>
+                                <span id="pendingBadgeMobile"
+                                    class="hidden absolute -top-1 -right-1 bg-orange-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white badge-pulse">0</span>
                             </button>
 
                             <div id="managerMenuMobile" class="hidden flex gap-2 items-center">
@@ -249,6 +263,12 @@
 
                     <div
                         class="flex items-center justify-end gap-2 w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-3 md:pt-0 hidden md:flex">
+                        <button id="queueButtonDesktop" onclick="app.openQueueModal()"
+                            class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group hidden"
+                            title="Fila Inteligente">
+                            <i class="fas fa-list-ol"></i>
+                        </button>
+
                         <button onclick="app.openArchiveListModal()"
                             class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
                             title="Arquivo">
@@ -259,6 +279,14 @@
                             class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group"
                             title="Histórico">
                             <i class="fas fa-history"></i>
+                        </button>
+
+                        <button id="pendingCallsDesktop" onclick="app.openPendingCallsModal()"
+                            class="p-2 text-stone-500 hover:text-brand-accent hover:bg-stone-50 rounded-full transition relative group hidden"
+                            title="Meus Chamados Pendentes">
+                            <i class="fas fa-hourglass-half"></i>
+                            <span id="pendingBadgeDesktop"
+                                class="hidden absolute -top-1 -right-1 bg-orange-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white badge-pulse">0</span>
                         </button>
 
                         <div id="managerMenu" class="hidden flex gap-2 items-center">
@@ -307,7 +335,7 @@
                         class="bg-white text-stone-600 px-2 py-0.5 rounded text-xs font-bold border border-stone-200 shadow-sm"
                         id="count-backlog">0</span>
                 </div>
-                <div class="flex-1 overflow-y-auto p-2 space-y-2 pb-20" id="col-backlog"></div>
+                <div class="flex-1 overflow-y-auto p-2 space-y-2" id="col-backlog"></div>
             </div>
             <div class="kanban-col w-72 md:w-80 bg-blue-50/50 rounded-xl border border-blue-100">
                 <div
@@ -319,7 +347,7 @@
                         class="bg-white text-blue-600 px-2 py-0.5 rounded text-xs font-bold border border-blue-100 shadow-sm"
                         id="count-doing">0</span>
                 </div>
-                <div class="flex-1 overflow-y-auto p-2 space-y-2 pb-20" id="col-doing"></div>
+                <div class="flex-1 overflow-y-auto p-2 space-y-2" id="col-doing"></div>
             </div>
             <div class="kanban-col w-72 md:w-80 bg-red-50/50 rounded-xl border border-red-100">
                 <div
@@ -331,7 +359,7 @@
                         class="bg-white text-red-600 px-2 py-0.5 rounded text-xs font-bold border border-red-100 shadow-sm"
                         id="count-stuck">0</span>
                 </div>
-                <div class="flex-1 overflow-y-auto p-2 space-y-2 pb-20" id="col-stuck"></div>
+                <div class="flex-1 overflow-y-auto p-2 space-y-2" id="col-stuck"></div>
             </div>
             <div class="kanban-col w-72 md:w-80 bg-green-50/50 rounded-xl border border-green-100">
                 <div
@@ -343,7 +371,7 @@
                         class="bg-white text-green-600 px-2 py-0.5 rounded text-xs font-bold border border-green-100 shadow-sm"
                         id="count-done">0</span>
                 </div>
-                <div class="flex-1 overflow-y-auto p-2 space-y-2 pb-20" id="col-done"></div>
+                <div class="flex-1 overflow-y-auto p-2 space-y-2" id="col-done"></div>
             </div>
         </div>
     </main>
@@ -358,6 +386,115 @@
         class="fab w-14 h-14 bg-brand-accent hover:bg-amber-600 text-white rounded-full flex items-center justify-center text-2xl transition-transform hover:scale-110 active:scale-95 hidden">
         <i class="fas fa-plus"></i>
     </button>
+
+    <div id="queueModal"
+        class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div
+            class="bg-white w-[95%] md:w-full max-w-6xl mx-auto rounded-xl shadow-2xl flex flex-col max-h-[90vh] transform scale-95 transition-transform duration-300">
+            <div
+                class="p-6 border-b border-stone-200 flex justify-between items-center bg-stone-50 rounded-t-xl relative">
+                <div class="flex items-center gap-3">
+                    <svg class="w-6 h-6 text-brand-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <line x1="8" y1="6" x2="21" y2="6"></line>
+                        <line x1="8" y1="12" x2="21" y2="12"></line>
+                        <line x1="8" y1="18" x2="21" y2="18"></line>
+                        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                    </svg>
+                    <h2 class="text-xl font-bold text-brand-text">Fila Inteligente de Chamados</h2>
+                </div>
+                <button onclick="app.closeTopModal()"
+                    class="text-stone-400 hover:text-red-500 text-2xl z-10">&times;</button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6 bg-stone-50">
+                <!-- Insights Cards -->
+                <div id="queueInsights" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white border border-stone-200 rounded-lg p-4 shadow-sm">
+                        <div class="text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Total na Fila</div>
+                        <div id="queueTotal" class="text-3xl font-bold text-brand-accent">0</div>
+                    </div>
+                    <div class="bg-white border border-stone-200 rounded-lg p-4 shadow-sm">
+                        <div class="text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Tempo Médio</div>
+                        <div id="queueAvgDays" class="text-3xl font-bold text-amber-500">0 dias</div>
+                    </div>
+                    <div class="bg-white border border-stone-200 rounded-lg p-4 shadow-sm">
+                        <div class="text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Em Risco</div>
+                        <div id="queueAtRisk" class="text-3xl font-bold text-red-600">0</div>
+                        <div class="text-xs text-stone-500 mt-1">Simples c/ +7 dias</div>
+                    </div>
+                    <div class="bg-white border border-stone-200 rounded-lg p-4 shadow-sm">
+                        <div class="text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Última Atualização
+                        </div>
+                        <div id="queueLastUpdate" class="text-sm font-semibold text-stone-600">Calculando...</div>
+                    </div>
+                </div>
+
+                <!-- Alert de Risco -->
+                <div id="queueRiskAlert" class="hidden bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                            </path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        <div class="flex-1">
+                            <strong class="text-red-600 font-bold">Chamados em Risco de Postergação:</strong>
+                            <div id="queueRiskList" class="mt-2 text-sm text-red-900"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Insights -->
+                <div id="queueAIInsights" class="hidden bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                            <polyline points="2 17 12 22 22 17"></polyline>
+                            <polyline points="2 12 12 17 22 12"></polyline>
+                        </svg>
+                        <div class="flex-1">
+                            <strong class="text-blue-600 font-bold text-sm">Análise IA</strong>
+                            <p id="queueAIText" class="mt-1 text-sm text-blue-900 leading-relaxed"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabela da Fila -->
+                <div class="bg-white rounded-lg border border-stone-200 overflow-hidden shadow-sm">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-stone-100 text-stone-700">
+                                <tr>
+                                    <th class="px-4 py-3 text-center font-bold">#</th>
+                                    <th class="px-4 py-3 text-center font-bold">Q</th>
+                                    <th class="px-4 py-3 font-bold">Título</th>
+                                    <th class="px-4 py-3 font-bold">Unidade</th>
+                                    <th class="px-4 py-3 font-bold">Status</th>
+                                    <th class="px-4 py-3 text-center font-bold">Dias</th>
+                                    <th class="px-4 py-3 text-center font-bold">Score</th>
+                                    <th class="px-4 py-3 text-center font-bold">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="queueTableBody" class="divide-y divide-stone-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-stone-200 bg-stone-50 rounded-b-xl flex justify-between items-center">
+                <div class="text-xs text-stone-500">
+                    <i class="fas fa-info-circle"></i> A fila é recalculada automaticamente a cada 24h
+                </div>
+                <button onclick="app.closeTopModal()"
+                    class="px-4 py-2 bg-white border border-stone-300 rounded-lg text-sm text-stone-600 hover:bg-stone-100 font-semibold">Fechar</button>
+            </div>
+        </div>
+    </div>
 
     <div id="archiveListModal"
         class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
@@ -454,165 +591,197 @@
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div
             class="bg-white w-full max-w-2xl mx-4 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] transform scale-95 transition-transform duration-300 border border-stone-200">
-            <div class="p-6 pb-4 border-b border-stone-100 bg-white z-10 shrink-0">
+            <div class="p-6 pb-4 border-b border-stone-200 bg-white z-10 shrink-0">
                 <div class="flex justify-between items-start gap-4">
                     <div class="flex-1">
-                        <div class="flex items-center gap-2 mb-2 flex-wrap">
-                            <span id="modalPriority"
-                                class="h-8 inline-flex items-center justify-center text-xs font-bold px-3 rounded border">Q?</span>
-                            <span id="modalCategory"
-                                class="h-8 inline-flex items-center gap-1.5 text-xs font-bold px-3 rounded border"></span>
-                            <div id="modalCategoryEdit" class="hidden">
-                                <select id="modalCategorySelect" onchange="app.updateTaskCategory()"
-                                    class="h-8 max-w-full text-xs font-medium px-2 rounded border border-stone-300 bg-white focus:ring-2 focus:ring-brand-accent outline-none overflow-hidden">
-                                    <optgroup label="⚡ Elétrica">
-                                        <option value="eletrica_geral">⚡ Elétrica (Geral/Outros)</option>
-                                        <option value="lampada_queimada">💡 Lâmpada Queimada (Área Comum)</option>
-                                        <option value="disjuntor_caindo">📉 Disjuntor Caindo / Queda de Energia</option>
-                                        <option value="tomada_defeito">🔌 Tomada / Interruptor com Defeito</option>
-                                        <option value="sensor_presenca">🚶 Sensor de Presença Falhando</option>
-                                        <option value="interfone_mudo">📞 Interfone Mudo / Chiando</option>
-                                        <option value="portao_motor">⚙️ Motor do Portão Travado</option>
-                                        <option value="cerca_eletrica">⚡ Cerca Elétrica (Estalando/Rompida)</option>
-                                        <option value="para_raios">🌩️ Para-raios / Aterramento</option>
-                                        <option value="gerador">🔋 Gerador (Falha/Combustível)</option>
-                                        <option value="timer_minuteria">⏱️ Timer / Minuteria Travada</option>
-                                        <option value="luz_emergencia">🔦 Luz de Emergência Queimada</option>
-                                    </optgroup>
-                                    <optgroup label="💧 Hidráulica e Gás">
-                                        <option value="hidraulica_geral">💧 Hidráulica (Geral/Outros)</option>
-                                        <option value="vazamento_agua">💦 Vazamento de Água Visível</option>
-                                        <option value="infiltracao_parede">🌫️ Infiltração / Umidade em Parede</option>
-                                        <option value="torneira_pingando">🚰 Torneira Pingando / Quebrada</option>
-                                        <option value="chuveiro_comum">🚿 Chuveiro (Vestiário/Piscina)</option>
-                                        <option value="vaso_entupido">🚽 Vaso Sanitário Entupido</option>
-                                        <option value="ralo_entupido">🛁 Ralo / Calha Entupida</option>
-                                        <option value="pressao_agua">📉 Pressão da Água (Baixa/Alta)</option>
-                                        <option value="bomba_dagua">⚙️ Bomba d'água (Barulho/Defeito)</option>
-                                        <option value="falta_agua">🚱 Falta de Água</option>
-                                        <option value="cheiro_gas">⛽ Cheiro de Gás / Tubulação</option>
-                                        <option value="hidrante">🚒 Hidrante / Mangueira Danificada</option>
-                                    </optgroup>
-                                    <optgroup label="🏗️ Estrutura e Predial">
-                                        <option value="estrutura_geral">🏗️ Estrutura (Geral/Outros)</option>
-                                        <option value="piso_quebrado">🧱 Piso Quebrado / Solto</option>
-                                        <option value="vidro_quebrado">🪟 Vidro Quebrado / Trincado</option>
-                                        <option value="porta_fechadura">🚪 Porta / Maçaneta / Mola</option>
-                                        <option value="janela_basculante">🪟 Janela / Basculante Emperrado</option>
-                                        <option value="telhado_telha">🏠 Telhado / Telha Solta</option>
-                                        <option value="calhas_rufos">🌧️ Calhas e Rufos</option>
-                                        <option value="fachada_pastilha">🏢 Fachada / Pastilha Caindo</option>
-                                        <option value="pintura_descascando">🎨 Pintura Descascando / Suja</option>
-                                        <option value="muro_cerca">🧱 Muro / Grade Danificada</option>
-                                        <option value="acessibilidade">♿ Rampa / Acessibilidade</option>
-                                        <option value="escada_corrimao">🪜 Escada / Corrimão Solto</option>
-                                    </optgroup>
-                                    <optgroup label="🛡️ Segurança">
-                                        <option value="seguranca_geral">🛡️ Segurança (Geral/Outros)</option>
-                                        <option value="camera_cftv">📹 Câmera sem Imagem / CFTV</option>
-                                        <option value="alarme_disparado">🚨 Alarme Disparando</option>
-                                        <option value="controle_acesso">🆔 Tag / Biometria / Facial Falhando</option>
-                                        <option value="chaves_controles">🔑 Chaves e Controles Remotos</option>
-                                        <option value="extintor_vencido">🧯 Extintor Vencido/Vazio</option>
-                                        <option value="acesso_estranho">🕵️ Presença de Estranhos</option>
-                                        <option value="veiculo_suspeito">🚙 Veículo Suspeito</option>
-                                        <option value="furto_roubo">💰 Furto ou Roubo</option>
-                                    </optgroup>
-                                    <optgroup label="🧹 Limpeza e Conservação">
-                                        <option value="limpeza_geral">🧹 Limpeza (Geral/Outros)</option>
-                                        <option value="coleta_lixo">🗑️ Lixo Acumulado / Não Coletado</option>
-                                        <option value="mau_cheiro">🤢 Mau Cheiro</option>
-                                        <option value="pragas">🦗 Pragas (Baratas, Ratos, Formigas)</option>
-                                        <option value="limpeza_elevador">🛗 Limpeza do Elevador</option>
-                                        <option value="limpeza_escadas">🪜 Limpeza de Escadas/Corredores</option>
-                                        <option value="limpeza_hall">✨ Limpeza do Hall de Entrada</option>
-                                        <option value="oleo_garagem">⚫ Mancha de Óleo na Garagem</option>
-                                        <option value="limpeza_vidros">🪟 Vidros Sujos</option>
-                                    </optgroup>
-                                    <optgroup label="🌿 Jardinagem">
-                                        <option value="jardinagem_geral">🌿 Jardinagem (Geral/Outros)</option>
-                                        <option value="grama_alta">✂️ Grama Alta</option>
-                                        <option value="poda_arvore">🌳 Poda de Árvore / Galho Perigoso</option>
-                                        <option value="plantas_mortas">🥀 Plantas Secas / Mortas</option>
-                                        <option value="irrigacao">🚿 Sistema de Irrigação</option>
-                                        <option value="vasos_jardineiras">🏺 Vasos e Jardineiras</option>
-                                        <option value="folhas_sujeira">🍂 Excesso de Folhas Secas</option>
-                                    </optgroup>
-                                    <optgroup label="🛗 Elevadores">
-                                        <option value="elevador_geral">🛗 Elevador (Geral/Outros)</option>
-                                        <option value="elevador_parado">🛑 Elevador Parado / Travado</option>
-                                        <option value="elevador_barulho">🔊 Barulho Anormal no Elevador</option>
-                                        <option value="elevador_luz">💡 Luz Interna do Elevador</option>
-                                        <option value="elevador_botoes">🔢 Botões do Painel Falhando</option>
-                                        <option value="elevador_porta">🚪 Porta não abre/fecha</option>
-                                        <option value="elevador_ventilador">💨 Ventilador/Exaustor do Elevador</option>
-                                    </optgroup>
-                                    <optgroup label="⚽ Áreas de Lazer">
-                                        <option value="lazer_geral">⚽ Áreas de Lazer (Geral/Outros)</option>
-                                        <option value="piscina_agua">🏊 Piscina (Água Suja/Turva)</option>
-                                        <option value="piscina_fisica">🧩 Piscina (Azulejo/Borda/Escada)</option>
-                                        <option value="academia_equipamento">🏋️ Academia (Equipamento Quebrado)
-                                        </option>
-                                        <option value="salao_festas">🎉 Salão de Festas (Limpeza/Danos)</option>
-                                        <option value="churrasqueira">🍖 Churrasqueira (Grelha/Exaustor)</option>
-                                        <option value="playground">🛝 Playground / Brinquedo Quebrado</option>
-                                        <option value="quadra_esportiva">🥅 Quadra (Rede/Piso/Iluminação)</option>
-                                        <option value="sauna">🧖 Sauna (Não Esquenta)</option>
-                                        <option value="salao_jogos">🎱 Salão de Jogos (Sinuca/Mesa)</option>
-                                    </optgroup>
-                                    <optgroup label="🔇 Convivência e Regras">
-                                        <option value="convivencia_geral">🔇 Convivência (Geral/Outros)</option>
-                                        <option value="barulho_som">🔊 Barulho Excessivo (Som/Gritos)</option>
-                                        <option value="barulho_obra">🔨 Barulho de Obra (Fora de Horário)</option>
-                                        <option value="barulho_passos">👠 Barulho de Passos/Móveis</option>
-                                        <option value="animais_barulho">🐶 Animais (Latidos/Barulho)</option>
-                                        <option value="animais_sujeira">💩 Animais (Dejetos/Sem Guia)</option>
-                                        <option value="cigarro">🚬 Cigarro em Área Proibida</option>
-                                        <option value="objeto_corredor">🚲 Objeto em Corredor/Área Comum</option>
-                                        <option value="uso_indevido">🚫 Uso Indevido de Área Comum</option>
-                                    </optgroup>
-                                    <optgroup label="🚗 Garagem e Veículos">
-                                        <option value="garagem_geral">🚗 Garagem (Geral/Outros)</option>
-                                        <option value="vaga_indevida">🚫 Carro na Vaga Errada</option>
-                                        <option value="vaga_ocupacao">📏 Carro Ocupando 2 Vagas</option>
-                                        <option value="bicicletario">🚲 Bicicletário (Lotado/Desorganizado)</option>
-                                        <option value="carro_abandonado">🕸️ Veículo Abandonado</option>
-                                        <option value="batida_veiculo">💥 Colisão / Dano em Veículo</option>
-                                        <option value="portao_garagem_uso">🚧 Uso Indevido do Portão</option>
-                                    </optgroup>
-                                    <optgroup label="📦 Portaria e Encomendas">
-                                        <option value="portaria_geral">📦 Portaria (Geral/Outros)</option>
-                                        <option value="encomenda_sumida">❓ Encomenda Não Localizada</option>
-                                        <option value="delivery_problema">🍕 Problema com Delivery</option>
-                                        <option value="correspondencia">📬 Correspondência Trocada</option>
-                                        <option value="atendimento_staff">🤝 Atendimento / Postura do Funcionário
-                                        </option>
-                                    </optgroup>
-                                    <optgroup label="📂 Administrativo">
-                                        <option value="admin_geral">📂 Administrativo (Geral/Outros)</option>
-                                        <option value="segunda_via_boleto">📄 2ª Via de Boleto / Cota</option>
-                                        <option value="atualizacao_cadastral">📝 Atualização de Cadastro</option>
-                                        <option value="reserva_espaco">📅 Reserva de Espaço</option>
-                                        <option value="agendamento_mudanca">🚛 Agendamento de Mudança</option>
-                                        <option value="multa_recurso">⚠️ Recurso de Multa</option>
-                                        <option value="assembleia_ata">📋 Dúvida sobre Assembleia/Ata</option>
-                                    </optgroup>
-                                    <optgroup label="❓ Diversos">
-                                        <option value="sugestao">💡 Sugestão de Melhoria</option>
-                                        <option value="elogio">👏 Elogio</option>
-                                        <option value="outros">❓ Outros Assuntos</option>
-                                    </optgroup>
-                                </select>
-                            </div>
-                            <div id="modalVisibilityContainer" class="h-8 flex items-center"></div>
-                        </div>
                         <h2 id="modalTitle" class="text-xl font-bold text-brand-text leading-tight"></h2>
                     </div>
                     <button onclick="app.closeTopModal()"
-                        class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-stone-100 text-stone-400 hover:text-stone-600 text-2xl leading-none transition">&times;</button>
+                        class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-stone-100 text-stone-400 hover:text-stone-600 text-2xl leading-none transition flex-shrink-0">&times;</button>
                 </div>
             </div>
             <div class="flex-1 overflow-y-auto px-6 py-4 bg-stone-50/30">
+                <!-- Badges e metadados -->
+                <div class="flex items-center gap-2 flex-wrap mb-4">
+                    <span id="modalPriority"
+                        class="h-8 inline-flex items-center justify-center text-xs font-bold px-3 rounded border">Q?</span>
+                    <span id="modalCategory"
+                        class="h-8 inline-flex items-center gap-1.5 text-xs font-bold px-3 rounded border"></span>
+                    <div id="modalCategoryEdit" class="hidden">
+                        <select id="modalCategorySelect" onchange="app.updateTaskCategory()"
+                            class="h-8 max-w-full text-xs font-medium px-2 rounded border border-stone-300 bg-white focus:ring-2 focus:ring-brand-accent outline-none overflow-hidden">
+                            <optgroup label="⚡ Elétrica">
+                                <option value="eletrica_geral">⚡ Elétrica (Geral/Outros)</option>
+                                <option value="lampada_queimada">💡 Lâmpada Queimada (Área Comum)</option>
+                                <option value="disjuntor_caindo">📉 Disjuntor Caindo / Queda de Energia</option>
+                                <option value="tomada_defeito">🔌 Tomada / Interruptor com Defeito</option>
+                                <option value="sensor_presenca">🚶 Sensor de Presença Falhando</option>
+                                <option value="interfone_mudo">📞 Interfone Mudo / Chiando</option>
+                                <option value="portao_motor">⚙️ Motor do Portão Travado</option>
+                                <option value="cerca_eletrica">⚡ Cerca Elétrica (Estalando/Rompida)</option>
+                                <option value="para_raios">🌩️ Para-raios / Aterramento</option>
+                                <option value="gerador">🔋 Gerador (Falha/Combustível)</option>
+                                <option value="timer_minuteria">⏱️ Timer / Minuteria Travada</option>
+                                <option value="luz_emergencia">🔦 Luz de Emergência Queimada</option>
+                            </optgroup>
+                            <optgroup label="💧 Hidráulica e Gás">
+                                <option value="hidraulica_geral">💧 Hidráulica (Geral/Outros)</option>
+                                <option value="vazamento_agua">💦 Vazamento de Água Visível</option>
+                                <option value="infiltracao_parede">🌫️ Infiltração / Umidade em Parede</option>
+                                <option value="torneira_pingando">🚰 Torneira Pingando / Quebrada</option>
+                                <option value="chuveiro_comum">🚿 Chuveiro (Vestiário/Piscina)</option>
+                                <option value="vaso_entupido">🚽 Vaso Sanitário Entupido</option>
+                                <option value="ralo_entupido">🛁 Ralo / Calha Entupida</option>
+                                <option value="pressao_agua">📉 Pressão da Água (Baixa/Alta)</option>
+                                <option value="bomba_dagua">⚙️ Bomba d'água (Barulho/Defeito)</option>
+                                <option value="falta_agua">🚱 Falta de Água</option>
+                                <option value="cheiro_gas">⛽ Cheiro de Gás / Tubulação</option>
+                                <option value="hidrante">🚒 Hidrante / Mangueira Danificada</option>
+                            </optgroup>
+                            <optgroup label="🏗️ Estrutura e Predial">
+                                <option value="estrutura_geral">🏗️ Estrutura (Geral/Outros)</option>
+                                <option value="piso_quebrado">🧱 Piso Quebrado / Solto</option>
+                                <option value="vidro_quebrado">🪟 Vidro Quebrado / Trincado</option>
+                                <option value="porta_fechadura">🚪 Porta / Maçaneta / Mola</option>
+                                <option value="janela_basculante">🪟 Janela / Basculante Emperrado</option>
+                                <option value="telhado_telha">🏠 Telhado / Telha Solta</option>
+                                <option value="calhas_rufos">🌧️ Calhas e Rufos</option>
+                                <option value="fachada_pastilha">🏢 Fachada / Pastilha Caindo</option>
+                                <option value="pintura_descascando">🎨 Pintura Descascando / Suja</option>
+                                <option value="muro_cerca">🧱 Muro / Grade Danificada</option>
+                                <option value="acessibilidade">♿ Rampa / Acessibilidade</option>
+                                <option value="escada_corrimao">🪜 Escada / Corrimão Solto</option>
+                            </optgroup>
+                            <optgroup label="🛡️ Segurança">
+                                <option value="seguranca_geral">🛡️ Segurança (Geral/Outros)</option>
+                                <option value="camera_cftv">📹 Câmera sem Imagem / CFTV</option>
+                                <option value="alarme_disparado">🚨 Alarme Disparando</option>
+                                <option value="controle_acesso">🆔 Tag / Biometria / Facial Falhando</option>
+                                <option value="chaves_controles">🔑 Chaves e Controles Remotos</option>
+                                <option value="extintor_vencido">🧯 Extintor Vencido/Vazio</option>
+                                <option value="acesso_estranho">🕵️ Presença de Estranhos</option>
+                                <option value="veiculo_suspeito">🚙 Veículo Suspeito</option>
+                                <option value="furto_roubo">💰 Furto ou Roubo</option>
+                            </optgroup>
+                            <optgroup label="🧹 Limpeza e Conservação">
+                                <option value="limpeza_geral">🧹 Limpeza (Geral/Outros)</option>
+                                <option value="coleta_lixo">🗑️ Lixo Acumulado / Não Coletado</option>
+                                <option value="mau_cheiro">🤢 Mau Cheiro</option>
+                                <option value="pragas">🦗 Pragas (Baratas, Ratos, Formigas)</option>
+                                <option value="limpeza_elevador">🛗 Limpeza do Elevador</option>
+                                <option value="limpeza_escadas">🪜 Limpeza de Escadas/Corredores</option>
+                                <option value="limpeza_hall">✨ Limpeza do Hall de Entrada</option>
+                                <option value="oleo_garagem">⚫ Mancha de Óleo na Garagem</option>
+                                <option value="limpeza_vidros">🪟 Vidros Sujos</option>
+                            </optgroup>
+                            <optgroup label="🌿 Jardinagem">
+                                <option value="jardinagem_geral">🌿 Jardinagem (Geral/Outros)</option>
+                                <option value="grama_alta">✂️ Grama Alta</option>
+                                <option value="poda_arvore">🌳 Poda de Árvore / Galho Perigoso</option>
+                                <option value="plantas_mortas">🥀 Plantas Secas / Mortas</option>
+                                <option value="irrigacao">🚿 Sistema de Irrigação</option>
+                                <option value="vasos_jardineiras">🏺 Vasos e Jardineiras</option>
+                                <option value="folhas_sujeira">🍂 Excesso de Folhas Secas</option>
+                            </optgroup>
+                            <optgroup label="🛗 Elevadores">
+                                <option value="elevador_geral">🛗 Elevador (Geral/Outros)</option>
+                                <option value="elevador_parado">🛑 Elevador Parado / Travado</option>
+                                <option value="elevador_barulho">🔊 Barulho Anormal no Elevador</option>
+                                <option value="elevador_luz">💡 Luz Interna do Elevador</option>
+                                <option value="elevador_botoes">🔢 Botões do Painel Falhando</option>
+                                <option value="elevador_porta">🚪 Porta não abre/fecha</option>
+                                <option value="elevador_ventilador">💨 Ventilador/Exaustor do Elevador</option>
+                            </optgroup>
+                            <optgroup label="⚽ Áreas de Lazer">
+                                <option value="lazer_geral">⚽ Áreas de Lazer (Geral/Outros)</option>
+                                <option value="piscina_agua">🏊 Piscina (Água Suja/Turva)</option>
+                                <option value="piscina_fisica">🧩 Piscina (Azulejo/Borda/Escada)</option>
+                                <option value="academia_equipamento">🏋️ Academia (Equipamento Quebrado)
+                                </option>
+                                <option value="salao_festas">🎉 Salão de Festas (Limpeza/Danos)</option>
+                                <option value="churrasqueira">🍖 Churrasqueira (Grelha/Exaustor)</option>
+                                <option value="playground">🛝 Playground / Brinquedo Quebrado</option>
+                                <option value="quadra_esportiva">🥅 Quadra (Rede/Piso/Iluminação)</option>
+                                <option value="sauna">🧖 Sauna (Não Esquenta)</option>
+                                <option value="salao_jogos">🎱 Salão de Jogos (Sinuca/Mesa)</option>
+                            </optgroup>
+                            <optgroup label="🔇 Convivência e Regras">
+                                <option value="convivencia_geral">🔇 Convivência (Geral/Outros)</option>
+                                <option value="barulho_som">🔊 Barulho Excessivo (Som/Gritos)</option>
+                                <option value="barulho_obra">🔨 Barulho de Obra (Fora de Horário)</option>
+                                <option value="barulho_passos">👠 Barulho de Passos/Móveis</option>
+                                <option value="animais_barulho">🐶 Animais (Latidos/Barulho)</option>
+                                <option value="animais_sujeira">💩 Animais (Dejetos/Sem Guia)</option>
+                                <option value="cigarro">🚬 Cigarro em Área Proibida</option>
+                                <option value="objeto_corredor">🚲 Objeto em Corredor/Área Comum</option>
+                                <option value="uso_indevido">🚫 Uso Indevido de Área Comum</option>
+                            </optgroup>
+                            <optgroup label="🚗 Garagem e Veículos">
+                                <option value="garagem_geral">🚗 Garagem (Geral/Outros)</option>
+                                <option value="vaga_indevida">🚫 Carro na Vaga Errada</option>
+                                <option value="vaga_ocupacao">📏 Carro Ocupando 2 Vagas</option>
+                                <option value="bicicletario">🚲 Bicicletário (Lotado/Desorganizado)</option>
+                                <option value="carro_abandonado">🕸️ Veículo Abandonado</option>
+                                <option value="batida_veiculo">💥 Colisão / Dano em Veículo</option>
+                                <option value="portao_garagem_uso">🚧 Uso Indevido do Portão</option>
+                            </optgroup>
+                            <optgroup label="📦 Portaria e Encomendas">
+                                <option value="portaria_geral">📦 Portaria (Geral/Outros)</option>
+                                <option value="encomenda_sumida">❓ Encomenda Não Localizada</option>
+                                <option value="delivery_problema">🍕 Problema com Delivery</option>
+                                <option value="correspondencia">📬 Correspondência Trocada</option>
+                                <option value="atendimento_staff">🤝 Atendimento / Postura do Funcionário
+                                </option>
+                            </optgroup>
+                            <optgroup label="📂 Administrativo">
+                                <option value="admin_geral">📂 Administrativo (Geral/Outros)</option>
+                                <option value="segunda_via_boleto">📄 2ª Via de Boleto / Cota</option>
+                                <option value="atualizacao_cadastral">📝 Atualização de Cadastro</option>
+                                <option value="reserva_espaco">📅 Reserva de Espaço</option>
+                                <option value="agendamento_mudanca">🚛 Agendamento de Mudança</option>
+                                <option value="multa_recurso">⚠️ Recurso de Multa</option>
+                                <option value="assembleia_ata">📋 Dúvida sobre Assembleia/Ata</option>
+                            </optgroup>
+                            <optgroup label="❓ Diversos">
+                                <option value="sugestao">💡 Sugestão de Melhoria</option>
+                                <option value="elogio">👏 Elogio</option>
+                                <option value="outros">❓ Outros Assuntos</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div id="modalVisibilityContainer" class="h-8 flex items-center"></div>
+                </div>
+
+                <!-- Títulos originais/gerenciais -->
+                <div id="originalTitleContainer" class="hidden mb-3">
+                    <div class="bg-red-50 border border-red-100 p-2 pb-3 rounded-lg relative">
+                        <span
+                            class="absolute top-0 right-0 bg-red-100 text-red-600 text-[9px] font-bold px-1.5 py-0.5 rounded-tr-lg rounded-bl-lg border-b border-l border-red-200">
+                            <i class="fas fa-lock"></i> TÍTULO ORIGINAL (PRIVADO)
+                        </span>
+                        <h2 id="modalOriginalTitle" class="text-lg font-bold text-stone-800 leading-tight pt-4"></h2>
+                    </div>
+                </div>
+
+                <div id="managerTitleEditor" class="hidden mb-3">
+                    <label class="block text-xs font-bold text-brand-secondary uppercase mb-1">
+                        <i class="fas fa-shield-alt"></i> Título Público (Mediado)
+                    </label>
+                    <input type="text" id="publicTitleInput" maxlength="200"
+                        class="w-full border-2 border-brand-secondary/30 rounded-lg p-2 text-sm focus:ring-2 focus:ring-brand-secondary focus:border-brand-secondary outline-none transition"
+                        placeholder="Versão mediada do título (ex: 'Reclamação de vizinhança')...">
+                    <div class="flex justify-end gap-2 mt-1">
+                        <button id="approveOriginalTitleBtn" onclick="app.approveOriginalTitle()"
+                            class="text-xs bg-green-600 text-white px-3 py-1 rounded font-bold hover:bg-green-700 transition">
+                            <i class="fas fa-check"></i> Aprovar Título Original
+                        </button>
+                        <button onclick="app.savePublicTitle()"
+                            class="text-xs bg-brand-secondary text-white px-3 py-1 rounded font-bold hover:bg-sky-600 transition">
+                            Salvar Título Público
+                        </button>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div class="bg-white p-3 rounded-lg border border-stone-200 shadow-sm">
                         <p class="text-xs font-bold text-stone-400 uppercase mb-1">Status Atual</p>
@@ -652,9 +821,9 @@
                     </h5>
 
                     <div id="originalDescContainer" class="hidden mb-3">
-                        <div class="bg-red-50 border border-red-100 p-3 rounded-lg relative">
+                        <div class="bg-red-50 border border-red-100 p-3 pb-4 rounded-lg relative">
                             <span
-                                class="absolute top-0 right-0 bg-red-100 text-red-600 text-[9px] font-bold px-1.5 py-0.5 rounded-bl-lg border-b border-l border-red-200">
+                                class="absolute top-0 right-0 bg-red-100 text-red-600 text-[9px] font-bold px-1.5 py-0.5 rounded-tr-lg rounded-bl-lg border-b border-l border-red-200">
                                 <i class="fas fa-lock"></i> ORIGINAL (PRIVADO)
                             </span>
                             <p id="modalOriginalDesc" class="text-sm text-stone-700 leading-relaxed pt-2"></p>
@@ -676,11 +845,15 @@
                             <label class="block text-xs font-bold text-brand-secondary uppercase mb-1">
                                 <i class="fas fa-edit"></i> Editar Resumo Público (Sanitizado)
                             </label>
-                            <textarea id="summaryInput"
+                            <textarea id="summaryInput" maxlength="2000"
                                 class="w-full border-2 border-brand-secondary/30 rounded-lg p-3 text-sm focus:ring-2 focus:ring-brand-secondary focus:border-brand-secondary outline-none transition"
                                 rows="3"
                                 placeholder="Escreva aqui uma versão segura para exibição pública (ex: 'Reclamação de ruído noturno')..."></textarea>
-                            <div class="flex justify-end mt-1">
+                            <div class="flex justify-end gap-2 mt-1">
+                                <button id="approveOriginalBtn" onclick="app.approveOriginalDescription()"
+                                    class="text-xs bg-green-600 text-white px-3 py-1 rounded font-bold hover:bg-green-700 transition">
+                                    <i class="fas fa-check"></i> Aprovar Descrição Original
+                                </button>
                                 <button onclick="app.savePublicSummary()"
                                     class="text-xs bg-brand-secondary text-white px-3 py-1 rounded font-bold hover:bg-sky-600 transition">
                                     Salvar Resumo Público
@@ -693,12 +866,25 @@
                     <h5 class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">Anexos</h5>
                     <div id="attachmentsList" class="flex gap-2 overflow-x-auto pb-2 no-scrollbar"></div>
                 </div>
+
+                <!-- Seção de Comentários -->
+                <div class="mb-6">
+                    <h5 class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">Comentários</h5>
+                    <div class="flex gap-2" id="commentsSection">
+                        <input type="text" id="newCommentInput" maxlength="500"
+                            class="flex-1 border border-stone-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-accent focus:border-transparent outline-none transition"
+                            placeholder="Adicionar comentário...">
+                        <button onclick="app.addComment()"
+                            class="bg-stone-100 text-stone-600 px-4 py-2 rounded-lg hover:bg-stone-200 font-bold text-sm transition"><i
+                                class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+
                 <div class="pt-4 border-t border-stone-200">
                     <h5 class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-4 flex items-center gap-2">
                         <i class="fas fa-history"></i> Histórico de Atividades
                     </h5>
-                    <div id="auditTrail"
-                        class="space-y-4 relative before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-stone-200">
+                    <div id="auditTrail" class="space-y-4">
                     </div>
                 </div>
             </div>
@@ -710,16 +896,11 @@
                         class="w-full border border-stone-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-brand-accent outline-none"
                         rows="2" placeholder="Motivo da aprovação ou arquivamento..."></textarea>
                 </div>
-                <div class="flex gap-2 mb-3" id="commentsSection">
-                    <input type="text" id="newCommentInput"
-                        class="flex-1 border border-stone-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-accent focus:border-transparent outline-none transition"
-                        placeholder="Adicionar comentário...">
-                    <button onclick="app.addComment()"
-                        class="bg-stone-100 text-stone-600 px-4 py-2 rounded-lg hover:bg-stone-200 font-bold text-sm transition"><i
-                            class="fas fa-paper-plane"></i></button>
-                </div>
                 <div id="modalActions" class="space-y-2">
-                    <div id="actionButtonsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+                    <div class="border-t border-stone-200 pt-3">
+                        <h3 class="text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">Mover para</h3>
+                        <div id="actionButtonsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+                    </div>
                     <button id="archiveActionBtn" onclick="app.archiveCurrentTask()"
                         class="w-full mt-2 p-2 text-stone-400 hover:text-red-500 text-xs font-semibold flex items-center justify-center gap-2 transition">
                         <i class="fas fa-archive"></i> Arquivar este chamado
@@ -746,7 +927,7 @@
                 <button onclick="app.closeTopModal()"
                     class="text-stone-400 hover:text-stone-600 text-2xl">&times;</button>
             </div>
-            <div class="flex-1 overflow-y-auto p-0">
+            <div class="flex-1 overflow-y-auto p-0 rounded-b-xl">
                 <table class="w-full text-left text-sm">
                     <thead class="bg-stone-50 text-stone-500 sticky top-0 shadow-sm">
                         <tr>
@@ -757,7 +938,9 @@
                             <th class="px-6 py-3 font-semibold text-right">Ação</th>
                         </tr>
                     </thead>
-                    <tbody id="triageTableBody" class="divide-y divide-stone-100"></tbody>
+                    <tbody id="triageTableBody"
+                        class="divide-y divide-stone-100 [&>tr:last-child]:rounded-b-xl [&>tr:last-child>td:first-child]:rounded-bl-xl [&>tr:last-child>td:last-child]:rounded-br-xl">
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -844,14 +1027,14 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-stone-500 uppercase mb-1">O que está acontecendo?</label>
-                    <input type="text" id="newTitle"
+                    <input type="text" id="newTitle" maxlength="200"
                         class="w-full border border-stone-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-accent outline-none"
                         placeholder="Ex: Luz do corredor queimada">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Detalhes (Original -
                         Privado)</label>
-                    <textarea id="newDesc"
+                    <textarea id="newDesc" maxlength="2000"
                         class="w-full border border-stone-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-accent outline-none"
                         rows="3" placeholder="Descreva melhor o problema..."></textarea>
                 </div>
@@ -1096,6 +1279,234 @@
         </div>
     </div>
 
+    <!-- Modal de Chamados Pendentes (Morador) -->
+    <div id="pendingCallsModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div
+            class="bg-white w-full max-w-4xl mx-4 rounded-xl p-6 shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-hourglass-half text-orange-500"></i> Meus Chamados Pendentes
+            </h2>
+            <p class="text-sm text-stone-500 mb-4">Chamados criados por você aguardando classificação e aprovação do
+                Gestor:</p>
+
+            <div id="pendingCallsTable" class="overflow-x-auto">
+                <!-- Conteúdo será preenchido dinamicamente -->
+            </div>
+
+            <div class="flex justify-end gap-2 mt-6">
+                <button onclick="app.closeTopModal()"
+                    class="px-4 py-2 text-stone-500 font-semibold hover:bg-stone-100 rounded">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Filtros do Gestor -->
+    <div id="managerFilterModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div
+            class="bg-white w-full max-w-2xl mx-4 rounded-xl p-6 shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-filter text-blue-500"></i> Filtros de Visualização (Gestor)
+            </h2>
+            <p class="text-sm text-stone-500 mb-4">Escolha como deseja visualizar e organizar os chamados:</p>
+
+            <!-- Seção: Por Categoria -->
+            <div class="mb-6">
+                <h3 class="text-sm font-bold text-stone-700 mb-3 flex items-center gap-2">
+                    <i class="fas fa-tags text-brand-accent"></i> Por Categoria
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    <button onclick="app.toggleManagerFilter('category', 'eletrica')" id="btn-mgr-cat-eletrica"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>⚡ Elétrica</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('category', 'hidraulica')" id="btn-mgr-cat-hidraulica"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>💧 Hidráulica</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('category', 'estrutura')" id="btn-mgr-cat-estrutura"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>🏗️ Estrutura</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('category', 'seguranca')" id="btn-mgr-cat-seguranca"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>🛡️ Segurança</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('category', 'limpeza')" id="btn-mgr-cat-limpeza"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>🧹 Limpeza</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('category', 'jardinagem')" id="btn-mgr-cat-jardinagem"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>🌿 Jardinagem</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('category', 'elevadores')" id="btn-mgr-cat-elevadores"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>🛗 Elevadores</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('category', 'areas_lazer')" id="btn-mgr-cat-areas_lazer"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>🏊‍♂️ Áreas de Lazer</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('category', 'convivencia_regras')"
+                        id="btn-mgr-cat-convivencia_regras"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>👥 Convivência e Regras</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('category', 'garagem_veiculos')"
+                        id="btn-mgr-cat-garagem_veiculos"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>🚗 Garagem e Veículos</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('category', 'portaria_encomendas')"
+                        id="btn-mgr-cat-portaria_encomendas"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>📦 Portaria e Encomendas</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('category', 'administrativo')"
+                        id="btn-mgr-cat-administrativo"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>📂 Administrativo</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('category', 'outros')" id="btn-mgr-cat-outros"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>❓ Outros</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Seção: Por Localização - Blocos -->
+            <div class="mb-6">
+                <h3 class="text-sm font-bold text-stone-700 mb-3 flex items-center gap-2">
+                    <i class="fas fa-building text-blue-600"></i> Por Bloco
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    <button onclick="app.toggleManagerFilter('block', 'all')" id="btn-mgr-block-all"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>Todos Blocos</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('block', 'A')" id="btn-mgr-block-A"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>Bloco A</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('block', 'B')" id="btn-mgr-block-B"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>Bloco B</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('block', 'C')" id="btn-mgr-block-C"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>Bloco C</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Seção: Por Localização - Andares -->
+            <div class="mb-6">
+                <h3 class="text-sm font-bold text-stone-700 mb-3 flex items-center gap-2">
+                    <i class="fas fa-layer-group text-purple-600"></i> Por Andar
+                </h3>
+                <div class="grid grid-cols-3 md:grid-cols-5 gap-2">
+                    <button onclick="app.toggleManagerFilter('floor', 'all')" id="btn-mgr-floor-all"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>Todos</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('floor', '1')" id="btn-mgr-floor-1"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>1º</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('floor', '2')" id="btn-mgr-floor-2"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>2º</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('floor', '3')" id="btn-mgr-floor-3"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>3º</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('floor', '4')" id="btn-mgr-floor-4"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>4º</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('floor', '5')" id="btn-mgr-floor-5"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>5º</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('floor', '6')" id="btn-mgr-floor-6"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>6º</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('floor', '7')" id="btn-mgr-floor-7"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>7º</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('floor', '8')" id="btn-mgr-floor-8"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>8º</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('floor', '9')" id="btn-mgr-floor-9"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>9º</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('floor', '10')" id="btn-mgr-floor-10"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>10º</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Seção: Por Visibilidade -->
+            <div class="mb-6">
+                <h3 class="text-sm font-bold text-stone-700 mb-3 flex items-center gap-2">
+                    <i class="fas fa-eye text-green-600"></i> Por Visibilidade
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    <button onclick="app.toggleManagerFilter('visibility', 'public')" id="btn-mgr-vis-public"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>🌐 Público</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('visibility', 'block')" id="btn-mgr-vis-block"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>🏢 Bloco</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('visibility', 'floor')" id="btn-mgr-vis-floor"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>📊 Andar</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('visibility', 'private')" id="btn-mgr-vis-private"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>🔒 Privado</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Seção: Por Status de Resumo Público -->
+            <div class="mb-6">
+                <h3 class="text-sm font-bold text-stone-700 mb-3 flex items-center gap-2">
+                    <i class="fas fa-file-alt text-orange-600"></i> Por Status de Resumo
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <button onclick="app.toggleManagerFilter('pendingSummary', 'true')" id="btn-mgr-pending-true"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>⚠️ Pendentes de Resumo</span>
+                    </button>
+                    <button onclick="app.toggleManagerFilter('pendingSummary', 'false')" id="btn-mgr-pending-false"
+                        class="px-3 py-2 text-xs font-bold rounded-lg border transition-all">
+                        <span>✅ Com Resumo Definido</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex justify-between gap-2 mt-6">
+                <button onclick="app.clearManagerFilters()"
+                    class="px-4 py-2 text-red-600 font-semibold hover:bg-red-50 rounded border border-red-200">
+                    Limpar Filtros
+                </button>
+                <button onclick="app.closeTopModal()"
+                    class="px-4 py-2 text-stone-500 font-semibold hover:bg-stone-100 rounded">Fechar</button>
+            </div>
+        </div>
+    </div>
+
     <div id="toast-container"
         class="fixed top-4 right-4 z-[100] flex flex-col gap-3 pointer-events-none p-4 w-full max-w-sm"></div>
 
@@ -1123,10 +1534,10 @@
                 'Q4': {text: 'text-stone-600', bg: 'bg-stone-100', border: 'border-stone-200'}
             },
             VISIBILITY_BADGES: {
-                'public': '<span class="text-[10px] uppercase font-bold text-green-600 bg-green-100 px-1.5 py-0.5 rounded border border-green-200">Público</span>',
-                'block': '<span class="text-[10px] uppercase font-bold text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded border border-blue-200">Bloco</span>',
-                'floor': '<span class="text-[10px] uppercase font-bold text-purple-600 bg-purple-100 px-1.5 py-0.5 rounded border border-purple-200">Andar</span>',
-                'private': '<span class="text-[10px] uppercase font-bold text-stone-500 bg-stone-200 px-1.5 py-0.5 rounded border border-stone-300">Privado</span>'
+                'public': '<span class="text-[10px] leading-none uppercase font-bold text-green-600 bg-green-100 px-1.5 rounded border border-green-200 h-6 inline-flex items-center justify-center">Público</span>',
+                'block': '<span class="text-[10px] leading-none uppercase font-bold text-blue-600 bg-blue-100 px-1.5 rounded border border-blue-200 h-6 inline-flex items-center justify-center">Bloco</span>',
+                'floor': '<span class="text-[10px] leading-none uppercase font-bold text-purple-600 bg-purple-100 px-1.5 rounded border border-purple-200 h-6 inline-flex items-center justify-center">Andar</span>',
+                'private': '<span class="text-[10px] leading-none uppercase font-bold text-stone-500 bg-stone-200 px-1.5 rounded border border-stone-300 h-6 inline-flex items-center justify-center">Privado</span>'
             },
             VISIBILITY_LABELS: {
                 public: 'Público',
@@ -1205,9 +1616,20 @@
                     badgeText: 'text-blue-700',
                     badgeBorder: 'border-blue-200'
                 },
+                'estrutura': {
+                    label: 'Estrutura',
+                    icon: 'fas fa-hammer',
+                    emoji: '🏗️',
+                    color: 'text-orange-600',
+                    bgColor: 'bg-orange-50',
+                    borderColor: 'border-orange-300',
+                    badgeBg: 'bg-orange-100',
+                    badgeText: 'text-orange-700',
+                    badgeBorder: 'border-orange-200'
+                },
                 'seguranca': {
                     label: 'Segurança',
-                    icon: 'fas fa-shield-halved',
+                    icon: 'fas fa-shield-alt',
                     emoji: '🛡️',
                     color: 'text-red-600',
                     bgColor: 'bg-red-50',
@@ -1227,16 +1649,82 @@
                     badgeText: 'text-emerald-700',
                     badgeBorder: 'border-emerald-200'
                 },
-                'estrutura': {
-                    label: 'Estrutura',
-                    icon: 'fas fa-hammer',
-                    emoji: '🏗️',
-                    color: 'text-orange-600',
-                    bgColor: 'bg-orange-50',
-                    borderColor: 'border-orange-300',
-                    badgeBg: 'bg-orange-100',
-                    badgeText: 'text-orange-700',
-                    badgeBorder: 'border-orange-200'
+                'jardinagem': {
+                    label: 'Jardinagem',
+                    icon: 'fas fa-leaf',
+                    emoji: '🌿',
+                    color: 'text-green-600',
+                    bgColor: 'bg-green-50',
+                    borderColor: 'border-green-300',
+                    badgeBg: 'bg-green-100',
+                    badgeText: 'text-green-700',
+                    badgeBorder: 'border-green-200'
+                },
+                'elevadores': {
+                    label: 'Elevadores',
+                    icon: 'fas fa-elevator',
+                    emoji: '🛗',
+                    color: 'text-sky-600',
+                    bgColor: 'bg-sky-50',
+                    borderColor: 'border-sky-300',
+                    badgeBg: 'bg-sky-100',
+                    badgeText: 'text-sky-700',
+                    badgeBorder: 'border-sky-200'
+                },
+                'areas_lazer': {
+                    label: 'Áreas de Lazer',
+                    icon: 'fas fa-swimming-pool',
+                    emoji: '🏊‍♂️',
+                    color: 'text-purple-600',
+                    bgColor: 'bg-purple-50',
+                    borderColor: 'border-purple-300',
+                    badgeBg: 'bg-purple-100',
+                    badgeText: 'text-purple-700',
+                    badgeBorder: 'border-purple-200'
+                },
+                'convivencia_regras': {
+                    label: 'Convivência e Regras',
+                    icon: 'fas fa-users',
+                    emoji: '👥',
+                    color: 'text-pink-600',
+                    bgColor: 'bg-pink-50',
+                    borderColor: 'border-pink-300',
+                    badgeBg: 'bg-pink-100',
+                    badgeText: 'text-pink-700',
+                    badgeBorder: 'border-pink-200'
+                },
+                'garagem_veiculos': {
+                    label: 'Garagem e Veículos',
+                    icon: 'fas fa-car',
+                    emoji: '🚗',
+                    color: 'text-indigo-600',
+                    bgColor: 'bg-indigo-50',
+                    borderColor: 'border-indigo-300',
+                    badgeBg: 'bg-indigo-100',
+                    badgeText: 'text-indigo-700',
+                    badgeBorder: 'border-indigo-200'
+                },
+                'portaria_encomendas': {
+                    label: 'Portaria e Encomendas',
+                    icon: 'fas fa-box-open',
+                    emoji: '📦',
+                    color: 'text-amber-600',
+                    bgColor: 'bg-amber-50',
+                    borderColor: 'border-amber-300',
+                    badgeBg: 'bg-amber-100',
+                    badgeText: 'text-amber-700',
+                    badgeBorder: 'border-amber-200'
+                },
+                'administrativo': {
+                    label: 'Administrativo',
+                    icon: 'fas fa-file-invoice-dollar',
+                    emoji: '📂',
+                    color: 'text-cyan-600',
+                    bgColor: 'bg-cyan-50',
+                    borderColor: 'border-cyan-300',
+                    badgeBg: 'bg-cyan-100',
+                    badgeText: 'text-cyan-700',
+                    badgeBorder: 'border-cyan-200'
                 },
                 'outros': {
                     label: 'Outros',
@@ -1311,65 +1799,65 @@
                 'limpeza_hall': 'limpeza',
                 'oleo_garagem': 'limpeza',
                 'limpeza_vidros': 'limpeza',
-                // Jardinagem -> Limpeza
-                'jardinagem_geral': 'limpeza',
-                'grama_alta': 'limpeza',
-                'poda_arvore': 'limpeza',
-                'plantas_mortas': 'limpeza',
-                'irrigacao': 'limpeza',
-                'vasos_jardineiras': 'limpeza',
-                'folhas_sujeira': 'limpeza',
-                // Elevadores -> Estrutura
-                'elevador_geral': 'estrutura',
-                'elevador_parado': 'estrutura',
-                'elevador_barulho': 'estrutura',
-                'elevador_luz': 'estrutura',
-                'elevador_botoes': 'estrutura',
-                'elevador_porta': 'estrutura',
-                'elevador_ventilador': 'estrutura',
-                // Áreas de Lazer -> Limpeza/Estrutura
-                'lazer_geral': 'limpeza',
-                'piscina_agua': 'limpeza',
-                'piscina_fisica': 'estrutura',
-                'academia_equipamento': 'estrutura',
-                'salao_festas': 'limpeza',
-                'churrasqueira': 'estrutura',
-                'playground': 'estrutura',
-                'quadra_esportiva': 'estrutura',
-                'sauna': 'estrutura',
-                'salao_jogos': 'estrutura',
-                // Convivência -> Outros
-                'convivencia_geral': 'outros',
-                'barulho_som': 'outros',
-                'barulho_obra': 'outros',
-                'barulho_passos': 'outros',
-                'animais_barulho': 'outros',
-                'animais_sujeira': 'outros',
-                'cigarro': 'outros',
-                'objeto_corredor': 'outros',
-                'uso_indevido': 'outros',
-                // Garagem -> Outros
-                'garagem_geral': 'outros',
-                'vaga_indevida': 'outros',
-                'vaga_ocupacao': 'outros',
-                'bicicletario': 'outros',
-                'carro_abandonado': 'outros',
-                'batida_veiculo': 'outros',
-                'portao_garagem_uso': 'outros',
-                // Portaria -> Outros
-                'portaria_geral': 'outros',
-                'encomenda_sumida': 'outros',
-                'delivery_problema': 'outros',
-                'correspondencia': 'outros',
-                'atendimento_staff': 'outros',
-                // Administrativo -> Outros
-                'admin_geral': 'outros',
-                'segunda_via_boleto': 'outros',
-                'atualizacao_cadastral': 'outros',
-                'reserva_espaco': 'outros',
-                'agendamento_mudanca': 'outros',
-                'multa_recurso': 'outros',
-                'assembleia_ata': 'outros',
+                // Jardinagem
+                'jardinagem_geral': 'jardinagem',
+                'grama_alta': 'jardinagem',
+                'poda_arvore': 'jardinagem',
+                'plantas_mortas': 'jardinagem',
+                'irrigacao': 'jardinagem',
+                'vasos_jardineiras': 'jardinagem',
+                'folhas_sujeira': 'jardinagem',
+                // Elevadores
+                'elevador_geral': 'elevadores',
+                'elevador_parado': 'elevadores',
+                'elevador_barulho': 'elevadores',
+                'elevador_luz': 'elevadores',
+                'elevador_botoes': 'elevadores',
+                'elevador_porta': 'elevadores',
+                'elevador_ventilador': 'elevadores',
+                // Áreas de Lazer
+                'lazer_geral': 'areas_lazer',
+                'piscina_agua': 'areas_lazer',
+                'piscina_fisica': 'areas_lazer',
+                'academia_equipamento': 'areas_lazer',
+                'salao_festas': 'areas_lazer',
+                'churrasqueira': 'areas_lazer',
+                'playground': 'areas_lazer',
+                'quadra_esportiva': 'areas_lazer',
+                'sauna': 'areas_lazer',
+                'salao_jogos': 'areas_lazer',
+                // Convivência
+                'convivencia_geral': 'convivencia_regras',
+                'barulho_som': 'convivencia_regras',
+                'barulho_obra': 'convivencia_regras',
+                'barulho_passos': 'convivencia_regras',
+                'animais_barulho': 'convivencia_regras',
+                'animais_sujeira': 'convivencia_regras',
+                'cigarro': 'convivencia_regras',
+                'objeto_corredor': 'convivencia_regras',
+                'uso_indevido': 'convivencia_regras',
+                // Garagem
+                'garagem_geral': 'garagem_veiculos',
+                'vaga_indevida': 'garagem_veiculos',
+                'vaga_ocupacao': 'garagem_veiculos',
+                'bicicletario': 'garagem_veiculos',
+                'carro_abandonado': 'garagem_veiculos',
+                'batida_veiculo': 'garagem_veiculos',
+                'portao_garagem_uso': 'garagem_veiculos',
+                // Portaria
+                'portaria_geral': 'portaria_encomendas',
+                'encomenda_sumida': 'portaria_encomendas',
+                'delivery_problema': 'portaria_encomendas',
+                'correspondencia': 'portaria_encomendas',
+                'atendimento_staff': 'portaria_encomendas',
+                // Administrativo
+                'admin_geral': 'administrativo',
+                'segunda_via_boleto': 'administrativo',
+                'atualizacao_cadastral': 'administrativo',
+                'reserva_espaco': 'administrativo',
+                'agendamento_mudanca': 'administrativo',
+                'multa_recurso': 'administrativo',
+                'assembleia_ata': 'administrativo',
                 // Diversos -> Outros
                 'sugestao': 'outros',
                 'elogio': 'outros',
@@ -1523,6 +2011,43 @@
 
             activeFilters: ['following'],
 
+            // ========================================
+            // SEGURANÇA: SANITIZAÇÃO XSS
+            // ========================================
+            sanitizeHTML: function (str) {
+                if (!str) return '';
+                const temp = document.createElement('div');
+                temp.textContent = str;
+                return temp.innerHTML;
+            },
+
+            sanitizeAttribute: function (str) {
+                if (!str) return '';
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#x27;')
+                    .replace(/\//g, '&#x2F;');
+            },
+
+            validateInput: function (str, maxLength = 1000) {
+                if (!str || typeof str !== 'string') return false;
+                if (str.length > maxLength) return false;
+                // Rejeita strings com tags HTML suspeitas
+                const dangerousPatterns = /<script|<iframe|javascript:|onerror|onload/gi;
+                return !dangerousPatterns.test(str);
+            },
+
+            managerFilters: {
+                categories: [],
+                blocks: [],
+                floors: [],
+                visibility: [],
+                pendingSummary: []
+            },
+
             logState: {
                 logs: [],
                 page: 1,
@@ -1596,6 +2121,11 @@
                 return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             },
 
+            // Retorna o título seguro para logs (mediado se existir)
+            getSafeTitle(task) {
+                return task.public_title || task.title;
+            },
+
             // ========================================
             // INICIALIZAÇÃO
             // ========================================
@@ -1603,6 +2133,7 @@
                 this.loadData();
                 this.updateUserInterface();
                 this.updateFilterButtons();
+                this.updatePendingBadges();
                 this.render();
                 this.initWatermark();
                 this.initGlobalKeyboardHandler();
@@ -1622,9 +2153,9 @@
             loadData() {
                 // Força regeneração uma única vez para atualizar categorias
                 const categoryVersion = sessionStorage.getItem('categoryVersion');
-                if (categoryVersion !== '2.0') {
+                if (categoryVersion !== '3.0') {
                     sessionStorage.clear();
-                    sessionStorage.setItem('categoryVersion', '2.0');
+                    sessionStorage.setItem('categoryVersion', '3.0');
                 }
 
                 const storedTasks = sessionStorage.getItem('condoTasks');
@@ -1815,11 +2346,23 @@
                         if (Math.random() > 0.7) followers.push('resident_B_5');
                     }
 
+                    // 99% dos cards terão título e descrição públicas definidas
+                    // Apenas 1% (aproximadamente 1 card) terá conteúdo genérico
+                    const needsModeration = Math.random() < 0.01; // 1% de chance
+
+                    const originalTitle = `${template.title} - ${locale}`;
+                    const originalDescription = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Problema recorrente reportado pelos moradores.';
+
+                    // Definir títulos e descrições públicas para a maioria
+                    let publicTitle = needsModeration ? null : originalTitle;
+                    let publicSummary = needsModeration ? null : 'Problema reportado em área comum, sob análise da administração.';
+
                     this.data.tasks.push({
                         id: i + 1,
-                        title: `${template.title} - ${locale}`,
-                        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Problema recorrente reportado pelos moradores.',
-                        public_summary: null,
+                        title: originalTitle,
+                        description: originalDescription,
+                        public_summary: publicSummary,
+                        public_title: publicTitle,
                         status: status,
                         visibility: vis,
                         priority: `Q${Math.floor(Math.random() * 4) + 1}`,
@@ -1840,6 +2383,7 @@
                     title: 'Lixo no corredor Bloco B',
                     description: 'Saco de lixo deixado na porta do 203.',
                     public_summary: 'Relato de item deixado em área comum.',
+                    public_title: 'Objeto em área comum do Bloco B',
                     status: 'triage',
                     visibility: 'block',
                     priority: 'Q3',
@@ -2052,7 +2596,7 @@
                         return `
                         <tr class="hover:bg-stone-50 border-b border-stone-50 cursor-pointer" onclick="app.closeModals(); app.openCardModal(${t.id})">
                             <td class="px-6 py-3 text-stone-500">${new Date(t.created_at).toLocaleDateString()}</td>
-                            <td class="px-6 py-3 font-medium text-stone-800">${t.title}</td>
+                            <td class="px-6 py-3 font-medium text-stone-800">${this.sanitizeHTML(t.title)}</td>
                             <td class="px-6 py-3">${categoryBadge}</td>
                             <td class="px-6 py-3"><span class="px-2 py-1 bg-stone-100 rounded text-xs font-bold text-stone-600">${t.priority}</span></td>
                             <td class="px-6 py-3 text-right"><button class="text-brand-accent hover:underline text-xs font-bold uppercase">Analisar</button></td>
@@ -2108,6 +2652,69 @@
                         return matchesFilter;
                     }
 
+                    // Filtros do Gestor
+                    if (isManager) {
+                        const hasAnyFilter = this.managerFilters.categories.length > 0 ||
+                            this.managerFilters.blocks.length > 0 ||
+                            this.managerFilters.floors.length > 0 ||
+                            this.managerFilters.visibility.length > 0 ||
+                            this.managerFilters.pendingSummary.length > 0;
+
+                        // Se não há filtros ativos, mostrar tudo
+                        if (!hasAnyFilter) return true;
+
+                        let matches = true;
+
+                        // Filtro por categoria
+                        if (this.managerFilters.categories.length > 0) {
+                            const mainCategory = this.getMainCategory(t.category);
+                            matches = matches && this.managerFilters.categories.includes(mainCategory);
+                        }
+
+                        // Filtro por bloco
+                        if (this.managerFilters.blocks.length > 0) {
+                            if (this.managerFilters.blocks.includes('all')) {
+                                // "Todos Blocos" está ativo, mostrar todos
+                            } else {
+                                matches = matches && this.managerFilters.blocks.includes(t.block);
+                            }
+                        }
+
+                        // Filtro por andar
+                        if (this.managerFilters.floors.length > 0) {
+                            if (this.managerFilters.floors.includes('all')) {
+                                // "Todos Andares" está ativo, mostrar todos
+                            } else {
+                                matches = matches && this.managerFilters.floors.includes(t.floor);
+                            }
+                        }
+
+                        // Filtro por visibilidade
+                        if (this.managerFilters.visibility.length > 0) {
+                            matches = matches && this.managerFilters.visibility.includes(t.visibility);
+                        }
+
+                        // Filtro por status de resumo público
+                        if (this.managerFilters.pendingSummary.length > 0) {
+                            const hasSummary = t.public_summary && t.public_summary.trim() !== '';
+                            const hasPendingFilter = this.managerFilters.pendingSummary.includes('true');
+                            const hasDefinedFilter = this.managerFilters.pendingSummary.includes('false');
+
+                            if (hasPendingFilter && hasDefinedFilter) {
+                                // Se ambos estão selecionados, mostra todos
+                                // Não adiciona nenhuma restrição
+                            } else if (hasPendingFilter) {
+                                // Mostra apenas chamados sem resumo definido (independente da visibilidade)
+                                matches = matches && !hasSummary;
+                            } else if (hasDefinedFilter) {
+                                // Mostra apenas chamados com resumo definido
+                                matches = matches && hasSummary;
+                            }
+                        }
+
+                        return matches;
+                    }
+
                     return true;
                 });
 
@@ -2150,6 +2757,17 @@
                     return;
                 }
 
+                // SEGURANÇA: Valida inputs antes de criar chamado
+                if (!this.validateInput(title, 200)) {
+                    this.showToast('warning', 'Erro', 'Título inválido ou muito longo (máx. 200 caracteres)');
+                    return;
+                }
+
+                if (desc && !this.validateInput(desc, 2000)) {
+                    this.showToast('warning', 'Erro', 'Descrição inválida ou muito longa (máx. 2000 caracteres)');
+                    return;
+                }
+
                 if (!category) {
                     this.showToast('warning', 'Atenção', 'Por favor, selecione uma categoria');
                     return;
@@ -2166,6 +2784,7 @@
                     title: title,
                     description: desc || 'Sem descrição.',
                     public_summary: null,
+                    public_title: null,
                     status: initialStatus,
                     visibility: vis,
                     priority: 'Q' + (Math.floor(Math.random() * 4) + 1),
@@ -2187,6 +2806,7 @@
                 this.data.tasks.unshift(newTask);
                 this.saveData();
                 this.closeModals();
+                this.updatePendingBadges();
 
                 document.getElementById('newTitle').value = '';
                 document.getElementById('newDesc').value = '';
@@ -2207,6 +2827,11 @@
                 if (oldStatus === 'triage') {
                     actionText = 'Aprovação / Triagem';
                     const triageNote = document.getElementById('triageReasonInput').value.trim();
+                    // SEGURANÇA: Valida nota de triagem
+                    if (triageNote && !this.validateInput(triageNote, 500)) {
+                        this.showToast('warning', 'Erro', 'Observação de triagem inválida ou muito longa');
+                        return;
+                    }
                     if (triageNote) details += `. Obs: ${triageNote}`;
                 }
 
@@ -2226,13 +2851,14 @@
                     user: historyEntry.user,
                     action: historyEntry.action,
                     details: historyEntry.details,
-                    taskTitle: this.data.currentTask.title,
+                    taskTitle: this.getSafeTitle(this.data.currentTask),
                     taskId: this.data.currentTask.id
                 });
 
                 this.data.currentTask.status = newStatus;
                 this.data.currentTask.stuck_reason = null;
                 this.saveData();
+                this.updatePendingBadges();
                 this.closeModals();
                 this.showToast('success', 'Movimentado!', `Chamado atualizado com sucesso.`);
             },
@@ -2258,6 +2884,12 @@
 
                 if (isTriage && !reason) {
                     this.showToast('warning', 'Atenção', "Por favor, informe o motivo do arquivamento/rejeição.");
+                    return;
+                }
+
+                // SEGURANÇA: Valida motivo de arquivamento
+                if (reason && !this.validateInput(reason, 500)) {
+                    this.showToast('warning', 'Erro', 'Motivo inválido ou muito longo (máx. 500 caracteres)');
                     return;
                 }
 
@@ -2424,7 +3056,7 @@
 
                         return `
                             <tr class="hover:bg-stone-50 border-b border-stone-50 cursor-pointer" onclick="app.closeModals(); app.openCardModal(${t.id})">
-                                <td class="px-6 py-3 font-medium text-stone-800">${t.title}</td>
+                                <td class="px-6 py-3 font-medium text-stone-800">${this.sanitizeHTML(t.title)}</td>
                                 <td class="px-6 py-3 text-stone-500">${new Date(t.created_at).toLocaleDateString('pt-BR')}</td>
                                 <td class="px-6 py-3 text-stone-600">${ownerDisplay}</td>
                                 <td class="px-6 py-3 text-right">
@@ -2438,13 +3070,549 @@
                 this.openModal('archiveListModal');
             },
 
+            // ========================================
+            // FILA INTELIGENTE
+            // ========================================
+            openQueueModal: async function () {
+                // Verificar se usuário é admin (manager)
+                if (!this.isManager()) {
+                    this.showToast('warning', 'Acesso Negado', 'Apenas administradores podem visualizar a fila inteligente.');
+                    return;
+                }
+
+                this.openModal('queueModal');
+
+                // Mostrar loading
+                document.getElementById('queueTotal').textContent = '...';
+                document.getElementById('queueAvgDays').textContent = 'Calculando...';
+                document.getElementById('queueAtRisk').textContent = '...';
+                document.getElementById('queueLastUpdate').textContent = 'Processando...';
+                document.getElementById('queueTableBody').innerHTML = '<tr><td colspan="8" class="p-8 text-center text-stone-400"><i class="fas fa-spinner fa-spin mr-2"></i> Calculando fila inteligente...</td></tr>';
+
+                try {
+                    // Verificar se precisa recalcular
+                    const cached = this.getQueueCache();
+                    if (cached) {
+                        this.renderQueueTable(cached.queue, cached.insights, cached.aiAnalysis);
+                    } else {
+                        // Calcular nova fila
+                        await this.calculateQueue();
+                    }
+                } catch (err) {
+                    this.showToast('warning', 'Erro', 'Erro ao calcular fila. Tente novamente.');
+                    document.getElementById('queueTableBody').innerHTML = '<tr><td colspan="8" class="p-8 text-center text-red-500">Erro ao calcular fila.</td></tr>';
+                }
+            },
+
+            calculateQueue: async function () {
+                // Filtrar apenas tickets ativos (não arquivados e não concluídos)
+                const activeTickets = this.data.tasks.filter(t => !t.archived && t.status !== 'done' && t.status !== 'archived');
+
+                if (activeTickets.length === 0) {
+                    document.getElementById('queueTableBody').innerHTML = '<tr><td colspan="8" class="p-8 text-center text-stone-400 italic">Nenhum chamado ativo na fila.</td></tr>';
+                    return;
+                }
+
+                // Calcular score para cada ticket
+                const scoredTickets = activeTickets.map(ticket => ({
+                    ...ticket,
+                    score: this.calculateTicketScore(ticket),
+                    daysOpen: this.getTaskAge(ticket)
+                }));
+
+                // Ordenar por pontuação (maior primeiro)
+                scoredTickets.sort((a, b) => b.score - a.score);
+
+                // Aplicar balanceamento inteligente
+                const balancedQueue = this.applyQueueBalancing(scoredTickets);
+
+                // Gerar insights
+                const insights = this.generateQueueInsights(balancedQueue);
+
+                // Tentar obter análise da IA (Gemini)
+                let aiAnalysis = null;
+                const apiKey = this.getGeminiApiKey();
+                if (apiKey) {
+                    try {
+                        aiAnalysis = await this.getAIQueueAnalysis(balancedQueue.slice(0, 10), apiKey);
+                    } catch (err) {
+                        console.warn('IA indisponível:', err);
+                    }
+                }
+
+                // Salvar no cache
+                this.saveQueueCache(balancedQueue, insights, aiAnalysis);
+
+                // Renderizar
+                this.renderQueueTable(balancedQueue, insights, aiAnalysis);
+            },
+
+            calculateTicketScore: function (ticket) {
+                // 1. Pontuação base por quadrante
+                const baseScore = {
+                    1: 100, // Q1: Urgente + Importante
+                    2: 70,  // Q2: Não Urgente + Importante
+                    3: 50,  // Q3: Urgente + Não Importante
+                    4: 30   // Q4: Não Urgente + Não Importante
+                }[ticket.priorityMatrix?.quadrant || 4];
+
+                // 2. Bônus por aging (envelhecimento)
+                const daysOpen = this.getTaskAge(ticket);
+                const agingBonus = Math.min(daysOpen, 60); // Cap em 60 dias
+
+                // 3. Bônus por status
+                const statusBonus = {
+                    'fazendo': 20,    // Em andamento
+                    'enroscados': 15, // Bloqueado
+                    'backlog': 0      // A fazer
+                }[ticket.status] || 0;
+
+                // 4. Bônus por regressões/bloqueios
+                let regressionBonus = 0;
+                if (ticket.previousStatus === 'enroscados') {
+                    regressionBonus = ticket.status === 'backlog' ? 25 : 15;
+                } else if (ticket.previousStatus === 'fazendo' && ticket.status === 'backlog') {
+                    regressionBonus = 20;
+                } else if (ticket.status === 'enroscados' && ticket.previousStatus !== 'fazendo') {
+                    regressionBonus = 18;
+                }
+
+                return baseScore + agingBonus + statusBonus + regressionBonus;
+            },
+
+            applyQueueBalancing: function (sortedTickets) {
+                // Separar por complexidade (Q1/Q2 = complexo, Q3/Q4 = simples)
+                const complex = sortedTickets.filter(t => [1, 2].includes(t.priorityMatrix?.quadrant));
+                const simple = sortedTickets.filter(t => [3, 4].includes(t.priorityMatrix?.quadrant));
+
+                const balanced = [];
+                let complexIdx = 0;
+                let simpleIdx = 0;
+
+                // Intercalar: 2 complexos, 1 simples
+                while (complexIdx < complex.length || simpleIdx < simple.length) {
+                    // Adiciona 2 complexos
+                    for (let i = 0; i < 2 && complexIdx < complex.length; i++) {
+                        balanced.push(complex[complexIdx++]);
+                    }
+                    // Adiciona 1 simples
+                    if (simpleIdx < simple.length) {
+                        balanced.push(simple[simpleIdx++]);
+                    }
+                }
+
+                return balanced;
+            },
+
+            generateQueueInsights: function (queue) {
+                if (!queue || queue.length === 0) {
+                    return {total: 0, avgDays: 0, atRisk: [], byQuadrant: {}};
+                }
+
+                const totalDays = queue.reduce((sum, t) => sum + (t.daysOpen || 0), 0);
+                const avgDays = Math.round(totalDays / queue.length);
+
+                // Tickets em risco: Q3/Q4 com mais de 7 dias
+                const atRisk = queue.filter(t =>
+                    [3, 4].includes(t.priorityMatrix?.quadrant) && t.daysOpen > 7
+                );
+
+                const byQuadrant = {
+                    1: queue.filter(t => t.priorityMatrix?.quadrant === 1).length,
+                    2: queue.filter(t => t.priorityMatrix?.quadrant === 2).length,
+                    3: queue.filter(t => t.priorityMatrix?.quadrant === 3).length,
+                    4: queue.filter(t => t.priorityMatrix?.quadrant === 4).length
+                };
+
+                return {total: queue.length, avgDays, atRisk, byQuadrant};
+            },
+
+            getAIQueueAnalysis: async function (topTickets, apiKey) {
+                const summary = topTickets.map((t, idx) => ({
+                    pos: idx + 1,
+                    titulo: this.getSafeTitle(t),
+                    quadrante: t.priorityMatrix?.quadrant || 4,
+                    dias: t.daysOpen,
+                    status: t.status
+                }));
+
+                const prompt = `Você é um gerente de condomínio experiente. Analise esta fila de chamados e forneça uma breve análise (máximo 2 frases) identificando padrões ou riscos principais.
+
+Fila atual (top 10):
+${JSON.stringify(summary, null, 2)}
+
+Responda APENAS com um JSON no formato:
+{"insights": "sua análise em português"}`;
+
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{text: prompt}]
+                        }],
+                        generationConfig: {
+                            temperature: 0.3,
+                            maxOutputTokens: 200
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+                try {
+                    const parsed = JSON.parse(text);
+                    return parsed.insights || null;
+                } catch {
+                    return null;
+                }
+            },
+
+            getGeminiApiKey: function () {
+                // SEGURANÇA: API key armazenada com ofuscação simples
+                // Nota: Para produção, use backend com variáveis de ambiente
+                let encodedKey = localStorage.getItem('_gak');
+                if (!encodedKey) return null;
+
+                try {
+                    // Decodifica (ofuscação básica, não é criptografia real)
+                    return atob(encodedKey);
+                } catch {
+                    return null;
+                }
+            },
+
+            setGeminiApiKey: function (apiKey) {
+                // SEGURANÇA: Valida formato da API key
+                if (!apiKey || apiKey.length < 20) {
+                    this.showToast('warning', 'Erro', 'API key inválida');
+                    return false;
+                }
+
+                // Ofusca antes de salvar
+                try {
+                    localStorage.setItem('_gak', btoa(apiKey));
+                    this.showToast('success', 'Configurado', 'API key salva com segurança');
+                    return true;
+                } catch {
+                    this.showToast('warning', 'Erro', 'Erro ao salvar API key');
+                    return false;
+                }
+            },
+
+            renderQueueTable: function (queue, insights, aiAnalysis) {
+                // Atualizar insights
+                document.getElementById('queueTotal').textContent = insights.total;
+                document.getElementById('queueAvgDays').textContent = `${insights.avgDays} dias`;
+                document.getElementById('queueAtRisk').textContent = insights.atRisk.length;
+                document.getElementById('queueLastUpdate').textContent = new Date().toLocaleString('pt-BR');
+
+                // Mostrar alerta de risco se houver
+                const riskAlert = document.getElementById('queueRiskAlert');
+                const riskList = document.getElementById('queueRiskList');
+                if (insights.atRisk.length > 0) {
+                    riskAlert.classList.remove('hidden');
+                    riskList.innerHTML = insights.atRisk.slice(0, 5).map(t =>
+                        `• ${this.getSafeTitle(t)} (${t.daysOpen}d)`
+                    ).join('<br>');
+                } else {
+                    riskAlert.classList.add('hidden');
+                }
+
+                // Mostrar análise da IA se houver
+                const aiInsights = document.getElementById('queueAIInsights');
+                const aiText = document.getElementById('queueAIText');
+                if (aiAnalysis) {
+                    aiInsights.classList.remove('hidden');
+                    aiText.textContent = aiAnalysis;
+                } else {
+                    aiInsights.classList.add('hidden');
+                }
+
+                // Renderizar tabela
+                const tbody = document.getElementById('queueTableBody');
+                if (queue.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" class="p-8 text-center text-stone-400 italic">Nenhum chamado ativo na fila.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = queue.map((ticket, idx) => {
+                    const quadrant = ticket.priorityMatrix?.quadrant || 4;
+                    const qColors = {
+                        1: {bg: '#ef4444', label: 'Q1'},
+                        2: {bg: '#f59f00', label: 'Q2'},
+                        3: {bg: '#10b981', label: 'Q3'},
+                        4: {bg: '#64748b', label: 'Q4'}
+                    };
+                    const qColor = qColors[quadrant];
+
+                    const statusLabels = {
+                        'backlog': {text: 'A Fazer', color: '#94a3b8'},
+                        'fazendo': {text: 'Fazendo', color: '#3b82f6'},
+                        'enroscados': {text: 'Bloqueado', color: '#f59f00'}
+                    };
+                    const statusInfo = statusLabels[ticket.status] || {text: 'A Fazer', color: '#94a3b8'};
+
+                    // Destacar chamados em risco
+                    const isAtRisk = [3, 4].includes(quadrant) && ticket.daysOpen > 7;
+                    const rowStyle = isAtRisk ? 'background:#fef2f2; border-left:3px solid #dc2626;' : '';
+
+                    const title = this.getSafeTitle(ticket);
+                    const rawDesc = ticket.public_summary || ticket.description || 'Sem descrição';
+                    const shortDesc = this.sanitizeHTML(rawDesc.substring(0, 80)) + (rawDesc.length > 80 ? '...' : '');
+
+                    return `
+                        <tr style="border-bottom: 1px solid #f1f5f9; ${rowStyle}">
+                            <td class="px-4 py-3 text-center font-bold text-brand-accent">${idx + 1}</td>
+                            <td class="px-4 py-3 text-center">
+                                <span style="display:inline-block; background:${qColor.bg}; color:white; border-radius:4px; padding:4px 8px; font-weight:700; font-size:12px;">
+                                    ${qColor.label}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="font-semibold text-stone-800 mb-1">${title}</div>
+                                <div class="text-xs text-stone-500">${shortDesc}</div>
+                            </td>
+                            <td class="px-4 py-3 text-stone-600">${ticket.block || 'ADM'}</td>
+                            <td class="px-4 py-3">
+                                <span style="color:${statusInfo.color}; font-weight:600; font-size:13px;">${statusInfo.text}</span>
+                            </td>
+                            <td class="px-4 py-3 text-center font-semibold text-stone-600">${ticket.daysOpen}</td>
+                            <td class="px-4 py-3 text-center font-bold text-brand-accent">${ticket.score}</td>
+                            <td class="px-4 py-3 text-center">
+                                <button onclick="app.closeModals(); app.openCardModal(${ticket.id})" class="text-stone-500 hover:text-brand-accent transition" title="Ver Detalhes">
+                                    <svg class="w-4 h-4 inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            },
+
+            // Sistema de cache (validade até meia-noite)
+            getQueueCache: function () {
+                const cached = sessionStorage.getItem('queueCache');
+                if (!cached) return null;
+
+                try {
+                    const data = JSON.parse(cached);
+                    const now = new Date();
+                    const expiry = new Date(data.expiresAt);
+
+                    if (now >= expiry) {
+                        sessionStorage.removeItem('queueCache');
+                        return null;
+                    }
+
+                    return data;
+                } catch {
+                    return null;
+                }
+            },
+
+            saveQueueCache: function (queue, insights, aiAnalysis) {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(0, 0, 0, 0);
+
+                const cache = {
+                    queue,
+                    insights,
+                    aiAnalysis,
+                    expiresAt: tomorrow.toISOString()
+                };
+
+                sessionStorage.setItem('queueCache', JSON.stringify(cache));
+            },
+
             openNewTicketModal: function () {
                 this.openModal('newTicketModal');
             },
 
             openFilterModal: function () {
-                this.updateFilterButtons();
-                this.openModal('filterModal');
+                if (this.isManager()) {
+                    this.updateManagerFilterButtons();
+                    this.openModal('managerFilterModal');
+                } else {
+                    this.updateFilterButtons();
+                    this.openModal('filterModal');
+                }
+            },
+
+            toggleManagerFilter: function (type, value) {
+                let filterArray;
+                if (type === 'category') {
+                    filterArray = this.managerFilters.categories;
+                } else if (type === 'block') {
+                    filterArray = this.managerFilters.blocks;
+                } else if (type === 'floor') {
+                    filterArray = this.managerFilters.floors;
+                } else if (type === 'visibility') {
+                    filterArray = this.managerFilters.visibility;
+                } else if (type === 'pendingSummary') {
+                    filterArray = this.managerFilters.pendingSummary;
+                }
+
+                if (!filterArray) return;
+
+                const idx = filterArray.indexOf(value);
+
+                if (idx > -1) {
+                    filterArray.splice(idx, 1);
+                } else {
+                    filterArray.push(value);
+                }
+
+                this.updateManagerFilterButtons();
+                this.render();
+            },
+
+            clearManagerFilters: function () {
+                this.managerFilters = {
+                    categories: [],
+                    blocks: [],
+                    floors: [],
+                    visibility: [],
+                    pendingSummary: []
+                };
+                this.updateManagerFilterButtons();
+                this.render();
+            },
+
+            updateManagerFilterButtons: function () {
+                const activeClass = 'bg-brand-accent text-white border-brand-accent ring-2 ring-brand-accent/30';
+                const inactiveClass = 'bg-stone-50 text-stone-700 border-stone-300 hover:bg-stone-100';
+
+                // Atualizar botões de categoria
+                ['eletrica', 'hidraulica', 'estrutura', 'seguranca', 'limpeza', 'jardinagem', 'elevadores', 'areas_lazer', 'convivencia_regras', 'garagem_veiculos', 'portaria_encomendas', 'administrativo', 'outros'].forEach(cat => {
+                    const btn = document.getElementById(`btn-mgr-cat-${cat}`);
+                    if (btn) {
+                        const isActive = this.managerFilters.categories.includes(cat);
+                        btn.className = `px-3 py-2 text-xs font-bold rounded-lg border transition-all ${isActive ? activeClass : inactiveClass}`;
+                    }
+                });
+
+                // Atualizar botões de bloco
+                ['all', 'A', 'B', 'C'].forEach(block => {
+                    const btn = document.getElementById(`btn-mgr-block-${block}`);
+                    if (btn) {
+                        const isActive = this.managerFilters.blocks.includes(block);
+                        btn.className = `px-3 py-2 text-xs font-bold rounded-lg border transition-all ${isActive ? activeClass : inactiveClass}`;
+                    }
+                });
+
+                // Atualizar botões de andar
+                ['all', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'].forEach(floor => {
+                    const btn = document.getElementById(`btn-mgr-floor-${floor}`);
+                    if (btn) {
+                        const isActive = this.managerFilters.floors.includes(floor);
+                        btn.className = `px-3 py-2 text-xs font-bold rounded-lg border transition-all ${isActive ? activeClass : inactiveClass}`;
+                    }
+                });
+
+                // Atualizar botões de visibilidade
+                ['public', 'block', 'floor', 'private'].forEach(vis => {
+                    const btn = document.getElementById(`btn-mgr-vis-${vis}`);
+                    if (btn) {
+                        const isActive = this.managerFilters.visibility.includes(vis);
+                        btn.className = `px-3 py-2 text-xs font-bold rounded-lg border transition-all ${isActive ? activeClass : inactiveClass}`;
+                    }
+                });
+
+                // Atualizar botões de status de resumo
+                ['true', 'false'].forEach(pending => {
+                    const btn = document.getElementById(`btn-mgr-pending-${pending}`);
+                    if (btn) {
+                        const isActive = this.managerFilters.pendingSummary.includes(pending);
+                        btn.className = `px-3 py-2 text-xs font-bold rounded-lg border transition-all ${isActive ? activeClass : inactiveClass}`;
+                    }
+                });
+            },
+
+            openPendingCallsModal: function () {
+                this.renderPendingCalls();
+                this.openModal('pendingCallsModal');
+            },
+
+            renderPendingCalls: function () {
+                const container = document.getElementById('pendingCallsTable');
+                const pendingTasks = this.data.tasks.filter(t =>
+                    t.status === 'triage' && t.owner_id === this.data.currentUser
+                );
+
+                if (pendingTasks.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-12 text-stone-400">
+                            <i class="fas fa-check-circle text-5xl mb-4"></i>
+                            <p class="text-lg font-semibold">Nenhum chamado pendente</p>
+                            <p class="text-sm">Todos os seus chamados foram classificados!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const tableHTML = `
+                    <table class="w-full">
+                        <thead class="bg-stone-50 border-b-2 border-stone-200">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-stone-600 uppercase">Criado em</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-stone-600 uppercase">Título</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-stone-600 uppercase">Categoria</th>
+                                <th class="px-4 py-3 text-center text-xs font-bold text-stone-600 uppercase">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${pendingTasks.map(t => {
+                    const detailedCategory = t.category || 'outros';
+                    const mainCategory = this.getMainCategory(detailedCategory);
+                    const categoryConfig = CONFIG.CATEGORIES[mainCategory] || CONFIG.CATEGORIES['outros'];
+                    const categoryLabel = CONFIG.CATEGORY_LABELS[detailedCategory] || categoryConfig.label;
+                    const categoryBadge = `<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded border ${categoryConfig.badgeBg} ${categoryConfig.badgeText} ${categoryConfig.badgeBorder}"><i class="${categoryConfig.icon}"></i> ${categoryLabel}</span>`;
+
+                    return `
+                                    <tr class="hover:bg-stone-50 border-b border-stone-100">
+                                        <td class="px-4 py-3 text-sm text-stone-600">${new Date(t.created_at).toLocaleDateString('pt-BR')}</td>
+                                        <td class="px-4 py-3 font-medium text-stone-800">${this.sanitizeHTML(t.title)}</td>
+                                        <td class="px-4 py-3">${categoryBadge}</td>
+                                        <td class="px-4 py-3 text-center">
+                                            <span class="inline-flex items-center gap-1 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-bold border border-orange-200">
+                                                <i class="fas fa-hourglass-half"></i> Aguardando Triagem
+                                            </span>
+                                        </td>
+                                    </tr>
+                                `;
+                }).join('')}
+                        </tbody>
+                    </table>
+                `;
+
+                container.innerHTML = tableHTML;
+            },
+
+            updatePendingBadges: function () {
+                if (this.isManager()) return;
+
+                const pendingCount = this.data.tasks.filter(t =>
+                    t.status === 'triage' && t.owner_id === this.data.currentUser
+                ).length;
+
+                const badgeMobile = document.getElementById('pendingBadgeMobile');
+                const badgeDesktop = document.getElementById('pendingBadgeDesktop');
+
+                [badgeMobile, badgeDesktop].forEach(badge => {
+                    if (badge) {
+                        badge.textContent = pendingCount;
+                        badge.classList.toggle('hidden', pendingCount === 0);
+                    }
+                });
             },
 
             openUserModal: function () {
@@ -2456,9 +3624,9 @@
                 const tbody = document.getElementById('userTableBody');
                 tbody.innerHTML = this.data.users.map((u, index) => `
                     <tr class="border-b border-stone-100">
-                        <td class="py-3">${u.name}</td>
-                        <td class="py-3 text-stone-500">${u.unit}</td>
-                        <td class="py-3 text-stone-500">${u.email}</td>
+                        <td class="py-3">${this.sanitizeHTML(u.name)}</td>
+                        <td class="py-3 text-stone-500">${this.sanitizeHTML(u.unit)}</td>
+                        <td class="py-3 text-stone-500">${this.sanitizeHTML(u.email)}</td>
                         <td class="py-3 text-right">
                             <button onclick="app.deleteUser(${index})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
                         </td>
@@ -2549,12 +3717,12 @@
                 tbody.innerHTML = paginatedLogs.map(log => `
                     <tr class="hover:bg-stone-50 border-b border-stone-50">
                         <td class="px-6 py-3 text-stone-500 whitespace-nowrap">${new Date(log.date).toLocaleString('pt-BR')}</td>
-                        <td class="px-6 py-3 font-medium text-stone-800 truncate max-w-[200px]" title="${log.taskTitle}">
-                            ${log.taskId ? `<a href="#" onclick="app.closeModals(); app.openCardModal(${log.taskId})" class="hover:text-brand-accent hover:underline">${log.taskTitle}</a>` : `<span class="text-stone-500">${log.taskTitle}</span>`}
+                        <td class="px-6 py-3 font-medium text-stone-800 truncate max-w-[200px]" title="${this.sanitizeAttribute(log.taskTitle)}">
+                            ${log.taskId ? `<a href="#" onclick="app.closeModals(); app.openCardModal(${log.taskId})" class="hover:text-brand-accent hover:underline">${this.sanitizeHTML(log.taskTitle)}</a>` : `<span class="text-stone-500">${this.sanitizeHTML(log.taskTitle)}</span>`}
                         </td>
                         <td class="px-6 py-3 text-stone-600">${log.user}</td>
                         <td class="px-6 py-3"><span class="px-2 py-1 bg-stone-100 rounded text-xs font-bold text-stone-600 uppercase">${log.action}</span></td>
-                        <td class="px-6 py-3 text-stone-500 italic truncate max-w-[250px]" title="${log.details}">${log.details}</td>
+                        <td class="px-6 py-3 text-stone-500 italic truncate max-w-[250px]" title="${this.sanitizeAttribute(log.details)}">${this.sanitizeHTML(log.details)}</td>
                     </tr>
                 `).join('');
             },
@@ -2569,19 +3737,32 @@
                 const isOwner = this.isOwner(task);
                 const isPrivateVis = task.visibility === 'private';
 
-                let displayDescription = task.description;
+                // Mediação de título - TODOS veem título público quando existe
+                let displayTitle;
+                let titleClass = "text-sm font-semibold text-brand-text leading-tight mb-1 line-clamp-2";
 
-                if (!isManager && !isOwner) {
-                    if (task.public_summary) {
-                        displayDescription = task.public_summary;
-                    } else {
-                        displayDescription = "<span class='italic text-stone-400'>Conteúdo sob análise da administração.</span>";
-                    }
+                if (task.public_title) {
+                    // Se há título público, TODOS veem ele (gestores e não-gestores)
+                    displayTitle = this.sanitizeHTML(task.public_title);
+                } else {
+                    // Se não há título público, mostrar texto genérico para todos em itálico
+                    displayTitle = "Título público ainda não definido";
+                    titleClass = "text-sm font-semibold text-stone-400 italic leading-tight mb-1 line-clamp-2";
+                }
+
+                // Mediação de descrição - TODOS veem descrição pública no board
+                let displayDescription;
+                if (task.public_summary) {
+                    // Se há resumo público, TODOS veem ele
+                    displayDescription = this.sanitizeHTML(task.public_summary);
+                } else {
+                    // Se não há resumo público, mostrar texto genérico
+                    displayDescription = "<span class='italic text-stone-400'>Conteúdo sob análise da administração.</span>";
                 }
 
                 let pendingSummaryAlert = '';
-                if (isManager && !task.public_summary && task.visibility !== 'private') {
-                    pendingSummaryAlert = `<span class="text-[9px] font-bold text-orange-600 bg-orange-100 border border-orange-200 px-1.5 py-0.5 rounded flex items-center gap-1" title="Este chamado público ainda não tem um resumo seguro definido"><i class="fas fa-shield-alt"></i> PENDENTE</span>`;
+                if (isManager && (!task.public_title || task.public_title.trim() === '') && task.visibility !== 'private') {
+                    pendingSummaryAlert = `<span class="text-[10px] leading-none font-bold text-orange-600 bg-orange-100 border border-orange-200 px-1.5 rounded h-6 inline-flex items-center justify-center gap-1" title="Este chamado público ainda não tem um título moderado definido"><i class="fas fa-shield-alt"></i> PENDENTE</span>`;
                 }
 
                 let followBtn = '';
@@ -2591,7 +3772,7 @@
                     const isFollowing = task.followers && task.followers.includes(this.data.currentUser);
                     const iconClass = isFollowing ? 'fas fa-star text-amber-400' : 'far fa-star text-stone-300 hover:text-amber-400';
                     const title = isFollowing ? 'Deixar de Seguir' : 'Seguir Chamado';
-                    followBtn = `<button onclick="event.stopPropagation(); app.toggleFollow(${task.id})" class="p-1 transition-transform active:scale-95" title="${title}"><i class="${iconClass}"></i></button>`;
+                    followBtn = `<button onclick="event.stopPropagation(); app.toggleFollow(${task.id})" class="h-6 w-6 inline-flex items-center justify-center transition-transform active:scale-95" title="${title}"><i class="${iconClass} text-[10px]"></i></button>`;
                 }
 
                 let stuckHTML = '';
@@ -2602,42 +3783,45 @@
                 const diffDays = this.getTaskAge(task);
                 let agingHTML = '';
                 if (diffDays > CONFIG.AGING_THRESHOLD_DAYS && task.status !== 'done') {
-                    agingHTML = `<span class="text-[10px] text-red-500 font-bold ml-1 flex items-center gap-1"><i class="far fa-clock"></i> ${diffDays}d</span>`;
+                    agingHTML = `<span class="text-[10px] leading-none text-red-500 font-bold ml-1 h-6 inline-flex items-center justify-center gap-1"><i class="far fa-clock"></i> ${diffDays}d</span>`;
                 }
 
                 let attachHTML = '';
                 if (task.attachments && task.attachments.length > 0) {
-                    attachHTML = `<i class="fas fa-paperclip text-stone-400 text-xs"></i>`;
+                    attachHTML = `<i class="fas fa-paperclip text-stone-400 text-[10px] h-6 inline-flex items-center justify-center"></i>`;
                 }
 
                 const priorityTextColor = CONFIG.PRIORITY_TEXT_COLORS[task.priority] || 'text-stone-400';
 
-                // Badge de categoria com emoji genérico - mapeia categoria detalhada para principal
+                // Badge de categoria com ícone - mapeia categoria detalhada para principal
                 const detailedCategory = task.category || 'outros';
                 const mainCategory = this.getMainCategory(detailedCategory);
                 const categoryConfig = CONFIG.CATEGORIES[mainCategory] || CONFIG.CATEGORIES['outros'];
-                const categoryBadge = `<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded border ${categoryConfig.badgeBg} ${categoryConfig.badgeText} ${categoryConfig.badgeBorder}" title="${categoryConfig.label}">${categoryConfig.emoji}</span>`;
+                const categoryBadge = `<span class="inline-flex items-center justify-center gap-1 text-[10px] font-bold w-6 h-6 rounded border ${categoryConfig.badgeBg} ${categoryConfig.badgeText} ${categoryConfig.badgeBorder}" title="${categoryConfig.label}"><i class="${categoryConfig.icon}"></i></span>`;
 
                 return `
                 <div onclick="app.openCardModal(${task.id})" class="kanban-card bg-white p-3 rounded-lg shadow-sm border border-stone-100 border-l-4 ${CONFIG.PRIORITY_COLORS[task.priority]} mb-2 group">
                     
                     <div class="flex justify-between items-center mb-2 w-full h-6">
                         
-                        <div class="flex items-center gap-2 h-full">
-                            <span class="text-xs font-bold ${priorityTextColor} flex items-center h-full">${task.priority} ${agingHTML}</span>
+                        <div class="flex items-center gap-2 h-6">
+                            <div class="h-6 inline-flex items-center">
+                                <span class="text-[10px] font-bold ${priorityTextColor} leading-none">${task.priority}</span>
+                                ${agingHTML}
+                            </div>
                             ${categoryBadge}
                             ${pendingSummaryAlert}
                         </div>
 
-                        <div class="flex items-center gap-2 h-full">
+                        <div class="flex items-center gap-2 h-6">
                             ${attachHTML}
-                            <div class="">${CONFIG.VISIBILITY_BADGES[task.visibility]}</div>
+                            ${CONFIG.VISIBILITY_BADGES[task.visibility]}
                             ${followBtn}
                         </div>
 
                     </div>
 
-                    <h4 class="text-sm font-semibold text-brand-text leading-tight mb-1 line-clamp-2">${task.title}</h4>
+                    <h4 class="${titleClass}">${displayTitle}</h4>
                     <p class="text-xs text-stone-500 line-clamp-2">${displayDescription}</p>
                     ${stuckHTML}
                 </div>`;
@@ -2685,6 +3869,7 @@
 
                 this.updateUserInterface();
                 this.updateFilterButtons();
+                this.updatePendingBadges();
                 this.render();
                 this.initWatermark();
                 this.showToast('success', 'Perfil Alterado', `Agora simulando: ${role === 'manager' ? 'Gestor' : 'Morador'}`);
@@ -2701,7 +3886,11 @@
                     filterButtons: document.getElementById('filterButtonsContainer'),
                     viewFilterContainer: document.getElementById('viewFilterContainer'),
                     mainBoard: document.getElementById('mainBoard'),
-                    archiveView: document.getElementById('archiveView')
+                    archiveView: document.getElementById('archiveView'),
+                    pendingCallsMobile: document.getElementById('pendingCallsMobile'),
+                    pendingCallsDesktop: document.getElementById('pendingCallsDesktop'),
+                    queueButtonMobile: document.getElementById('queueButtonMobile'),
+                    queueButtonDesktop: document.getElementById('queueButtonDesktop')
                 };
 
                 const safeToggle = (el, cls, condition) => {
@@ -2711,8 +3900,18 @@
                 safeToggle(elements.managerMenu, 'hidden', !isManager);
                 safeToggle(elements.mobileMenu, 'hidden', !isManager);
                 safeToggle(elements.fab, 'hidden', isManager);
-                safeToggle(elements.filterFab, 'hidden', isManager);
+                // Gestor também usa o FAB de filtros (mas com modal diferente)
+                // Morador sempre vê o filterFab
+                safeToggle(elements.filterFab, 'hidden', false);
                 safeToggle(elements.filterButtons, 'hidden', isManager);
+
+                // Botão de chamados pendentes só para moradores
+                safeToggle(elements.pendingCallsMobile, 'hidden', isManager);
+                safeToggle(elements.pendingCallsDesktop, 'hidden', isManager);
+
+                // Botão da Fila Inteligente só para admins (manager)
+                safeToggle(elements.queueButtonMobile, 'hidden', !isManager);
+                safeToggle(elements.queueButtonDesktop, 'hidden', !isManager);
 
                 if (elements.viewFilterContainer) elements.viewFilterContainer.classList.add('hidden');
 
@@ -2787,7 +3986,37 @@
                     ownerRow.classList.add('hidden');
                 }
 
-                document.getElementById('modalTitle').innerText = task.title;
+                // Controlar exibição de títulos
+                const originalTitleContainer = document.getElementById('originalTitleContainer');
+
+                if (isManager) {
+                    // Gestor vê título original (privado) e título público
+                    originalTitleContainer.classList.remove('hidden');
+                    document.getElementById('modalOriginalTitle').innerText = task.title;
+
+                    // Exibir título público ou texto genérico
+                    if (task.public_title) {
+                        document.getElementById('modalTitle').innerText = task.public_title;
+                        document.getElementById('modalTitle').className = "text-xl font-bold text-brand-text leading-tight";
+                    } else {
+                        document.getElementById('modalTitle').innerText = "Título público ainda não definido";
+                        document.getElementById('modalTitle').className = "text-xl font-bold text-stone-400 italic leading-tight";
+                    }
+                } else {
+                    // Não-gestores
+                    originalTitleContainer.classList.add('hidden');
+
+                    let displayTitle;
+                    if (task.public_title) {
+                        // Se há título público, mostrar ele
+                        displayTitle = task.public_title;
+                    } else {
+                        // Se não há título público, mostrar texto genérico
+                        displayTitle = "Título público ainda não definido";
+                    }
+                    document.getElementById('modalTitle').innerText = displayTitle;
+                    document.getElementById('modalTitle').className = "text-xl font-bold text-brand-text leading-tight";
+                }
 
                 const pStyle = CONFIG.PRIORITY_BADGE_STYLES[task.priority] || CONFIG.PRIORITY_BADGE_STYLES['Q4'];
                 const priorityBadge = document.getElementById('modalPriority');
@@ -2858,11 +4087,37 @@
                     els.summaryEditor.classList.remove('hidden');
                     els.summaryInput.value = task.public_summary || '';
 
+                    // Botão de aprovar descrição original
+                    const approveBtn = document.getElementById('approveOriginalBtn');
+                    if (task.public_summary && task.public_summary.trim() !== '') {
+                        approveBtn.classList.add('hidden');
+                    } else {
+                        approveBtn.classList.remove('hidden');
+                    }
+
+                    // Editor de título público
+                    const titleEditor = document.getElementById('managerTitleEditor');
+                    const titleInput = document.getElementById('publicTitleInput');
+                    const approveTitleBtn = document.getElementById('approveOriginalTitleBtn');
+                    titleEditor.classList.remove('hidden');
+                    titleInput.value = task.public_title || '';
+
+                    // Mostrar botão de aprovar título original apenas se ainda não houver título público
+                    if (task.public_title && task.public_title.trim() !== '') {
+                        approveTitleBtn.classList.add('hidden');
+                    } else {
+                        approveTitleBtn.classList.remove('hidden');
+                    }
+
                     els.privacyBadge.classList.remove('hidden');
                     els.privacyBadge.className = "text-[10px] px-2 py-0.5 rounded border bg-brand-secondary/10 text-brand-secondary border-brand-secondary/30 font-bold uppercase";
                     els.privacyBadge.innerText = "Modo Gestão";
 
                 } else if (isOwner) {
+                    // Esconder editor de título público para não-gestores
+                    const titleEditor = document.getElementById('managerTitleEditor');
+                    titleEditor.classList.add('hidden');
+
                     els.origContainer.classList.remove('hidden');
                     els.origText.innerText = task.description;
 
@@ -2876,6 +4131,10 @@
                     }
 
                 } else {
+                    // Esconder editor de título público para não-gestores
+                    const titleEditor = document.getElementById('managerTitleEditor');
+                    titleEditor.classList.add('hidden');
+
                     els.summaryView.classList.remove('hidden');
                     if (task.public_summary) {
                         els.summaryView.innerText = task.public_summary;
@@ -2919,7 +4178,7 @@
                             <div class="absolute -left-[5px] top-2 w-2 h-2 rounded-full bg-stone-300"></div>
                             <div class="flex-1">
                                 <p class="text-xs font-bold text-stone-700">${h.action}</p>
-                                <p class="text-xs text-stone-500 italic">${h.details}</p>
+                                <p class="text-xs text-stone-500 italic">${this.sanitizeHTML(h.details)}</p>
                             </div>
                             <div class="text-[10px] text-stone-400 text-right">
                                 <p class="font-semibold">${h.user}</p>
@@ -3019,6 +4278,12 @@
                 if (!this.data.currentTask) return;
                 const newSummary = document.getElementById('summaryInput').value.trim();
 
+                // SEGURANÇA: Valida input antes de salvar
+                if (newSummary && !this.validateInput(newSummary, 2000)) {
+                    this.showToast('warning', 'Erro', 'Resumo contém caracteres inválidos ou é muito longo');
+                    return;
+                }
+
                 // Atualiza dados
                 this.data.currentTask.public_summary = newSummary;
 
@@ -3039,7 +4304,7 @@
                     user: historyEntry.user,
                     action: historyEntry.action,
                     details: historyEntry.details,
-                    taskTitle: this.data.currentTask.title,
+                    taskTitle: this.getSafeTitle(this.data.currentTask),
                     taskId: this.data.currentTask.id
                 });
 
@@ -3047,10 +4312,198 @@
                 this.showToast('success', 'Atualizado', 'Resumo público definido com sucesso.');
 
                 // Atualiza a visualização no modal imediatamente
-                document.getElementById('modalPublicSummary').innerText = newSummary;
+                // SEGURANÇA: Usa textContent para prevenir XSS
+                document.getElementById('modalPublicSummary').textContent = newSummary;
                 document.getElementById('modalPublicSummary').classList.remove('hidden');
+
+                // Desabilitar botão de aprovar descrição original após salvar
+                const approveBtn = document.getElementById('approveOriginalBtn');
+                if (approveBtn && newSummary && newSummary.trim() !== '') {
+                    approveBtn.classList.add('hidden');
+                }
+
+                // Atualizar histórico em tempo real
+                this.updateAuditTrail();
+
                 // Força re-render do board para atualizar o badge "PENDENTE" se necessário
                 this.render();
+            },
+
+            // Nova função: Aprovar descrição original como resumo público
+            approveOriginalDescription: function () {
+                if (!this.data.currentTask) return;
+                const originalDesc = this.data.currentTask.description;
+
+                // Define a descrição original como resumo público
+                this.data.currentTask.public_summary = originalDesc;
+
+                // Log de aprovação
+                if (!this.data.currentTask.history) this.data.currentTask.history = [];
+                const historyEntry = {
+                    date: new Date().toISOString(),
+                    user: 'Gestor',
+                    action: 'Moderação de Conteúdo',
+                    details: 'Descrição original aprovada como Resumo Público'
+                };
+                this.data.currentTask.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: this.data.currentTask.public_title || this.data.currentTask.title,
+                    taskId: this.data.currentTask.id
+                });
+
+                this.saveData();
+                this.showToast('success', 'Aprovado', 'Descrição original aprovada como resumo público.');
+
+                // Atualiza visualizações
+                document.getElementById('summaryInput').value = originalDesc;
+                document.getElementById('modalPublicSummary').innerText = originalDesc;
+                document.getElementById('modalPublicSummary').classList.remove('hidden');
+
+                // Ocultar botão de aprovar
+                document.getElementById('approveOriginalBtn').classList.add('hidden');
+
+                // Atualizar histórico em tempo real
+                this.updateAuditTrail();
+
+                this.render();
+            },
+
+            // Nova função: Aprovar título original como título público
+            approveOriginalTitle: function () {
+                if (!this.data.currentTask) return;
+                const originalTitle = this.data.currentTask.title;
+
+                // Define o título original como título público
+                this.data.currentTask.public_title = originalTitle;
+
+                // Log de aprovação
+                if (!this.data.currentTask.history) this.data.currentTask.history = [];
+                const historyEntry = {
+                    date: new Date().toISOString(),
+                    user: 'Gestor',
+                    action: 'Moderação de Conteúdo',
+                    details: 'Título original aprovado como Título Público'
+                };
+                this.data.currentTask.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: this.data.currentTask.public_title || this.data.currentTask.title,
+                    taskId: this.data.currentTask.id
+                });
+
+                this.saveData();
+                this.showToast('success', 'Aprovado', 'Título original aprovado como título público.');
+
+                // Atualiza visualizações
+                document.getElementById('publicTitleInput').value = originalTitle;
+                document.getElementById('modalTitle').innerText = originalTitle;
+                document.getElementById('modalTitle').className = "text-xl font-bold text-brand-text leading-tight";
+
+                // Ocultar botão de aprovar
+                document.getElementById('approveOriginalTitleBtn').classList.add('hidden');
+
+                // Atualizar histórico em tempo real
+                this.updateAuditTrail();
+
+                this.render();
+            },
+
+            // Nova função: Salvar título público
+            savePublicTitle: function () {
+                if (!this.data.currentTask) return;
+                const newTitle = document.getElementById('publicTitleInput').value.trim();
+
+                // SEGURANÇA: Valida input antes de salvar
+                if (newTitle && !this.validateInput(newTitle, 200)) {
+                    this.showToast('warning', 'Erro', 'Título contém caracteres inválidos ou é muito longo');
+                    return;
+                }
+
+                // Atualiza dados
+                const oldTitle = this.data.currentTask.public_title;
+                this.data.currentTask.public_title = newTitle;
+
+                // Log
+                if (!this.data.currentTask.history) this.data.currentTask.history = [];
+                const historyEntry = {
+                    date: new Date().toISOString(),
+                    user: 'Gestor',
+                    action: 'Moderação de Conteúdo',
+                    details: newTitle ? `Título Público definido: "${newTitle}"` : 'Título Público removido'
+                };
+                this.data.currentTask.history.unshift(historyEntry);
+
+                // Adiciona ao log do sistema
+                if (!this.data.systemLogs) this.data.systemLogs = [];
+                this.data.systemLogs.push({
+                    date: historyEntry.date,
+                    user: historyEntry.user,
+                    action: historyEntry.action,
+                    details: historyEntry.details,
+                    taskTitle: newTitle || this.data.currentTask.title,
+                    taskId: this.data.currentTask.id
+                });
+
+                this.saveData();
+                this.showToast('success', 'Atualizado', 'Título público atualizado com sucesso.');
+
+                // Atualizar visualização do título no modal
+                if (newTitle) {
+                    // SEGURANÇA: Usa textContent para prevenir XSS
+                    document.getElementById('modalTitle').textContent = newTitle;
+                    document.getElementById('modalTitle').className = "text-xl font-bold text-brand-text leading-tight";
+                } else {
+                    document.getElementById('modalTitle').textContent = "Título público ainda não definido";
+                    document.getElementById('modalTitle').className = "text-xl font-bold text-stone-400 italic leading-tight";
+                }
+
+                // Ocultar botão de aprovar título original após salvar
+                const approveTitleBtn = document.getElementById('approveOriginalTitleBtn');
+                if (approveTitleBtn && newTitle && newTitle.trim() !== '') {
+                    approveTitleBtn.classList.add('hidden');
+                }
+
+                // Atualizar histórico em tempo real
+                this.updateAuditTrail();
+
+                this.render();
+            },
+
+            // Função para atualizar o histórico (audit trail) em tempo real
+            updateAuditTrail: function () {
+                if (!this.data.currentTask) return;
+
+                const auditContainer = document.getElementById('auditTrail');
+                if (this.data.currentTask.history && this.data.currentTask.history.length > 0) {
+                    auditContainer.innerHTML = this.data.currentTask.history.map(h => `
+                        <div class="flex gap-4 border-l-2 border-stone-300 pl-4 py-1 relative">
+                            <div class="absolute -left-[5px] top-2 w-2 h-2 rounded-full bg-stone-300"></div>
+                            <div class="flex-1">
+                                <p class="text-xs font-bold text-stone-700">${h.action}</p>
+                                <p class="text-xs text-stone-500 italic">${this.sanitizeHTML(h.details)}</p>
+                            </div>
+                            <div class="text-[10px] text-stone-400 text-right">
+                                <p class="font-semibold">${h.user}</p>
+                                <p>${new Date(h.date).toLocaleString('pt-BR', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'})}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    auditContainer.innerHTML = '<p class="italic text-stone-400 text-xs">Sem histórico registrado.</p>';
+                }
             },
 
             changeVisibility: function (newVis) {
@@ -3076,7 +4529,7 @@
                     user: historyEntry.user,
                     action: historyEntry.action,
                     details: historyEntry.details,
-                    taskTitle: this.data.currentTask.title,
+                    taskTitle: this.getSafeTitle(this.data.currentTask),
                     taskId: this.data.currentTask.id
                 });
 
@@ -3124,7 +4577,7 @@
                     user: historyEntry.user,
                     action: historyEntry.action,
                     details: historyEntry.details,
-                    taskTitle: this.data.currentTask.title,
+                    taskTitle: this.getSafeTitle(this.data.currentTask),
                     taskId: this.data.currentTask.id
                 });
 
@@ -3137,31 +4590,20 @@
                 categoryBadge.innerHTML = `<i class="${newConfig.icon}"></i> <span>${newConfig.label}</span>`;
                 categoryBadge.className = `h-8 inline-flex items-center gap-1.5 text-xs font-bold px-3 rounded border ${newConfig.badgeBg} ${newConfig.badgeText} ${newConfig.badgeBorder}`;
 
-                // Atualiza o histórico no modal sem fechar
-                const auditContainer = document.getElementById('auditTrail');
-                if (this.data.currentTask.history && this.data.currentTask.history.length > 0) {
-                    auditContainer.innerHTML = this.data.currentTask.history.map(h => `
-                        <div class="flex gap-4 border-l-2 border-stone-300 pl-4 py-1 relative">
-                            <div class="absolute -left-[5px] top-2 w-2 h-2 rounded-full bg-stone-300"></div>
-                            <div class="flex-1">
-                                <p class="text-xs font-bold text-stone-700">${h.action}</p>
-                                <p class="text-xs text-stone-500 italic">${h.details}</p>
-                            </div>
-                            <div class="text-[10px] text-stone-400 text-right">
-                                <p class="font-semibold">${h.user}</p>
-                                <p>${new Date(h.date).toLocaleString('pt-BR', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'})}</p>
-                            </div>
-                        </div>
-                    `).join('');
-                } else {
-                    auditContainer.innerHTML = '<p class="italic text-stone-400 text-xs">Sem histórico registrado.</p>';
-                }
+                // Atualizar histórico em tempo real
+                this.updateAuditTrail();
             },
 
             addComment: function () {
                 const input = document.getElementById('newCommentInput');
                 const text = input.value.trim();
                 if (!text || !this.data.currentTask) return;
+
+                // SEGURANÇA: Valida comentário
+                if (!this.validateInput(text, 500)) {
+                    this.showToast('warning', 'Erro', 'Comentário inválido ou muito longo');
+                    return;
+                }
 
                 const userName = this.data.currentUser === 'manager' ? 'Gestor' : 'Você';
 
@@ -3181,13 +4623,15 @@
                     user: historyEntry.user,
                     action: historyEntry.action,
                     details: historyEntry.details,
-                    taskTitle: this.data.currentTask.title,
+                    taskTitle: this.getSafeTitle(this.data.currentTask),
                     taskId: this.data.currentTask.id
                 });
 
                 this.saveData();
                 input.value = '';
-                this.openCardModal(this.data.currentTask.id);
+
+                // Atualizar histórico em tempo real ao invés de reabrir o modal
+                this.updateAuditTrail();
             },
 
             requestStuckReason: function () {
@@ -3198,6 +4642,11 @@
                 const reason = document.getElementById('stuckReasonInput').value;
                 if (!reason.trim()) {
                     this.showToast('warning', 'Atenção', 'Por favor, informe o motivo.');
+                    return;
+                }
+                // SEGURANÇA: Valida motivo de enroscamento
+                if (!this.validateInput(reason, 500)) {
+                    this.showToast('warning', 'Erro', 'Motivo inválido ou muito longo (máx. 500 caracteres)');
                     return;
                 }
                 if (this.data.currentTask) {
@@ -3217,7 +4666,7 @@
                         user: historyEntry.user,
                         action: historyEntry.action,
                         details: historyEntry.details,
-                        taskTitle: this.data.currentTask.title,
+                        taskTitle: this.getSafeTitle(this.data.currentTask),
                         taskId: this.data.currentTask.id
                     });
 
@@ -3251,6 +4700,12 @@
 
                 if (isTriage && !reason) {
                     this.showToast('warning', 'Atenção', "Por favor, informe o motivo do arquivamento/rejeição.");
+
+                    // SEGURAN�A: Valida motivo de arquivamento
+                    if (reason && !this.validateInput(reason, 500)) {
+                        this.showToast('warning', 'Erro', 'Motivo inv�lido ou muito longo (m�x. 500 caracteres)');
+                        return;
+                    }
                     return;
                 }
 

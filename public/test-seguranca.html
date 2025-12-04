@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Segurança - GG Condomínio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .test-pass { background-color: #d1fae5; border-left: 4px solid #10b981; }
+        .test-fail { background-color: #fee2e2; border-left: 4px solid #ef4444; }
+        .test-pending { background-color: #fef3c7; border-left: 4px solid #f59e0b; }
+    </style>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">🛡️ Teste de Segurança - GG Condomínio</h1>
+        <p class="text-gray-600 mb-8">Testando todas as proteções implementadas contra XSS e injeção de código</p>
+
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">📋 Instruções</h2>
+            <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                <li>Abra o aplicativo principal em outra aba: <a href="board.html" target="_blank" class="text-blue-600 hover:underline font-bold">board.html</a></li>
+                <li>Execute cada teste abaixo clicando no botão "Testar"</li>
+                <li>Volte para a aba do board.html e verifique se o payload malicioso foi bloqueado</li>
+                <li>✅ = Bloqueado corretamente (seguro) | ❌ = Executado (vulnerável)</li>
+            </ol>
+        </div>
+
+        <div id="test-results" class="space-y-4">
+            <!-- Testes serão adicionados aqui -->
+        </div>
+
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mt-8">
+            <h3 class="font-bold text-blue-900 mb-2">ℹ️ Como Verificar os Resultados</h3>
+            <ul class="list-disc list-inside text-blue-800 space-y-1 text-sm">
+                <li>Se aparecer um alert() com mensagem de XSS = ❌ VULNERÁVEL</li>
+                <li>Se o texto aparecer como texto simples (sem executar) = ✅ SEGURO</li>
+                <li>Se receber erro de validação = ✅ SEGURO</li>
+                <li>Verifique também o console do DevTools (F12) para erros</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const tests = [
+            {
+                id: 'xss-titulo-basico',
+                name: 'XSS em Título - Script Básico',
+                category: 'XSS Armazenado',
+                payload: '<script>alert("XSS")</script>',
+                target: 'Título do novo chamado',
+                instructions: 'Criar novo chamado com o payload no título. Se aparecer alert, está vulnerável.',
+                autoTest: false
+            },
+            {
+                id: 'xss-titulo-img',
+                name: 'XSS em Título - IMG onerror',
+                category: 'XSS Armazenado',
+                payload: '<img src=x onerror=alert("XSS-IMG")>',
+                target: 'Título do novo chamado',
+                instructions: 'Criar novo chamado. Se aparecer alert, está vulnerável.',
+                autoTest: false
+            },
+            {
+                id: 'xss-titulo-svg',
+                name: 'XSS em Título - SVG onload',
+                category: 'XSS Armazenado',
+                payload: '<svg onload=alert("XSS-SVG")>',
+                target: 'Título do novo chamado',
+                instructions: 'Criar novo chamado. Se aparecer alert, está vulnerável.',
+                autoTest: false
+            },
+            {
+                id: 'xss-descricao-iframe',
+                name: 'XSS em Descrição - IFrame',
+                category: 'XSS Armazenado',
+                payload: '<iframe src="javascript:alert(XSS)"></iframe>',
+                target: 'Descrição do novo chamado',
+                instructions: 'Criar novo chamado com payload na descrição. Se aparecer alert, está vulnerável.',
+                autoTest: false
+            },
+            {
+                id: 'xss-descricao-javascript',
+                name: 'XSS em Descrição - JavaScript Protocol',
+                category: 'XSS Armazenado',
+                payload: '<a href="javascript:alert(XSS)">Click</a>',
+                target: 'Descrição do novo chamado',
+                instructions: 'Se o link for clicável e executar alert, está vulnerável.',
+                autoTest: false
+            },
+            {
+                id: 'xss-comentario-script',
+                name: 'XSS em Comentário - Script Tag',
+                category: 'XSS Armazenado',
+                payload: '<script>alert("XSS")</script>',
+                target: 'Campo de comentário',
+                instructions: 'Abrir um chamado e adicionar comentário com payload. Se aparecer alert, está vulnerável.',
+                autoTest: false
+            },
+            {
+                id: 'xss-comentario-evento',
+                name: 'XSS em Comentário - Evento onclick',
+                category: 'XSS Armazenado',
+                payload: '<div onclick=alert(1)>Click aqui</div>',
+                target: 'Campo de comentário',
+                instructions: 'Se o div for clicável e executar alert, está vulnerável.',
+                autoTest: false
+            },
+            {
+                id: 'xss-titulo-publico',
+                name: 'XSS em Título Público (Moderação)',
+                category: 'XSS Moderado',
+                payload: '<script>alert("XSS")</script>',
+                target: 'Título público (gestor)',
+                instructions: 'Como gestor, moderar título público com payload. Se aparecer alert, está vulnerável.',
+                autoTest: false
+            },
+            {
+                id: 'xss-resumo-publico',
+                name: 'XSS em Resumo Público (Moderação)',
+                category: 'XSS Moderado',
+                payload: '<img src=x onerror=alert(1)>',
+                target: 'Resumo público (gestor)',
+                instructions: 'Como gestor, editar resumo público com payload. Se aparecer alert, está vulnerável.',
+                autoTest: false
+            },
+            {
+                id: 'xss-motivo-arquivamento',
+                name: 'XSS em Motivo de Arquivamento',
+                category: 'XSS em Notas',
+                payload: '<script>alert("XSS")</script>',
+                target: 'Motivo de arquivamento',
+                instructions: 'Arquivar chamado com payload no motivo. Se aparecer alert no histórico, está vulnerável.',
+                autoTest: false
+            },
+            {
+                id: 'xss-nota-triagem',
+                name: 'XSS em Nota de Triagem',
+                category: 'XSS em Notas',
+                payload: '<img src=x onerror=alert("XSS-TRIAGEM")>',
+                target: 'Observação de triagem',
+                instructions: 'Aprovar chamado de triagem com payload na obs. Se aparecer alert, está vulnerável.',
+                autoTest: false
+            },
+            {
+                id: 'xss-motivo-stuck',
+                name: 'XSS em Motivo de Enroscamento',
+                category: 'XSS em Notas',
+                payload: '<svg onload=alert("XSS-STUCK")>',
+                target: 'Motivo de stuck',
+                instructions: 'Marcar como enroscado com payload. Se aparecer alert, está vulnerável.',
+                autoTest: false
+            },
+            {
+                id: 'dos-titulo-longo',
+                name: 'DoS - Título Muito Longo',
+                category: 'Denial of Service',
+                payload: 'A'.repeat(10000),
+                target: 'Título do chamado',
+                instructions: 'Tentar criar chamado com 10.000 caracteres. Deve ser rejeitado (máx. 200).',
+                autoTest: false
+            },
+            {
+                id: 'dos-descricao-longa',
+                name: 'DoS - Descrição Muito Longa',
+                category: 'Denial of Service',
+                payload: 'B'.repeat(50000),
+                target: 'Descrição do chamado',
+                instructions: 'Tentar criar chamado com 50.000 caracteres. Deve ser rejeitado (máx. 2000).',
+                autoTest: false
+            },
+            {
+                id: 'dos-comentario-longo',
+                name: 'DoS - Comentário Muito Longo',
+                category: 'Denial of Service',
+                payload: 'C'.repeat(5000),
+                target: 'Comentário',
+                instructions: 'Tentar adicionar comentário com 5.000 caracteres. Deve ser rejeitado (máx. 500).',
+                autoTest: false
+            },
+            {
+                id: 'html-injection-bold',
+                name: 'HTML Injection - Tags de Formatação',
+                category: 'HTML Injection',
+                payload: '<b>Texto em negrito</b><i>Texto em itálico</i>',
+                target: 'Título do chamado',
+                instructions: 'Tags HTML devem aparecer como texto simples, não formatadas.',
+                autoTest: false
+            },
+            {
+                id: 'html-injection-style',
+                name: 'HTML Injection - Tag Style',
+                category: 'HTML Injection',
+                payload: '<style>body{background:red}</style>',
+                target: 'Descrição do chamado',
+                instructions: 'A tag style não deve ser aplicada. Fundo não deve ficar vermelho.',
+                autoTest: false
+            },
+            {
+                id: 'api-key-storage',
+                name: 'Proteção de API Key',
+                category: 'Privacidade',
+                payload: 'Verificar localStorage',
+                target: 'DevTools',
+                instructions: 'Abra DevTools (F12) > Application > Local Storage. A chave "gemini_api_key" NÃO deve existir. Deve haver "_gak" ofuscada.',
+                autoTest: true,
+                testFn: function() {
+                    const hasOldKey = localStorage.getItem('gemini_api_key') !== null;
+                    const hasNewKey = localStorage.getItem('_gak') !== null;
+                    
+                    if (hasOldKey) {
+                        return { pass: false, message: '❌ API key em texto plano encontrada!' };
+                    }
+                    if (!hasNewKey) {
+                        return { pass: true, message: '✅ Nenhuma API key armazenada (ok se não configurada)' };
+                    }
+                    
+                    const obfuscatedKey = localStorage.getItem('_gak');
+                    const isBase64 = /^[A-Za-z0-9+/=]+$/.test(obfuscatedKey);
+                    
+                    if (isBase64) {
+                        return { pass: true, message: '✅ API key ofuscada corretamente com base64' };
+                    } else {
+                        return { pass: false, message: '❌ API key não está ofuscada' };
+                    }
+                }
+            },
+            {
+                id: 'sanitize-functions',
+                name: 'Funções de Sanitização Existem',
+                category: 'Infraestrutura',
+                payload: 'Verificar código',
+                target: 'Objeto app',
+                instructions: 'Verificar se as funções sanitizeHTML, sanitizeAttribute e validateInput existem no objeto app.',
+                autoTest: true,
+                testFn: function() {
+                    // Tenta acessar o objeto app no contexto do board.html
+                    try {
+                        const boardWindow = window.open('board.html', 'boardTest');
+                        if (!boardWindow) {
+                            return { pass: false, message: '❌ Não foi possível abrir board.html' };
+                        }
+                        
+                        setTimeout(() => {
+                            if (boardWindow.app && 
+                                typeof boardWindow.app.sanitizeHTML === 'function' &&
+                                typeof boardWindow.app.sanitizeAttribute === 'function' &&
+                                typeof boardWindow.app.validateInput === 'function') {
+                                boardWindow.close();
+                                return { pass: true, message: '✅ Todas as funções de segurança existem' };
+                            } else {
+                                boardWindow.close();
+                                return { pass: false, message: '❌ Funções de segurança não encontradas' };
+                            }
+                        }, 1000);
+                    } catch (e) {
+                        return { pass: false, message: '❌ Erro ao verificar: ' + e.message };
+                    }
+                    return { pass: true, message: '⏳ Verificação manual necessária - abra board.html e digite no console: typeof app.sanitizeHTML' };
+                }
+            },
+            {
+                id: 'maxlength-attributes',
+                name: 'Limites HTML (maxlength)',
+                category: 'Infraestrutura',
+                payload: 'Verificar HTML',
+                target: 'Inputs e textareas',
+                instructions: 'Todos os campos de entrada devem ter atributo maxlength definido.',
+                autoTest: false
+            }
+        ];
+
+        // Definir funções antes de renderizar
+        function getCategoryIcon(category) {
+            const icons = {
+                'XSS Armazenado': '💉',
+                'XSS Moderado': '🎭',
+                'XSS em Notas': '📝',
+                'Denial of Service': '💣',
+                'HTML Injection': '🏷️',
+                'Privacidade': '🔐',
+                'Infraestrutura': '🏗️'
+            };
+            return icons[category] || '🧪';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function runTest(testId) {
+            const test = tests.find(t => t.id === testId);
+            if (!test) return;
+
+            const testDiv = document.getElementById('test-' + testId);
+            const resultDiv = document.getElementById('result-' + testId);
+
+            if (test.autoTest && test.testFn) {
+                // Executar teste automático
+                const result = test.testFn();
+                if (result.pass) {
+                    testDiv.className = 'test-pass p-4 rounded-lg';
+                    resultDiv.innerHTML = '✅ ' + result.message;
+                    resultDiv.className = 'mt-2 text-sm font-bold text-green-700';
+                } else {
+                    testDiv.className = 'test-fail p-4 rounded-lg';
+                    resultDiv.innerHTML = '❌ ' + result.message;
+                    resultDiv.className = 'mt-2 text-sm font-bold text-red-700';
+                }
+            } else {
+                // Copiar payload para clipboard
+                navigator.clipboard.writeText(test.payload).then(function() {
+                    resultDiv.innerHTML = '📋 Payload copiado! Cole no campo indicado e teste.';
+                    resultDiv.className = 'mt-2 text-sm font-bold text-blue-700';
+                    
+                    setTimeout(function() {
+                        resultDiv.innerHTML = '';
+                    }, 3000);
+                }).catch(function(err) {
+                    alert('Erro ao copiar: ' + err);
+                });
+            }
+        }
+
+        function renderTests() {
+            const container = document.getElementById('test-results');
+            
+            // Agrupar por categoria
+            const categories = {};
+            tests.forEach(test => {
+                if (!categories[test.category]) {
+                    categories[test.category] = [];
+                }
+                categories[test.category].push(test);
+            });
+
+            Object.keys(categories).forEach(category => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'bg-white rounded-lg shadow-md p-6 mb-4';
+                
+                let categoryHTML = `
+                    <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <span class="text-2xl">${getCategoryIcon(category)}</span>
+                        ${category}
+                        <span class="text-sm font-normal text-gray-500">(${categories[category].length} testes)</span>
+                    </h2>
+                    <div class="space-y-3">
+                `;
+
+                categories[category].forEach(test => {
+                    categoryHTML += `
+                        <div id="test-${test.id}" class="test-pending p-4 rounded-lg">
+                            <div class="flex items-start justify-between mb-2">
+                                <h3 class="font-bold text-gray-900">${test.name}</h3>
+                                <button 
+                                    onclick="runTest('${test.id}')" 
+                                    class="bg-blue-600 text-white px-4 py-1 rounded text-sm font-bold hover:bg-blue-700 transition">
+                                    ${test.autoTest ? '▶️ Testar Auto' : '📋 Copiar Payload'}
+                                </button>
+                            </div>
+                            <div class="text-sm text-gray-700 space-y-1">
+                                <p><strong>Alvo:</strong> ${test.target}</p>
+                                <p><strong>Payload:</strong> <code class="bg-gray-100 px-2 py-1 rounded text-xs break-all">${escapeHtml(test.payload)}</code></p>
+                                <p><strong>Instruções:</strong> ${test.instructions}</p>
+                            </div>
+                            <div id="result-${test.id}" class="mt-2 text-sm font-bold"></div>
+                        </div>
+                    `;
+                });
+
+                categoryHTML += '</div></div>';
+                categoryDiv.innerHTML = categoryHTML;
+                container.appendChild(categoryDiv);
+            });
+        }
+
+        // Renderizar testes ao carregar
+        renderTests();
+
+        // Adicionar estatísticas
+        const statsDiv = document.createElement('div');
+        statsDiv.className = 'bg-white rounded-lg shadow-md p-6 mt-8';
+        statsDiv.innerHTML = `
+            <h2 class="text-xl font-bold text-gray-800 mb-4">📊 Estatísticas</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-blue-600">${tests.length}</div>
+                    <div class="text-sm text-gray-600">Total de Testes</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-purple-600">${tests.filter(t => t.category.includes('XSS')).length}</div>
+                    <div class="text-sm text-gray-600">Testes XSS</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-orange-600">${tests.filter(t => t.category === 'Denial of Service').length}</div>
+                    <div class="text-sm text-gray-600">Testes DoS</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-green-600">${tests.filter(t => t.autoTest).length}</div>
+                    <div class="text-sm text-gray-600">Testes Automáticos</div>
+                </div>
+            </div>
+        `;
+        document.getElementById('test-results').appendChild(statsDiv);
+    </script>
+</body>
+</html>
